@@ -4,3 +4,5 @@ node_modules/
 .agents/sources.md
 .sources/
 .worktrees/
+.claude/
+skills-lock.json
