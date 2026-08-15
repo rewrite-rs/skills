@@ -6,16 +6,23 @@ on:
   pull_request:
     branches: [main, dev]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
       - run: npm ci
       - name: Tests, skill index, version sync
         run: npm run check
@@ -30,7 +37,7 @@ jobs:
               echo "::error file=$file::broken link to $target"
               fail=1
             fi
-          done < <(grep -rnoE '\]\((\./|\.\./)[^)#]+\)' --include='*.md' . \
-            | grep -v node_modules \
+          done < <(grep -rnoE '\]\((\./|\.\./)[^)#]+\)' --include='*.md' \
+            --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=superpowers . \
             | sed -E 's/^([^:]+):[0-9]+:\]\((.*)\)$/\1:\2/')
           exit $fail
