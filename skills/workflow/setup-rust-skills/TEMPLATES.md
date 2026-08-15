@@ -144,12 +144,15 @@ in it records nothing.
 ## Three worked scenarios
 
 **Greenfield binary crate.** Nothing exists yet: no `[lints]`, no
-`clippy.toml`, no `rustfmt.toml`, no `docs/`. The run creates all four — the
-lint block without `missing_docs` (no library surface), `clippy.toml` with the
-detected MSRV and the carve-out flags, the stable-only `rustfmt.toml`, and
-`docs/agents/rust.md` with the five facts. The report is four lines of
-"created." A second run is four lines of "already correct," and the tree is
-untouched.
+`clippy.toml`, no `rustfmt.toml`, no `docs/`. The run creates three artifacts
+across four files. The lint configuration: the lint block without
+`missing_docs` (no library surface) into `Cargo.toml`, and `clippy.toml` with
+the detected MSRV and the carve-out flags. Then the stable-only
+`rustfmt.toml`, and `docs/agents/rust.md` with the five facts. `Cargo.toml`
+is updated, not created: the crate exists, the lint block does not. The
+report states its four lines — `Cargo.toml` updated with an approved diff;
+`clippy.toml`, `rustfmt.toml`, and `docs/agents/rust.md` created. A second
+run is four lines of "already correct," and the tree is untouched.
 
 **Library crate with an MSRV commitment.** `rust-version = "1.85"` is
 declared and a CI job builds on 1.85. The detected MSRV goes into

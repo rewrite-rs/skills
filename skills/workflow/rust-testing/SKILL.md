@@ -9,8 +9,8 @@ A test suite is a statement about which changes the team refuses to accept
 silently. This skill decides *what deserves a test and in which form* — the
 five ordinary forms, golden files for file-shaped artifacts, and differential
 for ports — and it never decides what the code under test should look like.
-Shaping the code is the craft skills; whether a change is tested at all, as a
-review verdict, is `/rust-code-review`.
+Shaping the code belongs to the craft skills; whether a change is tested at
+all, as a review verdict, is `/rust-code-review`.
 
 ## What a test is for
 

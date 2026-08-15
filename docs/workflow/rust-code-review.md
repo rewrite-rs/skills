@@ -81,9 +81,9 @@ verdict rather than a dump of tool output.
 
 ## Where it fits
 
-`rust-code-review` is the review skill in the workflow group — it defers
-every "is this tested" verdict to `/rust-testing`, and it is the one the
-porting skills, when they land, will invoke for the review pass over ported
-code. It routes every smell row to the craft skill that owns the
+`rust-code-review` is the review skill in the workflow group — it owns the
+"is this tested" verdict and defers the test design to `/rust-testing`, and
+it is the one the porting skills, when they land, will invoke for the review
+pass over ported code. It routes every smell row to the skill that owns the
 standard, and it never restates those rules. See `rust-skills-map` for how
 the full set of skills relates.

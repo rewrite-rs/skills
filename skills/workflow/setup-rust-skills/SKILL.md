@@ -65,7 +65,7 @@ set the user did not agree to is a set they will disable in a week:
 | deny | `unsafe_op_in_unsafe_fn` | an implicit `unsafe` inside an `unsafe fn` hides the invariant the caller must uphold |
 | deny | `clippy::undocumented_unsafe_blocks` | every `unsafe` block needs a written `// SAFETY:` invariant |
 | deny | `clippy::missing_safety_doc` | every `pub unsafe fn` needs a `# Safety` doc section |
-| deny | `clippy::unwrap_used` | a panic in production code is a design decision — the test carve-out keeps it the assertion in tests |
+| deny | `clippy::unwrap_used` | a panic in production code is a design decision — the test carve-out keeps it as the assertion in tests |
 | deny | `clippy::expect_used` | the same rule, for the variant with a message |
 | warn | `clippy::pedantic`, as a group | worth a look, not a blocker; the group level leaves room to re-allow the noisy members |
 | warn | `missing_docs` | for a library — the public surface should document itself |

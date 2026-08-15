@@ -61,8 +61,8 @@ None yet in this bucket.
 
 **Model-invoked**
 
-- [rust-code-review](./skills/workflow/rust-code-review/SKILL.md) — Two-axis review — standards and spec — over a Rust diff.
 - [rust-testing](./skills/workflow/rust-testing/SKILL.md) — Tests that fail when behaviour changes, including port parity.
+- [rust-code-review](./skills/workflow/rust-code-review/SKILL.md) — Two-axis review — standards and spec — over a Rust diff.
 
 **User-invoked**
 
@@ -104,6 +104,15 @@ A port that compiles is not a port that matches the behaviour of its source. Wit
 crisply stated parity contract — what "done" means for this port — and discipline
 about never narrowing it silently, a port drifts: edge cases the original handled
 quietly stop being handled, and nobody notices until production.
+
+### Advice that nothing enforces
+
+The craft skills name the standard — the shape, the ownership, the error type —
+but a standard nothing enforces is a standard the next contributor forgets.
+Lint and format configuration the tooling applies, tests that fail when
+behaviour changes, a review that ends in a verdict, and a recorded posture file
+every agent reads on opening the repo are what make the standard the state
+the repo lives in, not advice about it.
 
 ## Contributing / repo layout
 
