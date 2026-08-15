@@ -1,0 +1,3 @@
+interface:
+  display_name: "Port from Go"
+  short_description: "Go-to-Rust mapping — goroutines, channels, interfaces, and error values"
