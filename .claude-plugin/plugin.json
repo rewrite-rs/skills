@@ -27,6 +27,7 @@
     "./skills/rust/unsafe-rust",
     "./skills/workflow/rust-testing",
     "./skills/workflow/rust-code-review",
-    "./skills/workflow/setup-rust-skills"
+    "./skills/workflow/setup-rust-skills",
+    "./skills/workflow/rust-skills-map"
   ]
 }

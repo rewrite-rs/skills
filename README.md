@@ -67,6 +67,7 @@ None yet in this bucket.
 **User-invoked**
 
 - [setup-rust-skills](./skills/workflow/setup-rust-skills/SKILL.md) — Lint, format, and recorded project posture for a Rust repo.
+- [rust-skills-map](./skills/workflow/rust-skills-map/SKILL.md) — Router over the skill set — which skill owns which decision.
 
 ## Why these skills exist
 

@@ -11,3 +11,4 @@ end to end.
 ## User-invoked
 
 - [setup-rust-skills](./setup-rust-skills/SKILL.md) — Lint, format, and recorded project posture for a Rust repo.
+- [rust-skills-map](./rust-skills-map/SKILL.md) — Router over the skill set — which skill owns which decision.
