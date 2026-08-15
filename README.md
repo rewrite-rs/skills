@@ -65,6 +65,10 @@ None yet in this bucket.
 - [port-from-cpp](./skills/porting/port-from-cpp/SKILL.md) — C++-to-Rust mapping — RAII, smart pointers, templates, and the cxx bridge.
 - [port-from-c](./skills/porting/port-from-c/SKILL.md) — C-to-Rust mapping — pointers, ownership, unions, and the bindgen boundary.
 
+**User-invoked**
+
+None yet in this bucket.
+
 ### Workflow
 
 **Model-invoked**
@@ -112,6 +116,15 @@ A port that compiles is not a port that matches the behaviour of its source. Wit
 crisply stated parity contract — what "done" means for this port — and discipline
 about never narrowing it silently, a port drifts: edge cases the original handled
 quietly stop being handled, and nobody notices until production.
+
+### Ports that never choose an end state
+
+A port ends one of three ways: replacement, with the source implementation deleted;
+a permanent binding that the existing callers keep importing; or scaffold, deleted
+at cut-over. That choice fixes the seam and the contract before either is written,
+and choosing it late is what leaves a codebase stuck in two languages — Rust that
+was never agreed to stay, and source code that is no longer maintained but still
+decides what runs.
 
 ### Advice that nothing enforces
 

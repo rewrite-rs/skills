@@ -50,16 +50,15 @@ the question is whether it is ready to merge.
 Python, TypeScript, Go, or Java — and the question is how to sequence the work
 so the port does not drift from the behaviour of its source.
 
-
 **The route.**
 
-1. `/port-to-rust` — the parity contract, the seam, the phase sequence;
-   for a Python source, `/port-from-python` alongside it, and for a
-   TypeScript or JavaScript source, `/port-from-typescript`, and
-   for a Go source, `/port-from-go`, and for a Java source,
+1. `/port-to-rust` — the end state, the parity contract, the seam, and the
+   phase sequence; for a Python source, `/port-from-python` alongside it,
+   and for a TypeScript or JavaScript source, `/port-from-typescript`,
+   and for a Go source, `/port-from-go`, and for a Java source,
    `/port-from-java`, and for a C++ source, `/port-from-cpp`, and
-   for a C source, `/port-from-c`, for the construct mapping and
-   the boundary.
+   for a C source, `/port-from-c`, for the construct mapping and the
+   boundary.
    **Handoff:** a written contract and a named seam exist.
 2. `/rust-testing` — the differential harness against the existing
    implementation: the same inputs through both, the outputs compared, the
