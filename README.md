@@ -61,6 +61,7 @@ None yet in this bucket.
 - [port-from-python](./skills/porting/port-from-python/SKILL.md) — Python-to-Rust construct mapping and the PyO3 boundary.
 - [port-from-go](./skills/porting/port-from-go/SKILL.md) — Go-to-Rust mapping — goroutines, channels, interfaces, and error values.
 - [port-from-java](./skills/porting/port-from-java/SKILL.md) — Java-to-Rust mapping — hierarchies to enums, exceptions to Result.
+- [port-from-cpp](./skills/porting/port-from-cpp/SKILL.md) — C++-to-Rust mapping — RAII, smart pointers, templates, and the cxx bridge.
 
 ### Workflow
 
