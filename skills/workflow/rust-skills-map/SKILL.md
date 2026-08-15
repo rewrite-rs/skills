@@ -58,10 +58,10 @@ signal that moves between them — is in `FLOWS.md`.
 - **Reviewing someone else code:** `/rust-code-review` first — it dispatches
   to the craft skills itself; a craft skill directly only when the review
   already named it and the depth is wanted.
-- **Porting from another language:** `/port-to-rust` for the parity
-  contract, the seam, and the phase sequence, then `/port-from-python`
-  for a Python source, `/port-from-typescript` for a TypeScript or
-  JavaScript one, `/port-from-go` for a Go one,
+- **Porting from another language:** `/port-to-rust` for the end
+  state, the parity contract, the seam, and the phase sequence, then
+  `/port-from-python` for a Python source, `/port-from-typescript`
+  for a TypeScript or JavaScript one, `/port-from-go` for a Go one,
   `/port-from-java` for a Java one, `/port-from-cpp` for a C++ one,
   or `/port-from-c` for a C one, for the construct mapping and the
   boundary, `/rust-testing` for the differential harness, the craft

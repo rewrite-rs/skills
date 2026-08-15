@@ -49,11 +49,11 @@ handoff signal between each step:
 - **Reviewing someone else code** — `/rust-code-review` first; it dispatches
   to the craft skills itself, and a craft skill is reached for directly only
   when the review already named it and the depth is wanted.
-- **Porting from another language** — `/port-to-rust` for the parity
-  contract, the seam, and the phase sequence, then the matching
-  `/port-from-<language>` skill for the construct mapping and the
-  boundary, `/rust-testing` for the differential harness, the craft
-  skills, and `/rust-code-review` before merge.
+- **Porting from another language** — `/port-to-rust` for the end
+  state, the parity contract, the seam, and the phase sequence, then
+  the matching `/port-from-<language>` skill for the construct
+  mapping and the boundary, `/rust-testing` for the differential
+  harness, the craft skills, and `/rust-code-review` before merge.
 
 The tie-breaker when two skills both seem right: which one names the decision
 as its defining constraint, stated on each docs page under `## What it does`.
