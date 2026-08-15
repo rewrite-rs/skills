@@ -1,0 +1,3 @@
+interface:
+  display_name: "Port from Java"
+  short_description: "Java-to-Rust mapping — hierarchies to enums, exceptions to Result"
