@@ -19,6 +19,7 @@
   ],
   "skills": [
     "./skills/rust/idiomatic-rust",
-    "./skills/rust/ownership-not-clone"
+    "./skills/rust/ownership-not-clone",
+    "./skills/rust/rust-errors"
   ]
 }
