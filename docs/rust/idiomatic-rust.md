@@ -45,7 +45,7 @@ skill will remove repeated `.map_err(...)` closures with `#[from]` (see
 `BOILERPLATE.md`), but the shape of the enum itself is not its call.
 
 **Is every `Deref` impl on a wrapper type wrong?** No — `Deref` is correct for actual
-smart pointers. It's wrong specifically when used to forward a wrapper's whole method
+smart pointers. It's wrong specifically when used to forward the whole method
 surface for inheritance-style convenience; see the `Deref` section of
 `BOILERPLATE.md` for the distinction.
 
@@ -59,7 +59,7 @@ surface for inheritance-style convenience; see the `Deref` section of
   comment explains why the derive would be wrong.
 - Bare primitives that stand in for a domain concept (an ID, a currency amount) have
   become newtypes.
-- No new `Deref` impl exists purely to forward a wrapper's method surface.
+- No new `Deref` impl exists purely to forward the method surface of a wrapper.
 
 ## Where it fits
 

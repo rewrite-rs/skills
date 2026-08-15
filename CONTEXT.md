@@ -1,6 +1,6 @@
 # CONTEXT.md
 
-The repo's own vocabulary. Skill prose, docs pages, and commit messages use these
+The vocabulary this repo uses. Skill prose, docs pages, and commit messages use these
 terms consistently — prefer the term here over the "avoid" alternatives listed with
 it, so a reader never has to wonder whether two different words mean the same thing.
 
@@ -14,7 +14,7 @@ it, so a reader never has to wonder whether two different words mean the same th
 - **Verification step** — the command a skill instructs the agent to run to settle a
   claim a machine can settle, e.g. `cargo clippy`, `cargo test`, `cargo miri test`.
   Avoid: "test step", "check" — too generic, and "check" collides with `npm run
-  check`, the repo's own harness command.
+  check`, the harness command this repo runs.
 
 - **Parity contract** — in porting work, the crisply stated definition of what
   "done" means for a given port. Once stated, it is never narrowed without explicit

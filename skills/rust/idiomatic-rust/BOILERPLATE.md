@@ -128,7 +128,7 @@ fn load(path: &str) -> Result<Config, AppError> {
 `#[from]` generates the `From` impl that lets `?` convert the error automatically, so
 every call site drops its `.map_err(...)` closure. This is expression-level
 boilerplate removal; deciding how the error *type itself* should be shaped is the
-`/rust-errors` skill's call, not this one's.
+a call for `/rust-errors` to make, not this skill.
 
 ## Forwarding methods on a wrapper type — the `Deref` trap
 
@@ -169,14 +169,14 @@ and its entire reason to exist is to add behavior (logging) on top. Implementing
 auto-deref, but it also silently exposes every other `Connection` method the wrapper
 never intended to expose, and it makes `&LoggingConnection` coerce to `&Connection`
 in places that quietly bypass the logging the wrapper exists to add. That defeats the
-wrapper's purpose without a compiler warning anywhere.
+purpose of the wrapper without a compiler warning anywhere.
 
 The idiomatic fix for genuine forwarding boilerplate is usually one of:
 
 - Keep the explicit forwarding methods — ten one-line functions are not a real
   maintenance burden, and they're a place to add behavior (a log line, a metric)
   later without touching call sites.
-- If the wrapper only needs a subset of the inner type's surface, forward exactly
+- If the wrapper only needs a subset of the surface on the inner type, forward exactly
   that subset explicitly rather than the whole type by `Deref`.
 - If the wrapper truly adds nothing and is pure indirection, delete the wrapper.
 

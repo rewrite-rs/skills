@@ -59,7 +59,7 @@ None yet in this bucket.
 
 ### Rust that reads like a translation
 
-Code ported or written without Rust's own idioms compiles and runs, but reads like
+Code ported or written without idioms native to Rust compiles and runs, but reads like
 whatever language it came from — index loops instead of iterators, hand-written
 conversions instead of `From`/`Into`, hand-written impls instead of derives. These
 skills push toward the shape a Rust reader expects, not just code that the compiler
@@ -75,7 +75,7 @@ routing around.
 
 ### Ports that drift from parity
 
-A port that compiles is not a port that matches its source's behaviour. Without a
+A port that compiles is not a port that matches the behaviour of its source. Without a
 crisply stated parity contract — what "done" means for this port — and discipline
 about never narrowing it silently, a port drifts: edge cases the original handled
 quietly stop being handled, and nobody notices until production.
@@ -83,4 +83,4 @@ quietly stop being handled, and nobody notices until production.
 ## Contributing / repo layout
 
 See `CLAUDE.md` for the rules that govern authoring, editing, and reviewing a skill
-in this repo, and `CONTEXT.md` for the repo's own vocabulary.
+in this repo, and `CONTEXT.md` for the vocabulary this repo uses.

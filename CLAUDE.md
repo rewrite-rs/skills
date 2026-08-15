@@ -31,7 +31,7 @@ verification step the agent actually runs — see
 
 ## 3. Config precedence
 
-A verification step runs at the target repo's own configured lint level.
+A verification step runs at the lint level configured in the target repo.
 `cargo clippy -- -D warnings` is the fallback only when the target repo has no lint
 configuration at all. A skill must never override a lint level the user (or an
 earlier `setup-rust-skills` run) deliberately set.
@@ -49,8 +49,8 @@ Sources live in `.agents/sources.md`, not inside any `SKILL.md` or docs page.
 ## 6. Invocation
 
 See `.agents/invocation.md` for the full rules on user-invoked versus model-invoked
-skills, and for what agrees between Claude Code's frontmatter flag and Codex's
-`agents/openai.yaml` policy. Only two skills in this repo are user-invoked:
+skills, and for what agrees between the frontmatter flag in Claude Code and the
+`agents/openai.yaml` policy in Codex. Only two skills in this repo are user-invoked:
 `setup-rust-skills` and `rust-skills-map`. Every other skill is model-invoked.
 
 ## 7. Router upkeep

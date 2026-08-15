@@ -28,8 +28,8 @@ this section entirely when there are none — do not write "none" as a section b
 
 ## Free-form middle
 
-One to three sections, titled in the skill's own vocabulary — use its leading term as
-a heading rather than a generic label like "Details." This is where the skill's actual
+One to three sections, titled in the vocabulary the skill uses — use its leading term as
+a heading rather than a generic label like "Details." This is where the actual
 content surfaces: the rules, the mapping, the checklist, whatever the skill teaches.
 Keep multi-way branches (this vs. that vs. the other) in a table or a list; a
 paragraph that tries to hold three branching cases reads as one undifferentiated
@@ -44,9 +44,9 @@ The questions a reader actually asks after skimming the sections above — edge 
 
 A bulleted checklist a reader can verify without opening `SKILL.md`: observable
 outcomes, not internal steps. Someone should be able to check these against their own
-repo or their own agent's output and know whether the skill did its job.
+repo or the output from their own agent and know whether the skill did its job.
 
 ## `## Where it fits`
 
-The skill's role in the set, its neighbours (skills it's commonly used alongside or
+The role this skill plays in the set, its neighbours (skills it's commonly used alongside or
 confused with), and a link to `rust-skills-map` for the full picture.

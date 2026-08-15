@@ -82,14 +82,14 @@ signals fallibility at the type level, so a caller can't forget to handle it.
 ## Derives before hand-written impls
 
 Reach for `#[derive(Debug, Clone, PartialEq, Default, Hash)]` before writing any of
-those by hand. A derived impl is generated from the struct's actual fields, so it
+those by hand. A derived impl is generated from the actual fields on the struct, so it
 stays correct as the struct changes — a hand-written one silently drifts the moment
 someone adds a field and forgets the impl.
 
 Write the manual version only when the derive would be wrong, not merely longer:
 
 - A `Default` that must preserve an invariant the field-wise default breaks — e.g. a
-  `Default` for `Percentage` that gives 0, not each field's own zero value
+  `Default` for `Percentage` that gives 0, not the zero value for each field
   independently, if the fields are meant to always sum to 100.
 - A `Debug` that must redact a secret field (an API key, a password) rather than
   print it — never derive `Debug` on a type holding a credential.
@@ -148,7 +148,7 @@ cargo fmt --check
 cargo test
 ```
 
-Run clippy at the repo's own configured lint level; don't add `-D warnings` on top of
+Run clippy at the lint level configured in the repo; don't add `-D warnings` on top of
 a repo that already has a `clippy.toml` or lint attributes of its own. Treat
 `clippy::pedantic` findings as proposals worth considering, not violations to fix
 automatically, unless the repo has explicitly opted into that lint group.

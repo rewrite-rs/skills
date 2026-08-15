@@ -37,7 +37,7 @@ tradeoff is accepted because this is a Rust skill set; every skill already assum
 Rust codebase.
 
 This decision also makes the config-precedence rule binding rather than advisory:
-verification runs at the repo's own configured lint level (whatever `clippy.toml` or
+verification runs at the lint level configured in the repo (whatever `clippy.toml` or
 equivalent already says), and `cargo clippy -- -D warnings` is the fallback only when
 the repo has no lint configuration at all. A skill must never silently override a lint
 level the user — or an earlier run of `setup-rust-skills` — deliberately set.

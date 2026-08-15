@@ -25,8 +25,8 @@ mentions…, asks about…" — so the right skill fires on the right task.
 
 ## The two harness settings must agree
 
-A skill is user-invoked in both harnesses (Claude Code's frontmatter flag and Codex's
-`agents/openai.yaml` policy) or in neither. Setting one without the other produces a
+A skill is user-invoked in both harnesses (the frontmatter flag in Claude Code and the
+`agents/openai.yaml` policy in Codex) or in neither. Setting one without the other produces a
 skill that behaves differently depending on which agent picks it up, which defeats the
 point of shipping both. `npm run check-skills` enforces this agreement; a mismatch
 fails the check.
@@ -46,7 +46,7 @@ When one skill needs another — for example, every porting skill needs the proc
 guidance in `port-to-rust` — express that as prose invocation in the skill-shaped,
 directly typeable form: "Run the `/port-to-rust` skill." Never write a cross-reference
 as a relative file link (`../other-skill/FILE.md`) reaching into another skill's
-directory. A skill's directory is its own; nothing outside it should depend on reading
+directory. A skill owns its own directory; nothing outside it should depend on reading
 files inside it directly.
 
 The corollary: reference material that more than one skill would otherwise want lives
