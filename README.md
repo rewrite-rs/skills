@@ -58,6 +58,7 @@ None yet in this bucket.
 **Model-invoked**
 
 - [port-to-rust](./skills/porting/port-to-rust/SKILL.md) — Parity contract, phase sequence, and differential proof for a port.
+- [port-from-python](./skills/porting/port-from-python/SKILL.md) — Python-to-Rust construct mapping and the PyO3 boundary.
 
 ### Workflow
 

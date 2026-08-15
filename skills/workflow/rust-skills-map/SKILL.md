@@ -25,7 +25,7 @@ every handoff in this set is a directly typeable `/skill-name`.
 - `workflow/` — process: testing, review, and repo setup.
 - `porting/` — migration from another language. The process skill
   (`/port-to-rust`) is shipped; the per-language skills for C, C++,
-  Python, TypeScript, Go, and Java are not, and nothing in this map
+  TypeScript, Go, and Java are not, and nothing in this map
   presents one as installed.
 
 ## The decision table
@@ -41,6 +41,7 @@ every handoff in this set is a directly typeable `/skill-name`.
 | Is this `unsafe` block sound? | `/unsafe-rust` | `/rust-code-review` — soundness versus review process |
 | Does this change deserve a test, and which kind? | `/rust-testing` | `/rust-code-review` — designing the test versus judging its absence |
 | How do I move this code into Rust without losing behaviour? | `/port-to-rust` | `/rust-testing` — the harness mechanism, not what the harness has to prove |
+| What does this Python construct become in Rust? | `/port-from-python` | `/port-to-rust` — the process and the contract, not the construct |
 | Is this diff ready to merge? | `/rust-code-review` | every craft skill — review routes to them, it does not restate them |
 | How should this repo be configured? | `/setup-rust-skills` | user-invoked; nothing else writes to the repo |
 

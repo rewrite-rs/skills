@@ -1,0 +1,3 @@
+interface:
+  display_name: "Port from Python"
+  short_description: "Python-to-Rust construct mapping and the PyO3 boundary"

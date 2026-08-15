@@ -29,6 +29,7 @@
     "./skills/workflow/rust-code-review",
     "./skills/workflow/setup-rust-skills",
     "./skills/workflow/rust-skills-map",
-    "./skills/porting/port-to-rust"
+    "./skills/porting/port-to-rust",
+    "./skills/porting/port-from-python"
   ]
 }
