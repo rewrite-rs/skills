@@ -1,0 +1,17 @@
+{
+  "name": "rewrite-rs",
+  "owner": {
+    "name": "rewrite-rs",
+    "url": "https://github.com/rewrite-rs"
+  },
+  "description": "Rust agent skills from rewrite-rs, as an installable Claude Code plugin.",
+  "plugins": [
+    {
+      "name": "rewrite-rs-skills",
+      "source": "./",
+      "description": "Agent skills for Rust — idiomatic code, ownership over clone and unwrap, and disciplined porting into Rust.",
+      "category": "engineering",
+      "keywords": ["rust", "skills", "porting", "migration"]
+    }
+  ]
+}

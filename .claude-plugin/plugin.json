@@ -1,0 +1,21 @@
+{
+  "name": "rewrite-rs-skills",
+  "version": "0.1.0",
+  "description": "Agent skills for Rust — idiomatic code without boilerplate, ownership instead of clone and unwrap, and disciplined porting from C, C++, Python, TypeScript, Go, and Java.",
+  "author": {
+    "name": "rewrite-rs",
+    "url": "https://github.com/rewrite-rs"
+  },
+  "homepage": "https://github.com/rewrite-rs/skills",
+  "repository": "https://github.com/rewrite-rs/skills",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "rust",
+    "skills",
+    "porting",
+    "migration",
+    "ownership",
+    "code-review"
+  ],
+  "skills": []
+}
