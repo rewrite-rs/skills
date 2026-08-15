@@ -2,7 +2,7 @@
   "name": "rewrite-rs",
   "owner": {
     "name": "rewrite-rs",
-    "url": "https://github.com/rewrite-rs"
+    "url": "https://rewrite.rs"
   },
   "description": "Rust agent skills from rewrite-rs, as an installable Claude Code plugin.",
   "plugins": [
