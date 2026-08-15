@@ -46,6 +46,7 @@ Language-craft skills for writing and reviewing Rust.
 - [rust-errors](./skills/rust/rust-errors/SKILL.md) — Result over unwrap, and error types callers can act on.
 - [type-driven-design](./skills/rust/type-driven-design/SKILL.md) — Make illegal states unrepresentable in the type system.
 - [rust-api-design](./skills/rust/rust-api-design/SKILL.md) — Public surface, trait design, and semver discipline.
+- [async-rust](./skills/rust/async-rust/SKILL.md) — Runtimes, Send bounds, cancellation safety, and blocking work.
 
 **User-invoked**
 

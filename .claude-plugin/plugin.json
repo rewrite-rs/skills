@@ -22,6 +22,7 @@
     "./skills/rust/ownership-not-clone",
     "./skills/rust/rust-errors",
     "./skills/rust/type-driven-design",
-    "./skills/rust/rust-api-design"
+    "./skills/rust/rust-api-design",
+    "./skills/rust/async-rust"
   ]
 }
