@@ -64,6 +64,10 @@ None yet in this bucket.
 - [rust-code-review](./skills/workflow/rust-code-review/SKILL.md) — Two-axis review — standards and spec — over a Rust diff.
 - [rust-testing](./skills/workflow/rust-testing/SKILL.md) — Tests that fail when behaviour changes, including port parity.
 
+**User-invoked**
+
+- [setup-rust-skills](./skills/workflow/setup-rust-skills/SKILL.md) — Lint, format, and recorded project posture for a Rust repo.
+
 ## Why these skills exist
 
 ### Rust that reads like a translation

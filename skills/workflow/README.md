@@ -10,4 +10,4 @@ end to end.
 
 ## User-invoked
 
-None yet in this bucket.
+- [setup-rust-skills](./setup-rust-skills/SKILL.md) — Lint, format, and recorded project posture for a Rust repo.
