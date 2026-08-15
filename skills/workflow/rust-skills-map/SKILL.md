@@ -23,10 +23,10 @@ every handoff in this set is a directly typeable `/skill-name`.
 
 - `rust/` — language craft: how the code should be shaped.
 - `workflow/` — process: testing, review, and repo setup.
-- `porting/` — migration from another language. Not shipped yet: the
-  per-language skills for C, C++, Python, TypeScript, Go, and Java, and the
-  process skill they route through, land in a later wave, and nothing in this
-  map presents one as installed.
+- `porting/` — migration from another language. The process skill
+  (`/port-to-rust`) is shipped; the per-language skills for C, C++,
+  Python, TypeScript, Go, and Java are not, and nothing in this map
+  presents one as installed.
 
 ## The decision table
 
@@ -40,6 +40,7 @@ every handoff in this set is a directly typeable `/skill-name`.
 | Is this safe to `.await` here? | `/async-rust` | `/ownership-not-clone` — the across-`.await` rule only |
 | Is this `unsafe` block sound? | `/unsafe-rust` | `/rust-code-review` — soundness versus review process |
 | Does this change deserve a test, and which kind? | `/rust-testing` | `/rust-code-review` — designing the test versus judging its absence |
+| How do I move this code into Rust without losing behaviour? | `/port-to-rust` | `/rust-testing` — the harness mechanism, not what the harness has to prove |
 | Is this diff ready to merge? | `/rust-code-review` | every craft skill — review routes to them, it does not restate them |
 | How should this repo be configured? | `/setup-rust-skills` | user-invoked; nothing else writes to the repo |
 
@@ -54,10 +55,10 @@ signal that moves between them — is in `FLOWS.md`.
 - **Reviewing someone else code:** `/rust-code-review` first — it dispatches
   to the craft skills itself; a craft skill directly only when the review
   already named it and the depth is wanted.
-- **Porting from another language:** partly forthcoming — the process skill
-  and the per-language skills land in a later wave; until they do, the route
-  runs through `/rust-testing` for the differential harness, then the craft
-  skills, then `/rust-code-review`.
+- **Porting from another language:** `/port-to-rust` for the parity
+  contract, the seam, and the phase sequence, then `/rust-testing` for the
+  differential harness, the craft skills, and `/rust-code-review` before
+  merge; the per-language skills are the only forthcoming piece.
 
 ## Keeping this map honest
 

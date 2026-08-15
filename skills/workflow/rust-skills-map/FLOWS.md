@@ -50,26 +50,25 @@ the question is whether it is ready to merge.
 Python, TypeScript, Go, or Java — and the question is how to sequence the work
 so the port does not drift from the behaviour of its source.
 
-The skills that own this flow — the process skill and one per source language
-(C, C++, Python, TypeScript, Go, and Java) — are not shipped yet; they land in
-a later wave, and this file presents none of them as installed. Until they do,
-the route below is the whole available flow, and the parity contract — which
-differences between the port and its source are acceptable — stays open,
-because it belongs to the skills that are missing.
+The per-language skills (C, C++, Python, TypeScript, Go, and Java) are not
+shipped yet; they land one per session, and this file presents none of them
+as installed. The process runs through `/port-to-rust` in the meantime; the
+construct mapping for a language arrives with the skill for that language.
 
 **The route.**
 
-1. `/rust-testing` — a differential harness against the existing
+1. `/port-to-rust` — the parity contract, the seam, the phase sequence.
+   **Handoff:** a written contract and a named seam exist.
+2. `/rust-testing` — the differential harness against the existing
    implementation: the same inputs through both, the outputs compared, the
-   differences recorded. This supplies the mechanism only. **Handoff:** the
-   harness exists and fails when the ported code diverges, so a drift is a
-   report rather than a production incident.
-2. The craft skills, on the Rust side, as the ported code raises their
+   differences recorded. **Handoff:** the harness fails when the ported code
+   diverges, so a drift is a report rather than a production incident.
+3. The craft skills on the Rust side, as the ported code raises their
    questions — the decision table in `SKILL.md` settles which one a given
-   question belongs to. **Handoff:** the ported code reads like Rust rather
-   than like a translation, at the level the repo configured.
-3. `/rust-code-review` — before merge, over the ported diff. **Handoff:** the
-   report leads with a verdict and nothing blocking is open.
+   question belongs to — then `/rust-code-review` before merge, over the
+   ported diff. **Handoff:** the ported code reads like Rust rather than
+   like a translation, at the level the repo configured, and the report
+   leads with a verdict and nothing blocking is open.
 
 ## When two skills both seem right
 

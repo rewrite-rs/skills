@@ -28,6 +28,7 @@
     "./skills/workflow/rust-testing",
     "./skills/workflow/rust-code-review",
     "./skills/workflow/setup-rust-skills",
-    "./skills/workflow/rust-skills-map"
+    "./skills/workflow/rust-skills-map",
+    "./skills/porting/port-to-rust"
   ]
 }

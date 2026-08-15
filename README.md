@@ -55,7 +55,9 @@ None yet in this bucket.
 
 ### Porting
 
-None yet in this bucket.
+**Model-invoked**
+
+- [port-to-rust](./skills/porting/port-to-rust/SKILL.md) — Parity contract, phase sequence, and differential proof for a port.
 
 ### Workflow
 
