@@ -79,6 +79,17 @@ that's the right call — but reaching for one by reflex, rather than as a delib
 tradeoff, is usually a sign the ownership structure needs rethinking rather than
 routing around.
 
+### States that compile, and invariants that hold
+
+The compiler accepts every constructible combination of fields, and the test
+suite covers only the paths it was told to. An illegal state that compiles — a
+post that is draft and published at once, a connection that sends before it
+connects — and an `unsafe` block whose invariant holds for every current caller
+but not for the next one both pass every check until they do not. The skills in
+this set push the first into the type system, where the state cannot be
+constructed, and keep the second behind a written invariant and Miri, where a
+violation is a report rather than a production incident.
+
 ### Ports that drift from parity
 
 A port that compiles is not a port that matches the behaviour of its source. Without a

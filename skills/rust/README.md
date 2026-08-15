@@ -14,4 +14,4 @@ Language-craft skills for writing and reviewing Rust.
 
 ## User-invoked
 
-None yet in this bucket.
+None in this bucket.
