@@ -47,6 +47,7 @@ Language-craft skills for writing and reviewing Rust.
 - [type-driven-design](./skills/rust/type-driven-design/SKILL.md) — Make illegal states unrepresentable in the type system.
 - [rust-api-design](./skills/rust/rust-api-design/SKILL.md) — Public surface, trait design, and semver discipline.
 - [async-rust](./skills/rust/async-rust/SKILL.md) — Runtimes, Send bounds, cancellation safety, and blocking work.
+- [unsafe-rust](./skills/rust/unsafe-rust/SKILL.md) — Justify, document, and verify unsafe blocks with Miri.
 
 **User-invoked**
 

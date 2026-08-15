@@ -23,6 +23,7 @@
     "./skills/rust/rust-errors",
     "./skills/rust/type-driven-design",
     "./skills/rust/rust-api-design",
-    "./skills/rust/async-rust"
+    "./skills/rust/async-rust",
+    "./skills/rust/unsafe-rust"
   ]
 }
