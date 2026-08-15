@@ -18,6 +18,7 @@
     "code-review"
   ],
   "skills": [
-    "./skills/rust/idiomatic-rust"
+    "./skills/rust/idiomatic-rust",
+    "./skills/rust/ownership-not-clone"
   ]
 }
