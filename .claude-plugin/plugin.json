@@ -17,5 +17,7 @@
     "ownership",
     "code-review"
   ],
-  "skills": []
+  "skills": [
+    "./skills/rust/idiomatic-rust"
+  ]
 }
