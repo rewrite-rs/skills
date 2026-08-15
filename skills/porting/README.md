@@ -6,6 +6,7 @@ Migration skills for moving code into Rust without losing behaviour.
 
 - [port-to-rust](./port-to-rust/SKILL.md) — Parity contract, phase sequence, and differential proof for a port.
 - [port-from-python](./port-from-python/SKILL.md) — Python-to-Rust construct mapping and the PyO3 boundary.
+- [port-from-typescript](./port-from-typescript/SKILL.md) — TypeScript and JavaScript mapping, with the napi-rs and wasm boundaries.
 - [port-from-go](./port-from-go/SKILL.md) — Go-to-Rust mapping — goroutines, channels, interfaces, and error values.
 - [port-from-java](./port-from-java/SKILL.md) — Java-to-Rust mapping — hierarchies to enums, exceptions to Result.
 - [port-from-cpp](./port-from-cpp/SKILL.md) — C++-to-Rust mapping — RAII, smart pointers, templates, and the cxx bridge.

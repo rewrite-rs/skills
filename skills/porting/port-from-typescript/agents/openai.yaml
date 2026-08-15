@@ -1,0 +1,3 @@
+interface:
+  display_name: "Port from TypeScript"
+  short_description: "TypeScript and JavaScript mapping, with the napi-rs and wasm boundaries"

@@ -23,10 +23,7 @@ every handoff in this set is a directly typeable `/skill-name`.
 
 - `rust/` — language craft: how the code should be shaped.
 - `workflow/` — process: testing, review, and repo setup.
-- `porting/` — migration from another language. The process skill
-  (`/port-to-rust`) is shipped; the per-language skill for
-  TypeScript is not, and nothing in this map
-  presents it as installed.
+- `porting/` — migration from another language.
 
 ## The decision table
 
@@ -42,6 +39,7 @@ every handoff in this set is a directly typeable `/skill-name`.
 | Does this change deserve a test, and which kind? | `/rust-testing` | `/rust-code-review` — designing the test versus judging its absence |
 | How do I move this code into Rust without losing behaviour? | `/port-to-rust` | `/rust-testing` — the harness mechanism, not what the harness has to prove |
 | What does this Python construct become in Rust? | `/port-from-python` | `/port-to-rust` — the process and the contract, not the construct |
+| What does this TypeScript or JavaScript construct become in Rust? | `/port-from-typescript` | `/port-to-rust` — the process and the contract, not the construct |
 | What does this Go construct become in Rust? | `/port-from-go` | `/async-rust` — the runtime rules, not the goroutine-to-task mapping |
 | What does this Java construct become in Rust? | `/port-from-java` | `/type-driven-design` — the enum rules, not the hierarchy mapping |
 | What does this C++ construct become in Rust? | `/port-from-cpp` | `/ownership-not-clone` — the sharing rules, not the smart-pointer mapping |
@@ -62,13 +60,12 @@ signal that moves between them — is in `FLOWS.md`.
   already named it and the depth is wanted.
 - **Porting from another language:** `/port-to-rust` for the parity
   contract, the seam, and the phase sequence, then `/port-from-python`
-  for a Python source, `/port-from-go` for a Go one,
+  for a Python source, `/port-from-typescript` for a TypeScript or
+  JavaScript one, `/port-from-go` for a Go one,
   `/port-from-java` for a Java one, `/port-from-cpp` for a C++ one,
   or `/port-from-c` for a C one, for the construct mapping and the
   boundary, `/rust-testing` for the differential harness, the craft
-  skills, and `/rust-code-review` before merge; the per-language
-  skills for the other source languages are the only forthcoming
-  piece.
+  skills, and `/rust-code-review` before merge.
 
 ## Keeping this map honest
 
