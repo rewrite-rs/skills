@@ -15,7 +15,7 @@ should take, when a port needs parity evidence, or when the user asks about
 `proptest`, `insta`, `rstest`, or test coverage. It does not cover the design
 of error variants (`/rust-errors`), Miri verification of `unsafe` code
 (`/unsafe-rust`), async test flavours and time control (`/async-rust`), or the
-parity contract of a port, which belongs to the porting skills when they land.
+parity contract of a port, which belongs to `/port-to-rust`.
 
 ## Choosing the form
 
@@ -44,8 +44,7 @@ evidence is both running over the same inputs and agreeing.
 side-by-side execution, property-driven — the normalizations that keep
 non-behaviour differences out of the comparison, and the triage for when the
 outputs disagree. This skill owns the mechanism only; the parity contract that
-says which differences are acceptable belongs to the porting skills, when they
-land.
+says which differences are acceptable belongs to `/port-to-rust`.
 
 ## Common questions
 
@@ -78,7 +77,7 @@ retires with the source runtime; it is the bridge, not the destination.
 
 `rust-testing` is the testing skill in the workflow group — the one
 `/rust-code-review` defers the test design to, and the one the porting
-skills, when they land, will invoke for the differential harness. It defers
+skills invoke for the differential harness. It defers
 error-variant design to `/rust-errors`, `unsafe` verification to
 `/unsafe-rust`, and async test flavours to `/async-rust`. See `rust-skills-map`
 for how the full set of Rust skills relates.

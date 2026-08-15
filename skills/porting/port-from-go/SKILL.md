@@ -76,7 +76,7 @@ unbounded Go channel pattern usually wants a bounded Rust channel,
 which introduces backpressure the source did not have — a contract
 change if it can block a caller.
 
-### context.Context maps to structure, not a parameter
+## context.Context maps to structure, not a parameter
 
 Cancellation becomes a `CancellationToken` or a shutdown channel
 selected on; deadlines become `tokio::time::timeout`; request-scoped

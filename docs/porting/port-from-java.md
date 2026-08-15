@@ -95,7 +95,7 @@ process seam as default, JNI with its real costs — and defers
 everything common to a port to `/port-to-rust`, the harness mechanism
 to `/rust-testing`, and the target-side judgment to the craft skills
 (`/rust-errors`, `/type-driven-design`, `/ownership-not-clone`,
-`/async-rust`). Its neighbours are the other per-language skills, as
-they land — C, C++, Python, TypeScript, and Go — which share its
+`/async-rust`). Its neighbours are the other per-language skills —
+C, C++, Python, TypeScript, and Go — which share its
 three-file shape but carry different traps and a different boundary.
 See `rust-skills-map` for how the full set relates.

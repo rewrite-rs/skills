@@ -66,8 +66,8 @@ loop, not the loop body — the module worth moving is the CPU-bound
 one with a clean boundary, where the boundary cost amortizes.
 
 The output is an npm package: `wasm-pack build --target web` emits a
-`pkg/` directory the JavaScript imports from, an edge runtime that
-takes wasm builds with `--target nodejs`.
+`pkg/` directory the JavaScript imports from, and the same build for
+an edge runtime takes `--target nodejs`.
 
 ```rust
 use wasm_bindgen::prelude::*;

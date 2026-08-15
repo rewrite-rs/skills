@@ -3,7 +3,7 @@
 The mechanism a port uses to prove parity: the same inputs through both
 implementations, the outputs compared. This file supplies the harness. The
 parity contract — which differences are acceptable, and what "done" means for
-the port — belongs to the porting skills, when they land.
+the port — belongs to `/port-to-rust`.
 
 ## Three harness shapes
 
@@ -53,7 +53,7 @@ decided silently by the agent doing the port.
 The record for each difference: the input that triggered it, both outputs
 verbatim, which side is the contract and why, and the decision — fix the port,
 or name the difference as one the parity contract must rule on. The contract
-itself is not written here; it belongs to the porting skills, when they land.
+itself is not written here; it belongs to `/port-to-rust`.
 A quarantined input with no written reason is a difference the team has
 agreed to ignore.
 

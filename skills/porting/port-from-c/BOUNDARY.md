@@ -13,7 +13,7 @@ Rust side can call the C that has not moved yet. What it generates is raw:
 discipline around them. The rule that follows: wrap the generated API in a
 safe module immediately, and never let generated raw types spread through the
 codebase. That wrapper is where the ownership and nullability decisions from
-`MAPPING.md` get written down, once.
+`MAPPING.md` get written down, once; the `unsafe` in it is `/unsafe-rust`.
 
 ## `cbindgen`, outward
 

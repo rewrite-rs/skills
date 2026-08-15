@@ -16,6 +16,9 @@ the annotations are evidence about intent, not guarantees about values.
 
 ## The end state decides whether a binding layer appears at all
 
+`/port-to-rust` names three end states, and this skill asks rather than
+assumes.
+
 | End state | In TypeScript and JavaScript terms | Binding layer |
 |---|---|---|
 | A. Replacement | A Rust binary or crate takes over; nothing imports it from JavaScript afterwards, and the seam is the CLI, route, or worker that already exists | Neither napi-rs nor wasm appears |

@@ -15,7 +15,7 @@ moving into Rust, when a rewrite needs sequencing or scoping, when a
 partially-ported system needs both implementations running side by
 side, or when a port needs to prove it matches its source. It does
 not cover construct mapping from any one language (the per-language
-skills, as they land), the mechanics of the differential harness
+skills), the mechanics of the differential harness
 (`/rust-testing`), the shape of the Rust that comes out
 (`/idiomatic-rust` and the other craft skills), or the review pass
 over a ported diff (`/rust-code-review`).
@@ -96,10 +96,8 @@ unit of parity is.
 
 **How does this relate to the per-language skills?** Those carry
 the construct mapping and FFI mechanics for one source language
-each; this skill carries the process they all share. The
-per-language skills are not shipped yet — the first lands in the
-next session — and until one does, this skill plus `/rust-testing`
-cover the process end to end.
+each; this skill carries the process they all share, and it runs
+first and stays running through the port.
 
 ## It's working if
 
@@ -117,7 +115,7 @@ cover the process end to end.
 ## Where it fits
 
 `port-to-rust` is the process skill in the porting group — the one
-the per-language skills will invoke for everything common to a
+the per-language skills invoke for everything common to a
 port. It defers the differential-harness mechanism to
 `/rust-testing`, the shape of the Rust to the craft skills
 (`/idiomatic-rust`, `/ownership-not-clone`, `/rust-errors`,

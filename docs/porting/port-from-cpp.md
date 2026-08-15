@@ -17,7 +17,7 @@ what `unique_ptr`, a template, or an STL container becomes in Rust.
 It does not cover how a port is run (that is `/port-to-rust`), the
 differential harness (`/rust-testing`), the `unsafe` discipline the
 boundary needs (`/unsafe-rust`), or a C codebase — C is a separate
-skill, `/port-from-c`, forthcoming.
+skill, `/port-from-c`.
 
 ## Prerequisites
 
@@ -106,6 +106,6 @@ mechanism to `/rust-testing`, the `unsafe` discipline to
 `/unsafe-rust`, and the target-side judgment to the craft skills
 (`/rust-errors`, `/type-driven-design`, `/ownership-not-clone`,
 `/idiomatic-rust`). Its neighbours are the other per-language
-skills, as they land — C, TypeScript, Go, and Java — which share
+skills — C, Python, TypeScript, Go, and Java — which share
 its three-file shape but carry different traps and a different
 boundary. See `rust-skills-map` for how the full set relates.

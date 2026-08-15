@@ -25,7 +25,8 @@ default for C++**, more than for any other language in this set: a
 large C++ codebase cannot be replaced in one step, and the seam — a
 Rust `staticlib` linked into the existing build — lets leaf modules
 move one at a time. The bridge is disposable scaffolding that must
-still be *sound*, and that tension is what this skill manages.
+still be *sound*, and that tension is what this skill manages; the
+mechanics are in `BOUNDARY.md`.
 
 ## The traps that break parity silently
 

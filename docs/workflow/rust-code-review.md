@@ -15,7 +15,7 @@ pull request, or branch, when asked whether a change is ready to merge, or
 when a review needs to cover more than what clippy already reports. It does
 not rewrite the code — findings, not patches — it does not restate the rules
 the seven craft skills own, and it does not decide the parity contract of a
-port, which belongs to the porting skills, landing in a later wave.
+port, which belongs to `/port-to-rust`.
 
 ## Prerequisites
 
@@ -83,7 +83,7 @@ verdict rather than a dump of tool output.
 
 `rust-code-review` is the review skill in the workflow group — it owns the
 "is this tested" verdict and defers the test design to `/rust-testing`, and
-it is the one the porting skills, when they land, will invoke for the review
-pass over ported code. It routes every smell row to the skill that owns the
+it is the one the porting skills invoke for the review pass over ported
+code. It routes every smell row to the skill that owns the
 standard, and it never restates those rules. See `rust-skills-map` for how
 the full set of skills relates.

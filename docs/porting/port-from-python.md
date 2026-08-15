@@ -108,6 +108,6 @@ everything common to a port to `/port-to-rust`, the harness mechanism to
 `/rust-testing`, and the target-side judgment to the craft skills
 (`/rust-errors`, `/type-driven-design`, `/ownership-not-clone`,
 `/async-rust`, `/idiomatic-rust`). Its neighbours are the other
-per-language skills, as they land — C, C++, TypeScript, Go, and Java —
+per-language skills — C, C++, TypeScript, Go, and Java —
 which share its three-file shape but carry different traps and a
 different boundary. See `rust-skills-map` for how the full set relates.

@@ -69,7 +69,7 @@ the existing callers already call.
 | Whole-unit replacement | The unit is small enough to port and validate in one sitting — a single CLI tool, one library with a narrow surface |
 
 The FFI mechanics — which crate, which build integration, which header
-generator — sit in the per-language skills, as they land.
+generator — sit in the per-language skills.
 
 ## Parity is proven, not asserted
 

@@ -77,7 +77,7 @@ A finding with no concrete fix is a question, and is phrased as one.
 It does not rewrite the code — findings, not patches, unless the author asks.
 It does not review a diff it cannot build: a check that cannot run is named in
 the report, not papered over. It does not decide the parity contract of a
-port; that is the porting skills, landing in a later wave.
+port; that is `/port-to-rust`.
 
 ## Verification
 

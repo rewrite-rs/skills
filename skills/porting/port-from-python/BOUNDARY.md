@@ -1,6 +1,6 @@
-If the end state is A — a standalone Rust replacement, no Python importing
+Under end state A — a standalone Rust replacement, no Python importing
 anything afterwards — the rest of this file does not apply, and the seam is
-the process boundary described in the last section. Read `/port-to-rust`
+the process boundary described in the second-to-last section. Read `/port-to-rust`
 for the end-state decision and come back only under B or C.
 
 Under C the binding layer is scaffolding and may be crude, because it is

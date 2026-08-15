@@ -105,7 +105,7 @@ and cgo — and defers everything common to a port to `/port-to-rust`,
 the harness mechanism to `/rust-testing`, the runtime rules to
 `/async-rust`, and the target-side judgment to the craft skills
 (`/rust-errors`, `/ownership-not-clone`, `/idiomatic-rust`). Its
-neighbours are `port-from-python` and the other per-language skills as
-they land — C, C++, TypeScript, and Java — which share its
+neighbours are the other per-language skills — Python, C, C++,
+TypeScript, and Java — which share its
 three-file shape but carry different traps and a different boundary.
 See `rust-skills-map` for how the full set relates.

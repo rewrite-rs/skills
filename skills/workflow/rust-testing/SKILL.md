@@ -91,8 +91,8 @@ evidence is both running over the same inputs and agreeing. The three harness
 shapes — recorded corpus, side-by-side execution, `proptest` over a shared
 generator — with their tradeoffs, and the rules for normalizing and recording
 differences, are in `DIFFERENTIAL-TESTING.md`. The parity contract that says
-which differences are acceptable belongs to the porting skills, which land in
-a later wave; this skill supplies the mechanism, not the contract.
+which differences are acceptable belongs to `/port-to-rust`; this skill
+supplies the mechanism, not the contract.
 
 ## Deferrals
 
