@@ -1,6 +1,6 @@
 ---
 name: port-from-python
-description: Port Python into Rust — construct mapping, the semantic traps (integer width, floor division, str versus bytes, exceptions to Result), and the PyO3 boundary that lets Python keep calling the code while it moves. Use when porting, rewriting, or migrating Python, CPython, Django, Flask, FastAPI, NumPy, or a Python CLI into Rust, when replacing a hot Python module with a native extension, or when the user asks how a Python construct translates to Rust.
+description: Port Python into Rust — construct mapping, the semantic traps (integer width, floor division, str versus bytes, exceptions to Result), and the seam, which is a process boundary for a standalone replacement and PyO3 when Python keeps calling the code. Use when porting, rewriting, or migrating Python, CPython, Django, Flask, FastAPI, NumPy, or a Python CLI into Rust, when replacing a Python tool with a Rust binary or a hot Python module with a native extension, or when the user asks how a Python construct translates to Rust.
 ---
 
 # Port from Python
@@ -88,9 +88,10 @@ python -m pytest                             # the existing suite still passes a
 maturin develop && python -c "import <module>; ..."   # end states B and C only — the extension imports and answers from the Python side
 ```
 
-Under end state A the last line does not exist and the differential harness
-runs process-to-process instead; say so rather than leaving the reader to
-delete a command that does not apply.
+Under end state A the last line does not apply: nothing imports the module
+from Python, and the differential harness runs process-to-process — the
+same argv and stdin through both implementations, with stdout, stderr, and
+exit codes compared.
 
 Then the differential run over the recorded corpus, reported with its
 denominator, plus the Python-specific check: inputs that cross the trap

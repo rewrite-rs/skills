@@ -1,7 +1,8 @@
 ## What it does
 
-Maps Python constructs to Rust and carries the mechanics of the PyO3
-boundary that lets the two runtimes talk while the port is under way. The
+Maps Python constructs to Rust and carries the mechanics of the seam — a
+process boundary when the Rust replaces the Python outright, and PyO3 when
+Python keeps calling the code. The
 defining constraint: construct mapping and boundary mechanics for one
 source language, with every process question deferred — the parity
 contract, the phases, and the anti-patterns are `/port-to-rust`.
@@ -10,9 +11,9 @@ contract, the phases, and the anti-patterns are `/port-to-rust`.
 
 Model-invoked: the agent pulls this in when Python code is moving into
 Rust — a Python CLI, a Django, Flask, or FastAPI service, a NumPy-heavy
-module, or a hot Python function being replaced by a native extension —
-and the question is what a Python construct becomes, or how the two
-runtimes talk. It does not cover how a port is run (that is
+module, a Python tool becoming a Rust binary, or a hot Python function
+being replaced by a native extension — and the question is what a Python
+construct becomes, or how the seam works. It does not cover how a port is run (that is
 `/port-to-rust`), the differential harness (`/rust-testing`), or the shape
 of the Rust that comes out (`/idiomatic-rust` and the other craft skills).
 
