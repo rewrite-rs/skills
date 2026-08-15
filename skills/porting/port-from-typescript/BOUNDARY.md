@@ -29,23 +29,25 @@ name = "fastcore"
 crate-type = ["cdylib"]
 
 [dependencies]
-napi = { version = "2", features = ["napi8"] }
-napi-derive = "2"
+napi = "3"
+napi-derive = "3"
 ```
 
 ```json
 {
   "name": "fastcore",
   "version": "0.1.0",
-  "main": "index.js",
+  "devDependencies": {
+    "@napi-rs/cli": "^3.0.0"
+  },
   "scripts": {
-    "build": "napi build --release --js index.js --dts index.d.ts"
+    "build": "napi build --release"
   }
 }
 ```
 
-`napi build` emits the `.node` addon beside a generated `index.js`
-that exports the names the JS module had, so the existing
+`napi build` emits the `.node` addon beside a generated JavaScript
+glue file that exports the names the JS module had, so the existing
 `require('fastcore')` is unchanged. Async crosses the same way: an
 `#[napi]` function returning a future resolves a JavaScript Promise,
 and blocking work belongs on the napi thread pool rather than on the
