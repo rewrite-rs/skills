@@ -1,4 +1,40 @@
-# rewrite-rs/skills
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/header/graph.svg?title=rewrite-rs%2Fskills&subtitle=Rust+craft%2C+porting%2C+and+workflow+skills+for+coding+agents&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9InJld3JpdGUucnMiPgogIDx0aXRsZT5yZXdyaXRlLnJzIOKAlCBhdmF0YXIsIHRyYW5zcGFyZW50PC90aXRsZT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMCAyMCkgc2NhbGUoMC42KSI%2BCiAgPHBvbHlnb24gcG9pbnRzPSIxMCwxMCA3OCwxMCAxMCw3OCIgZmlsbD0iIzVjNTM0ZCI%2BPC9wb2x5Z29uPgogIDxwb2x5Z29uIHBvaW50cz0iMTgsOTAgOTAsMTggOTAsOTAiIGZpbGw9IiNiYzQ3MTAiPjwvcG9seWdvbj4KICA8L2c%2BCjwvc3ZnPg%3D%3D&align=left&theme=orange&mode=dark" />
+  <img alt="rewrite-rs/skills — Rust craft, porting, and workflow skills for coding agents" src="https://shieldcn.dev/header/graph.svg?title=rewrite-rs%2Fskills&subtitle=Rust+craft%2C+porting%2C+and+workflow+skills+for+coding+agents&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9InJld3JpdGUucnMiPgogIDx0aXRsZT5yZXdyaXRlLnJzIOKAlCBhdmF0YXIsIHRyYW5zcGFyZW50PC90aXRsZT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMCAyMCkgc2NhbGUoMC42KSI%2BCiAgPHBvbHlnb24gcG9pbnRzPSIxMCwxMCA3OCwxMCAxMCw3OCIgZmlsbD0iIzVjNTM0ZCI%2BPC9wb2x5Z29uPgogIDxwb2x5Z29uIHBvaW50cz0iMTgsOTAgOTAsMTggOTAsOTAiIGZpbGw9IiNiYzQ3MTAiPjwvcG9seWdvbj4KICA8L2c%2BCjwvc3ZnPg%3D%3D&align=left&theme=orange&mode=light" />
+</picture>
+
+<p>
+  <a href="https://github.com/rewrite-rs/skills/actions/workflows/check.yml">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/ci/rewrite-rs/skills.svg?workflow=check&branch=main&variant=secondary&mode=dark" />
+      <img alt="CI status" src="https://shieldcn.dev/github/ci/rewrite-rs/skills.svg?workflow=check&branch=main&variant=secondary&mode=light" />
+    </picture>
+  </a>
+  <a href="#skills">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/skills-18-orange.svg?variant=secondary&logo=rust&mode=dark" />
+      <img alt="18 skills" src="https://shieldcn.dev/badge/skills-18-orange.svg?variant=secondary&logo=rust&mode=light" />
+    </picture>
+  </a>
+  <a href="./LICENSE">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/license/rewrite-rs/skills.svg?variant=secondary&mode=dark" />
+      <img alt="License" src="https://shieldcn.dev/github/license/rewrite-rs/skills.svg?variant=secondary&mode=light" />
+    </picture>
+  </a>
+  <a href="https://github.com/rewrite-rs/skills/commits/main">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/last-commit/rewrite-rs/skills.svg?variant=secondary&mode=dark" />
+      <img alt="Last commit" src="https://shieldcn.dev/github/last-commit/rewrite-rs/skills.svg?variant=secondary&mode=light" />
+    </picture>
+  </a>
+  <a href="https://github.com/rewrite-rs/skills/stargazers">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/stars/rewrite-rs/skills.svg?variant=secondary&mode=dark" />
+      <img alt="GitHub stars" src="https://shieldcn.dev/github/stars/rewrite-rs/skills.svg?variant=secondary&mode=light" />
+    </picture>
+  </a>
+</p>
 
 Skills for writing Rust that uses the ownership system rather than working around
 it, and for porting code into Rust without losing behaviour. The org name is
