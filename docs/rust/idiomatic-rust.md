@@ -18,10 +18,6 @@ ownership tradeoffs (that's `/ownership-not-clone`), error type design (that's
 `/type-driven-design`) — those are shape-preserving decisions this skill leaves
 alone even when the surrounding code also gets touched.
 
-## Prerequisites
-
-None.
-
 ## Iterators, conversions, derives, newtypes
 
 - **Iterators** — collect into the target type directly rather than pushing into a
