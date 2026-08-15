@@ -1,5 +1,20 @@
 # Contributing
 
+## Propose before you build
+
+Open an issue before writing anything. Describe the skill or the change you have
+in mind, what task shape would pull it in, and which existing skill it sits next
+to. Wait for a maintainer to agree the change belongs in the set.
+
+This is not ceremony. A skill is judged as much on what it refuses to cover as on
+what it teaches — two skills whose descriptions both match the same task make the
+set worse, not larger — and that judgement cannot be made from a finished pull
+request without asking someone to throw work away. The issue is where the scope
+gets settled, cheaply, before anyone has spent an evening on it.
+
+Pull requests that arrive without an agreed issue may be closed with a pointer
+back here, however good the content is.
+
 ## Branch model
 
 `dev` is where change integrates. `main` is release-only: it holds exactly the
@@ -8,11 +23,9 @@ usual sense — the merge from `dev` into `main` is fast-forward only, so `main`
 always ends up equal to some earlier `dev` commit rather than gaining a merge commit
 of its own.
 
-Open pull requests against `dev`. When `dev` is ready to ship, a maintainer runs the
-release-prep workflow, merges the resulting changelog PR into `dev`, opens a PR from
-`dev` into `main`, and comments `/fast-forward` on it. A bot account with elevated
-permissions performs the fast-forward merge; a regular contributor push cannot do
-this directly, and that is by design — see ADR 0004 for why.
+Open pull requests against `dev`. Moving `dev` into `main` is a maintainer action
+performed by a bot account with elevated permissions; a contributor push cannot do
+it directly, and that is by design — see ADR 0004 for why.
 
 ## Adding a changeset
 
@@ -48,20 +61,12 @@ from `protected-files-check`:
 - **`.github/workflows/**`** — verify a workflow change was intentional and does
   not weaken a gate (branch restrictions, forbidden-path scans, permission checks).
 
-## Release procedure
+## Releases
 
-1. Confirm `dev` carries the changesets for everything going out — check
-   `.changeset/*.md` for fragments beyond `README.md`.
-2. Trigger the `release-prep` workflow with `workflow_dispatch`, supplying the
-   target version (no leading `v`, e.g. `0.2.0`). It runs `changeset version`,
-   syncs `plugin.json`, verifies the assembled version matches what was
-   requested, runs `npm run check`, and opens a pull request into `dev` carrying
-   the assembled `CHANGELOG.md` and version bump.
-3. Review and merge that pull request into `dev`.
-4. Open a pull request from `dev` into `main`, then comment `/fast-forward` on it.
-   The `ff-merge-do` workflow verifies the pull request targets `main` from `dev`,
-   verifies the commenter has admin or maintainer permission, backs up the current
-   `main` under a timestamped branch, and performs the fast-forward merge.
-5. Publish a GitHub release on the resulting `main` commit, tagged `vX.Y.Z`. The
-   `release-notes` workflow extracts the matching `CHANGELOG.md` section and writes
-   it into the release body automatically.
+Releases are made by maintainers, and only from `main`. Nothing you do as a
+contributor triggers one: your change ships when a maintainer next cuts a
+release, and the changeset on your pull request is what puts it in the notes.
+
+You do not need to pick a version, tag anything, or edit `CHANGELOG.md` — the
+changelog is assembled from changesets, and a hand-edit to it will conflict.
+The procedure itself lives in `.agents/releasing.md`.
