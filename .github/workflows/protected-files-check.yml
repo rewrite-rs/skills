@@ -1,0 +1,72 @@
+name: Protected Files Check
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .claude-plugin/plugin.json
+      - .claude-plugin/marketplace.json
+      - .agents/install-block.md
+      - package.json
+      - .github/workflows/**
+
+jobs:
+  flag:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- protected-files-check -->';
+            const watched = [
+              '.claude-plugin/plugin.json',
+              '.claude-plugin/marketplace.json',
+              '.agents/install-block.md',
+              'package.json',
+            ];
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            const hit = files.filter(f =>
+              watched.includes(f.filename) || f.filename.startsWith('.github/workflows/')
+            );
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            const existing = comments.find(c => c.body.includes(marker));
+            const baseRef = context.payload.pull_request.base.ref;
+            const docUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}`
+              + `/blob/${baseRef}/docs/contributing.md#protected-files`;
+
+            let body;
+            if (hit.length > 0) {
+              body = `${marker}\n`
+                + `**Protected files changed** — these affect every consumer of the plugin.\n\n`
+                + hit.map(f => `- \`${f.filename}\` (${f.status})`).join('\n')
+                + `\n\nVerify: the skills array still matches the promoted buckets, `
+                + `install wording still matches \`.agents/install-block.md\` byte for byte, `
+                + `and \`package.json\` and \`plugin.json\` versions still agree.\n\n`
+                + `See [Contributing](${docUrl}).`;
+            } else if (existing) {
+              body = `${marker}\nNo protected files are modified by this PR any more. Warning cleared.`;
+            } else {
+              return;
+            }
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                comment_id: existing.id, body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: context.issue.number, body
+              });
+            }

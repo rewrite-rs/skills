@@ -1,0 +1,62 @@
+name: Changeset check
+
+on:
+  pull_request:
+    branches: [dev]
+    types: [opened, edited, synchronize, labeled, unlabeled]
+
+permissions:
+  contents: write
+
+jobs:
+  changeset:
+    runs-on: ubuntu-latest
+    if: >-
+      !contains(github.event.pull_request.labels.*.name, 'skip-changelog') &&
+      !startsWith(github.event.pull_request.head.ref, 'release-prep/')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Resolve bump type from PR title
+        id: type
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          PREFIX="$(printf '%s' "$PR_TITLE" | sed -E 's/^([a-zA-Z]+).*/\1/' | tr '[:upper:]' '[:lower:]')"
+          case "$PREFIX" in
+            feat)                 BUMP="minor" ;;
+            fix|docs|refactor)    BUMP="patch" ;;
+            *)                    BUMP="patch" ;;
+          esac
+          echo "bump=$BUMP" >> "$GITHUB_OUTPUT"
+
+      - name: Create a changeset if the PR has none
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          BUMP: ${{ steps.type.outputs.bump }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if ls .changeset/*.md 2>/dev/null | grep -qv 'README.md'; then
+            echo "Changeset already present."
+            exit 0
+          fi
+          FILE=".changeset/pr-${PR_NUMBER}.md"
+          printf -- '---\n"rewrite-rs-skills": %s\n---\n\n%s\n' "$BUMP" "$PR_TITLE" > "$FILE"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$FILE"
+          git commit -m "chore(changeset): add fragment for #${PR_NUMBER}"
+          git push
+
+      - name: Verify a changeset exists
+        run: |
+          if ! ls .changeset/*.md 2>/dev/null | grep -qv 'README.md'; then
+            echo "::error::No changeset found. Add one with 'npx changeset', or apply the 'skip-changelog' label."
+            exit 1
+          fi

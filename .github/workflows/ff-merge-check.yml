@@ -1,0 +1,45 @@
+name: Check Fast-Forward
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  check-fast-forward:
+    if: ${{ contains(github.event.comment.body, '/check-fast-forward')
+            && github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Verify target branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            if (pr.base.ref !== 'main' || pr.head.ref !== 'dev') {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `\`/check-fast-forward\` only works on \`dev → main\` PRs `
+                    + `(this PR: \`${pr.head.ref} → ${pr.base.ref}\`).`
+              });
+              core.setFailed('Fast-forward check is only allowed for dev → main PRs.');
+            }
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if fast-forward is possible
+        uses: sequoia-pgp/fast-forward@v1
+        with:
+          merge: false
+          comment: always

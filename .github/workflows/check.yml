@@ -1,0 +1,36 @@
+name: check
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci
+      - name: Tests, skill index, version sync
+        run: npm run check
+      - name: Check internal Markdown links resolve
+        run: |
+          fail=0
+          while IFS= read -r line; do
+            file="${line%%:*}"
+            target="${line#*:}"
+            resolved="$(dirname "$file")/$target"
+            if [ ! -e "$resolved" ] && [ ! -e "$target" ]; then
+              echo "::error file=$file::broken link to $target"
+              fail=1
+            fi
+          done < <(grep -rnoE '\]\((\./|\.\./)[^)#]+\)' --include='*.md' . \
+            | grep -v node_modules \
+            | sed -E 's/^([^:]+):[0-9]+:\]\((.*)\)$/\1:\2/')
+          exit $fail

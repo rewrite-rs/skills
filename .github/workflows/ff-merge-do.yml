@@ -1,0 +1,75 @@
+name: Fast Forward Merge
+
+on:
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: fast-forward-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  fast-forward:
+    if: ${{ contains(github.event.comment.body, '/fast-forward')
+            && github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    environment: ff_merge
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.FF_MERGE_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Verify PR and actor permissions
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            if (pr.base.ref !== 'main') {
+              core.setFailed('Fast-forward is only allowed for PRs targeting main.');
+            }
+            if (pr.head.ref !== 'dev') {
+              core.setFailed('Fast-forward is only allowed for PRs from dev to main.');
+            }
+            const { data: perm } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: context.actor
+            });
+            if (!['admin', 'maintain'].includes(perm.permission)) {
+              core.setFailed(`@${context.actor} (role: ${perm.permission}) — only admin/maintainer can fast-forward.`);
+            }
+
+      - name: Backup main before merge
+        run: |
+          BACKUP="main.backup.${{ github.event.issue.number }}.$(date +%Y%m%d-%H%M%S)"
+          git branch "$BACKUP" origin/main
+          git push origin "$BACKUP"
+          echo "Created backup: $BACKUP"
+
+      - name: Fast-forward merge
+        uses: sequoia-pgp/fast-forward@v1
+        with:
+          merge: true
+          comment: always
+          github_token: ${{ secrets.FF_MERGE_TOKEN }}
+
+      - name: Clean up old backups
+        run: |
+          git fetch --prune origin
+          git branch -r | grep 'origin/main.backup.' | sed 's| *origin/||' | \
+            sort -t. -k4 | head -n -5 | \
+            xargs -I {} git push origin --delete {} || true
