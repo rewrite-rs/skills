@@ -33,6 +33,7 @@
     "./skills/porting/port-from-python",
     "./skills/porting/port-from-go",
     "./skills/porting/port-from-java",
-    "./skills/porting/port-from-cpp"
+    "./skills/porting/port-from-cpp",
+    "./skills/porting/port-from-c"
   ]
 }

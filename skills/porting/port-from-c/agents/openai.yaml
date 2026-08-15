@@ -1,0 +1,3 @@
+interface:
+  display_name: "Port from C"
+  short_description: "C-to-Rust mapping — pointers, ownership, unions, and the bindgen boundary"

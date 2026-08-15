@@ -62,6 +62,7 @@ None yet in this bucket.
 - [port-from-go](./skills/porting/port-from-go/SKILL.md) — Go-to-Rust mapping — goroutines, channels, interfaces, and error values.
 - [port-from-java](./skills/porting/port-from-java/SKILL.md) — Java-to-Rust mapping — hierarchies to enums, exceptions to Result.
 - [port-from-cpp](./skills/porting/port-from-cpp/SKILL.md) — C++-to-Rust mapping — RAII, smart pointers, templates, and the cxx bridge.
+- [port-from-c](./skills/porting/port-from-c/SKILL.md) — C-to-Rust mapping — pointers, ownership, unions, and the bindgen boundary.
 
 ### Workflow
 
