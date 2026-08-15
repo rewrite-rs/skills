@@ -59,7 +59,9 @@ None yet in this bucket.
 
 ### Workflow
 
-None yet in this bucket.
+**Model-invoked**
+
+- [rust-testing](./skills/workflow/rust-testing/SKILL.md) — Tests that fail when behaviour changes, including port parity.
 
 ## Why these skills exist
 

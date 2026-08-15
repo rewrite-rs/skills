@@ -5,7 +5,7 @@ end to end.
 
 ## Model-invoked
 
-None yet in this bucket.
+- [rust-testing](./rust-testing/SKILL.md) — Tests that fail when behaviour changes, including port parity.
 
 ## User-invoked
 
