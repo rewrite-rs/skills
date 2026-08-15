@@ -1,6 +1,6 @@
 {
   "name": "rewrite-rs-skills",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "private": true,
   "description": "Agent skills for writing idiomatic, safe Rust and porting code into it",
   "homepage": "https://rewrite.rs",
