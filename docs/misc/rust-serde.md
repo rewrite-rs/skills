@@ -47,7 +47,8 @@ The surrounding decisions, per type:
   containing type and forces buffering during deserialization — worth it for
   composition, not for saving four lines.
 - **Errors.** A deserialization failure is user-facing input error, not a bug:
-  it carries where and why, and it goes into the crate error type as its own
+  it carries the reason — and, in JSON, a line and column once the failure
+  sits in a nested field — and it goes into the crate error type as its own
   kind, not as a stringified message. The shape of that error kind is
   `/rust-errors`.
 

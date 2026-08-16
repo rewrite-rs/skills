@@ -19,9 +19,8 @@ that could have reported it usefully. What the validated type should be is
 ## `#[serde(try_from = "...")]` is the mechanism
 
 Deserialize into a raw shape, convert with `TryFrom` into the validated type,
-and the conversion failure becomes a deserialization error — the payload
-fails at the read, not at the first use of the value. The error type must
-implement `std::error::Error`.
+and the conversion failure becomes a deserialization error — the read fails,
+not the first use of the value. The error must implement `std::error::Error`.
 
 ```rust
 #[derive(serde::Deserialize)]
@@ -99,8 +98,9 @@ for saving four lines.
 
 ## Errors from the boundary
 
-A deserialization failure is user-facing input error, not a bug: it carries
-where and why, and it goes into the crate error type as its own kind, not a
+A deserialization failure is user-facing input error, not a bug: it carries the
+reason — and, in JSON, a line and column once the failure sits in a nested
+field — and it goes into the crate error type as its own kind, not a
 stringified message. Shaping that kind is `/rust-errors`.
 
 ## Deferrals
