@@ -7,34 +7,58 @@ repo, the template is the proposal for a diff, not a replacement.
 
 ## `Cargo.toml` lint block
 
-Single-crate form:
+Single-crate form — the full default set from `SKILL.md`. `missing_docs`
+sits in `[lints.rust]` for a library; a binary crate drops it when adapting:
 
 ```toml
 [lints.rust]
 unsafe_op_in_unsafe_fn = "deny"
 missing_docs = "warn"
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
+rust_2018_idioms = "warn"
 
 [lints.clippy]
-unwrap_used = "deny"
-expect_used = "deny"
 undocumented_unsafe_blocks = "deny"
 missing_safety_doc = "deny"
+allow_attributes_without_reason = "deny"
+unwrap_used = "deny"
+expect_used = "deny"
 pedantic = { level = "warn", priority = -1 }
 ```
 
-Workspace form — the levels live at the root, and each member opts in:
+For a workspace, the same set lives in `[workspace.lints]` at the root plus
+the per-member `lints.workspace = true` opt-in — the full block is in the
+"The full worked configuration" section below.
+
+The test carve-out for `unwrap_used` and `expect_used` is not automatic:
+clippy fires both inside `#[cfg(test)]` modules unless `clippy.toml` says
+otherwise, so a deny level without the carve-out turns ordinary test
+assertions red.
+
+## The full worked configuration
+
+The default set from `SKILL.md`, as a workspace, with the mechanics that keep
+it behaving. `missing_docs` is deliberately absent from `[workspace.lints]` —
+a binary member has no public surface to document, so it goes in the library
+members instead.
 
 ```toml
 # Cargo.toml at the workspace root
 [workspace.lints.rust]
 unsafe_op_in_unsafe_fn = "deny"
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
+rust_2018_idioms = "warn"
 
 [workspace.lints.clippy]
-unwrap_used = "deny"
-expect_used = "deny"
 undocumented_unsafe_blocks = "deny"
 missing_safety_doc = "deny"
+allow_attributes_without_reason = "deny"
+unwrap_used = "deny"
+expect_used = "deny"
 pedantic = { level = "warn", priority = -1 }
+missing_errors_doc = "allow"
 ```
 
 ```toml
@@ -43,16 +67,18 @@ pedantic = { level = "warn", priority = -1 }
 workspace = true
 ```
 
-Two notes on the block:
+The `missing_errors_doc = "allow"` line is the `priority = -1` mechanic shown
+concretely: the group entry registers first, so the member re-allow sticks. A
+group entry at the default priority wins against a later `allow` on one of
+its members, and the exception is silently discarded.
 
-- `priority = -1` is what lets individual `pedantic` lints be re-allowed
-  afterwards — a group lint at the default priority would override a later
-  `allow` on a member, and the exception would be silently discarded.
-- The test carve-out for `unwrap_used` and `expect_used` is not automatic:
-  clippy fires both inside `#[cfg(test)]` modules unless `clippy.toml` says
-  otherwise, so a deny level without the carve-out turns ordinary test
-  assertions red. `missing_docs` stays in the members that are libraries, not
-  in `[workspace.lints]` — a binary member has no public surface to document.
+The MSRV triple has to agree — `rust-version` in `Cargo.toml`, `msrv` in
+`clippy.toml`, and the compiler the oldest CI job builds on. When it does
+not, clippy suggests an API newer than the declared MSRV, and the oldest
+job goes red on a change nobody made.
+
+The edition is stated, not assumed: once in `[workspace.package]` for the
+workspace, or per package, and never left to the default.
 
 ## `clippy.toml`
 
@@ -128,7 +154,9 @@ cargo clippy --all-targets  # at the level configured in Cargo.toml
 `--all-features` is meaningful: no — the feature set does not change the
 public API, and the default build covers it.
 
-Miri: not installed. `cargo miri test` is not part of the verification here.
+Tooling: `cargo audit` — run in CI. `cargo hack --feature-powerset check` —
+scheduled nightly, not on every push. `cargo udeps` — not installed.
+`cargo miri test` — not installed; Miri is not part of the verification here.
 
 ## Posture
 

@@ -29,7 +29,7 @@ and write access to `Cargo.toml` and `docs/`.
 |---|---|
 | Lint configuration | levels in `Cargo.toml` `[lints]` (or `[workspace.lints]` plus the per-member opt-in) and knobs in `clippy.toml` — `msrv`, the `unwrap_used`/`expect_used` test carve-outs |
 | `rustfmt.toml` | the stable keys, and the nightly-only keys marked or omitted |
-| `docs/agents/rust.md` | the five detected facts, the commands, and the unsafe policy — the recorded posture the rest of the set reads |
+| `docs/agents/rust.md` | the five detected facts, the commands, which of the four tools the repo runs, and the unsafe policy — the recorded posture the rest of the set reads |
 
 The one rule over all three: read before writing, and never overwrite a
 deliberate setting. An existing file is a diff for approval, not a
@@ -41,9 +41,32 @@ Detection reads `Cargo.toml`, the crate root, and `rust-toolchain.toml`, and
 settles what it can — edition, MSRV, async runtime, `no_std`, and the unsafe
 policy. Only the unsettled facts are asked, in one batch. The proposal is the
 default lint set with a one-line reason per entry, presented for the user to
-cut, never imposed. The confirmation is the per-artifact report: created,
-updated with an approved diff, or already correct and left alone. The
-templates and the three worked scenarios are in `TEMPLATES.md`.
+cut, never imposed: denies for the unsafe-documentation lints
+(`unsafe_op_in_unsafe_fn`, `clippy::undocumented_unsafe_blocks`, and
+`clippy::missing_safety_doc`), for the panic lints `clippy::unwrap_used` and
+`clippy::expect_used` with their test carve-out, and for
+`clippy::allow_attributes_without_reason`; warns for `clippy::pedantic` as a
+group at `priority = -1`, `missing_docs`, `missing_debug_implementations`,
+`unreachable_pub`, and `rust_2018_idioms`. `#[expect(lint, reason = "...")]`
+is preferred over `#[allow(lint)]` where the toolchain supports it, because
+an `expect` fails when the situation it was written for goes away, and an
+`allow` that outlived its reason is invisible. The confirmation is the
+per-artifact report: created, updated with an approved diff, or already
+correct and left alone. The templates, the full worked configuration, and the
+three worked scenarios are in `TEMPLATES.md`.
+
+## The tools worth having configured
+
+Four tools cover what lints cannot, and each gets a status line in
+`docs/agents/rust.md`, so no later skill has to guess: `cargo audit`
+(published advisories in the dependency tree), `cargo hack --feature-powerset
+check` (every feature combination compiles, not just the one CI builds),
+`cargo udeps` (declared but unused dependencies), and `cargo miri test`
+(undefined behaviour in the `unsafe` code). The skill proposes them and never
+installs them: `cargo hack` and `cargo udeps` go in a scheduled job rather
+than on every push, and `miri` is worth the toolchain only for a crate with
+`unsafe` in it. The posture file records the answer either way — "not
+installed" is as useful to the next agent as the installed state.
 
 ## Common questions
 
@@ -74,6 +97,9 @@ only when the user asks.
   the per-member opt-in — and not in `clippy.toml`.
 - `docs/agents/rust.md` records all five facts: edition, MSRV, async
   runtime, `no_std` posture, and unsafe policy.
+- The posture file names which of the four tools the repo runs — `cargo
+  audit`, `cargo hack --feature-powerset check`, `cargo udeps`, `cargo miri
+  test` — including the ones it does not.
 - No existing key was changed without an approved diff.
 - The verification commands ran and their output was reported, including any
   lints that turned red under the new set.
