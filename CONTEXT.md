@@ -8,13 +8,20 @@ it, so a reader never has to wonder whether two different words mean the same th
   `agents/openai.yaml`.
 
 - **Promoted** — living in a bucket whose skills ship in the plugin
-  (`skills/rust/`, `skills/porting/`, `skills/workflow/`). Avoid: "published",
-  "released" — those imply a release event; promotion is a bucket membership fact.
+  (`skills/rust/`, `skills/porting/`, `skills/workflow/`, `skills/misc/`).
+  Avoid: "published", "released" — those imply a release event; promotion
+  is a bucket membership fact.
 
-- **Misc** — a skill in `skills/misc/`: installable through the `npx skills`
-  route, not shipped in the plugin, and as finished as a promoted skill.
+- **Misc** — a skill in `skills/misc/`: promoted, shipped through both install
+  routes, and as finished as any other promoted skill. What makes a skill
+  `misc` is frequency of use, not availability — occasional, not everyday.
   Avoid: "unshipped", "unfinished", "experimental" — those read the split as
   readiness; it is frequency of use, not completeness.
+
+- **In-progress** — public but unshipped from both routes: not listed in the
+  plugin manifest, and every in-progress skill carries `metadata.internal: true`
+  in its `SKILL.md` frontmatter, which the `npx skills` installer skips unless
+  the user sets `INSTALL_INTERNAL_SKILLS=1`.
 
 - **Verification step** — the command a skill instructs the agent to run to settle a
   claim a machine can settle, e.g. `cargo clippy`, `cargo test`, `cargo miri test`.

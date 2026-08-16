@@ -97,6 +97,19 @@ None yet in this bucket.
 - [setup-rust-skills](./skills/workflow/setup-rust-skills/SKILL.md) — Lint, format, and recorded project posture for a Rust repo.
 - [rust-skills-map](./skills/workflow/rust-skills-map/SKILL.md) — Router over the skill set — which skill owns which decision.
 
+### Misc
+
+Occasional setup and audit skills: CI, hooks, and the dependency tree.
+
+**Model-invoked**
+
+- [rust-supply-chain](./skills/misc/rust-supply-chain/SKILL.md) — Dependency advisories, licences, and duplicates, each ending in a decision.
+
+**User-invoked**
+
+- [setup-rust-ci](./skills/misc/setup-rust-ci/SKILL.md) — A GitHub Actions workflow that runs what the skills run locally.
+- [setup-rust-pre-commit](./skills/misc/setup-rust-pre-commit/SKILL.md) — Fast format-and-lint hooks, with CI left as the gate.
+
 ## Why these skills exist
 
 ### Rust that reads like a translation

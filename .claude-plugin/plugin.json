@@ -35,6 +35,9 @@
     "./skills/porting/port-from-go",
     "./skills/porting/port-from-java",
     "./skills/porting/port-from-cpp",
-    "./skills/porting/port-from-c"
+    "./skills/porting/port-from-c",
+    "./skills/misc/setup-rust-ci",
+    "./skills/misc/setup-rust-pre-commit",
+    "./skills/misc/rust-supply-chain"
   ]
 }

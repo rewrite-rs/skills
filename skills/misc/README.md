@@ -1,7 +1,7 @@
 # Misc skills
 
-Not shipped in the plugin — occasional, provider-specific skills. Reachable
-through the `npx skills` install route, not through the Claude Code plugin.
+Shipped in the plugin as well as the `npx skills` route — occasional setup and
+audit skills. The bucket means frequency of use, not availability.
 
 ## Model-invoked
 

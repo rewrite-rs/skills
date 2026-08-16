@@ -6,10 +6,10 @@ before touching skill content — this file points at them rather than repeating
 
 ## 1. Buckets
 
-`skills/rust/` (language craft), `skills/porting/` (migration), and
-`skills/workflow/` (review, testing, setup, router) are **promoted**. `skills/misc/`
-(occasional, provider-specific) and `skills/in-progress/` (public, unshipped) are
-**not promoted**.
+`skills/rust/` (language craft), `skills/porting/` (migration),
+`skills/workflow/` (review, testing, setup, router), and `skills/misc/`
+(occasional setup and audit skills, reached for less often) are **promoted**.
+`skills/in-progress/` (public, unshipped) is **not promoted**.
 
 Every promoted skill must appear in all three of:
 
@@ -54,7 +54,7 @@ skills, and for what agrees between the frontmatter flag in Claude Code and the
 Any skill that writes files into the user's repo is user-invoked, in any
 bucket; `rust-skills-map` is user-invoked without writing files, because it is
 a router the user consults directly. The user-invoked skills are therefore
-`setup-rust-skills` and `rust-skills-map` in the promoted buckets, and
+`setup-rust-skills` and `rust-skills-map` in `workflow/`, and
 `setup-rust-ci` and `setup-rust-pre-commit` in `misc/`. Every other skill is
 model-invoked.
 

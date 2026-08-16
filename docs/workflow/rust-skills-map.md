@@ -36,7 +36,10 @@ points, and the named skill, typed as a `/skill-name`, does the work.
 | What does this C++ construct become in Rust? | `/port-from-cpp` | `/ownership-not-clone` — the sharing rules, not the smart-pointer mapping |
 | What does this C construct become in Rust? | `/port-from-c` | `/port-from-cpp` — RAII, templates, and the STL are the other skill |
 | Is this diff ready to merge? | `/rust-code-review` | every craft skill — review routes to them, it does not restate them |
-| How should this repo be configured? | `/setup-rust-skills` | user-invoked; the only promoted skill that writes to the repo |
+| How should this repo be configured? | `/setup-rust-skills` | `/setup-rust-ci`, `/setup-rust-pre-commit` — the workflow and the hook; this one writes the lint configuration and the recorded posture |
+| The repo needs CI that runs what the skills run locally | `/setup-rust-ci` | `/setup-rust-pre-commit` — that one is the commit-time convenience, this one the push-time gate |
+| Contributors keep pushing unformatted code | `/setup-rust-pre-commit` | `/setup-rust-ci` — that one is the public gate, this one the local hook |
+| An advisory fired, a licence question came up, or the tree grew duplicates | `/rust-supply-chain` | `/rust-code-review` — that one reviews the code, this one the dependencies |
 
 ## Flows
 
@@ -57,21 +60,6 @@ handoff signal between each step:
 
 The tie-breaker when two skills both seem right: which one names the decision
 as its defining constraint, stated on each docs page under `## What it does`.
-
-## Not shipped in the plugin
-
-Three further skills live in `misc/` and reach only the `npx skills` install
-route, never the Claude Code plugin. They are occasional rather than everyday,
-which is what `misc/` means — not that they are unfinished.
-
-| Skill | Reach for it when |
-|---|---|
-| `/setup-rust-ci` | The repo needs a GitHub Actions workflow that runs what the skills run locally. |
-| `/setup-rust-pre-commit` | Contributors keep pushing unformatted code and CI is catching it late. |
-| `/rust-supply-chain` | An advisory fired, a licence question came up, or the tree grew duplicates. |
-
-If a plugin install does not offer these, that is the promotion boundary working
-as designed.
 
 ## Common questions
 
@@ -100,5 +88,6 @@ typeable `/skill-name`, and typing it is the next step, not an option.
 `rust-skills-map` is the router in the workflow group — the skill every other
 docs page in the set points to for the full picture, and the one that gets
 re-synced in the same change as any skill added, renamed, or removed. It is
-the second user-invoked skill in the promoted buckets, alongside
-`setup-rust-skills`, and the only one in the set that owns no guidance at all.
+user-invoked, as are `setup-rust-skills`, `setup-rust-ci`, and
+`setup-rust-pre-commit`, and the only one in the set that owns no guidance
+at all.

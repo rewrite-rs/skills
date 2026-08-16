@@ -35,7 +35,7 @@ function addSkill(root, bucket, name, { userInvoked = false, docs = true } = {})
     join(dir, "agents", "openai.yaml"),
     `interface:\n  display_name: "${name}"\n  short_description: "Does the ${name} thing"\n${policy}`
   );
-  if (docs && ["rust", "porting", "workflow"].includes(bucket)) {
+  if (docs && ["rust", "porting", "workflow", "misc"].includes(bucket)) {
     mkdirSync(join(root, "docs", bucket), { recursive: true });
     writeFileSync(join(root, "docs", bucket, `${name}.md`), "## What it does\n");
   }
@@ -79,12 +79,20 @@ test("a fully indexed promoted skill passes", () => {
   assert.deepEqual(errors, []);
 });
 
-test("a misc skill listed in plugin.json is an error", () => {
+test("an in-progress skill listed in plugin.json is an error", () => {
+  const root = scaffold();
+  addSkill(root, "in-progress", "draft-skill");
+  promote(root, "in-progress", "draft-skill");
+  const { errors } = checkRepo(root);
+  assert.ok(errors.some((e) => e.includes("not promoted")));
+});
+
+test("a fully indexed promoted misc skill passes", () => {
   const root = scaffold();
   addSkill(root, "misc", "setup-rust-ci");
   promote(root, "misc", "setup-rust-ci");
   const { errors } = checkRepo(root);
-  assert.ok(errors.some((e) => e.includes("not promoted")));
+  assert.deepEqual(errors, []);
 });
 
 test("frontmatter name must match the directory name", () => {

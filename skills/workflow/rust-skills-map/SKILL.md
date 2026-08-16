@@ -19,11 +19,12 @@ that skill, and come back here only if the skill hands you off. Skills invoke
 each other in prose, so following a handoff means typing the named skill —
 every handoff in this set is a directly typeable `/skill-name`.
 
-## The three buckets, one line each
+## The four buckets, one line each
 
 - `rust/` — language craft: how the code should be shaped.
 - `workflow/` — process: testing, review, and repo setup.
 - `porting/` — migration from another language.
+- `misc/` — occasional: CI, hooks, and dependency audits.
 
 ## The decision table
 
@@ -45,7 +46,10 @@ every handoff in this set is a directly typeable `/skill-name`.
 | What does this C++ construct become in Rust? | `/port-from-cpp` | `/ownership-not-clone` — the sharing rules, not the smart-pointer mapping |
 | What does this C construct become in Rust? | `/port-from-c` | `/port-from-cpp` — RAII, templates, and the STL are the other skill |
 | Is this diff ready to merge? | `/rust-code-review` | every craft skill — review routes to them, it does not restate them |
-| How should this repo be configured? | `/setup-rust-skills` | user-invoked; the only promoted skill that writes to the repo |
+| How should this repo be configured? | `/setup-rust-skills` | `/setup-rust-ci`, `/setup-rust-pre-commit` — the workflow and the hook; this one writes the lint configuration and the recorded posture |
+| The repo needs CI that runs what the skills run locally | `/setup-rust-ci` | `/setup-rust-pre-commit` — that one is the commit-time convenience, this one the push-time gate |
+| Contributors keep pushing unformatted code | `/setup-rust-pre-commit` | `/setup-rust-ci` — that one is the public gate, this one the local hook |
+| An advisory fired, a licence question came up, or the tree grew duplicates | `/rust-supply-chain` | `/rust-code-review` — that one reviews the code, this one the dependencies |
 
 ## The three flows, one line each
 
@@ -72,21 +76,6 @@ signal that moves between them — is in `FLOWS.md`.
 When a skill is added, renamed, or removed from the set, this map is updated
 in the same change — a router that names a skill nobody can run is worse than
 no router.
-
-## Not shipped in the plugin
-
-Three further skills live in `misc/` and reach only the `npx skills` install
-route, never the Claude Code plugin. They are occasional rather than everyday,
-which is what `misc/` means — not that they are unfinished.
-
-| Skill | Reach for it when |
-|---|---|
-| `/setup-rust-ci` | The repo needs a GitHub Actions workflow that runs what the skills run locally. |
-| `/setup-rust-pre-commit` | Contributors keep pushing unformatted code and CI is catching it late. |
-| `/rust-supply-chain` | An advisory fired, a licence question came up, or the tree grew duplicates. |
-
-If a plugin install does not offer these, that is the promotion boundary working
-as designed.
 
 ## No verification step, and why
 

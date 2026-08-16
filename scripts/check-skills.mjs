@@ -1,8 +1,8 @@
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-const PROMOTED_BUCKETS = ["rust", "porting", "workflow"];
-const ALL_BUCKETS = [...PROMOTED_BUCKETS, "misc", "in-progress"];
+const PROMOTED_BUCKETS = ["rust", "porting", "workflow", "misc"];
+const ALL_BUCKETS = [...PROMOTED_BUCKETS, "in-progress"];
 
 function parseFrontmatter(source) {
   const match = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source);

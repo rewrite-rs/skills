@@ -18,8 +18,7 @@ pointed at — and the question is what to do first and in what order.
    of the skill reports nothing to change; from here every other skill in the
    set verifies at the level the repo set. An optional next step, once the
    lints exist, is `/setup-rust-ci`, which makes CI run what the skills run
-   locally — not shipped in the plugin, so only an `npx skills` install offers
-   it.
+   locally.
 2. The craft skills, as the code demands them — `/type-driven-design` while
    the model is still soft, `/rust-errors` at the first fallible boundary,
    `/rust-api-design` before the first published version, and the rest by the
