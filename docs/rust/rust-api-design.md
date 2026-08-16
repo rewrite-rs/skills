@@ -1,9 +1,10 @@
 ## What it does
 
 Governs what callers can see and rely on — the exported surface, trait design,
-generics versus `dyn`, sealed traits, and which changes break semver. Everything
-it says about internals is incidental: the re-export-from-`lib.rs` pattern exists
-so the internal tree can be reorganized without a major version.
+generics versus `dyn`, sealed traits, how a dependency gets into the API, and
+which changes break semver. Everything it says about internals is incidental: the
+re-export-from-`lib.rs` pattern exists so the internal tree can be reorganized
+without a major version.
 
 ## When to reach for it
 
@@ -35,6 +36,16 @@ surface-discipline sections still help, but the breaking-change table does not.
   because readers reproduce it wrong from memory.
 - **`pub(crate)` as the default habit**, with the surface re-exported from
   `lib.rs`, keeps the internal tree free to move.
+
+## The injection ladder
+
+A dependency gets in through the lowest rung that expresses the requirement: a
+concrete type first, then a wrapper struct, then a generic parameter, then
+`dyn Trait`. Climb only when the current rung cannot express the need — never
+for a test-only need (ADR 0006 belongs to `/rust-testing`). The cost of each rung
+is in `DEPENDENCY-INJECTION.md`; the rules the surface itself must obey — one
+path per item, no `Arc` or `Box` in a public signature, no leaked dependency
+types — and the ergonomics that cost nothing are in `SURFACE.md`.
 
 ## What breaks callers
 
@@ -73,6 +84,10 @@ crate may grow a consumer later.
   `cargo semver-checks` when the tool is present — before it was called
   non-breaking.
 - No public type is missing a derive it should carry.
+- No public signature names an `Arc`, `Rc`, `Box` or `RefCell`.
+- Every item has exactly one public path.
+- Every public type derives `Debug`.
+- No library ships a prelude.
 
 ## Where it fits
 
