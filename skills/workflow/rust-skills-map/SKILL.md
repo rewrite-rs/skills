@@ -38,6 +38,7 @@ every handoff in this set is a directly typeable `/skill-name`.
 | Is this safe to `.await` here? | `/async-rust` | `/ownership-not-clone` — the across-`.await` rule only |
 | Is this `unsafe` block sound? | `/unsafe-rust` | `/rust-code-review` — soundness versus review process |
 | Why is this slow, and what should I change? | `/rust-performance` | `/async-rust` — executor stalls and blocking work are the runtime question, not the throughput one |
+| Which concurrency model fits this work? | `/rust-concurrency` | `/async-rust` — tasks and executors; this row is threads, locks, and atomics |
 | Does this change deserve a test, and which kind? | `/rust-testing` | `/rust-code-review` — designing the test versus judging its absence |
 | How do I move this code into Rust without losing behaviour? | `/port-to-rust` | `/rust-testing` — the harness mechanism, not what the harness has to prove |
 | What does this Python construct become in Rust? | `/port-from-python` | `/port-to-rust` — the process and the contract, not the construct |
