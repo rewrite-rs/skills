@@ -6,18 +6,20 @@ description: Justify, document, and verify unsafe Rust — safety invariants on 
 # Unsafe Rust
 
 `unsafe` is a promise, not a permission: the code inside may break the rules,
-but the code around it must keep them. This skill governs *soundness* — whether
-a safe caller can trigger undefined behaviour — and it never treats "the tests
-pass" as evidence of soundness.
+but the code around it must keep them. `unsafe` means undefined behaviour, not
+"dangerous" — UB is the compiler being permitted to assume the situation
+cannot arise, which is why it surfaces as a later, unrelated miscompile. The
+depth is in `SAFETY-REVIEW.md` under `UB is not a bad outcome at runtime`.
+This skill governs *soundness* — whether a safe caller can trigger undefined
+behaviour — and it never treats "the tests pass" as evidence of soundness.
 
 ## `unsafe` does not turn off the borrow checker
 
 It permits exactly five extra operations: dereferencing a raw pointer, calling
 an `unsafe fn`, implementing an `unsafe trait`, accessing a `union` field, and
 mutating a `static mut`. Everything else — lifetimes, ownership, types — still
-applies inside the block. The most common misconception in ported code is that
-`unsafe` is a general escape hatch; it is a narrow one, and reaching for it to
-resolve a borrow error is always wrong. That case is `/ownership-not-clone`.
+applies inside the block. `unsafe` is a narrow escape hatch — reaching for it
+to resolve a borrow error is always wrong. That case is `/ownership-not-clone`.
 
 ## The justification test
 
@@ -29,6 +31,8 @@ be answered before the block is written — and the reason written down, in the
    memory on each side, what happens on a panic crossing the boundary (it must
    not), whether the foreign function is thread-safe, and what the lifetime of
    every pointer received actually is. Hand the boundary design to `/rust-ffi`.
+   Use the edition 2024 marks on the boundary — those attributes always were
+   unsafe assertions; they are in `SAFETY-REVIEW.md` under `Per FFI call`.
 2. **A performance win the profile named.** The checklist: what did the
    measurement say, what invariant is being asserted in place of the check,
    and is the safe version genuinely on the hot path — `/rust-performance`
@@ -90,9 +94,8 @@ One point each; the review depth is in `SAFETY-REVIEW.md`.
 
 `bytemuck` for plain-old-data casts, `zerocopy` for zero-copy parsing,
 `arrayvec`/`smallvec` for stack-backed collections, an existing binding crate
-for an existing C library. Auditing one line of `unsafe` you did not write is
-cheaper than justifying twenty you did — and the audit is the published,
-reviewed one.
+for an existing C library. Auditing `unsafe` you did not write is cheaper than
+justifying it — the audit is the published, reviewed one.
 
 ## Deferrals
 
@@ -100,12 +103,9 @@ Whether the wrapper should be `pub`, and what its `unsafe fn` signature commits
 the crate to, is `/rust-api-design`. `Pin` and manual `Future` impls interact
 with `/async-rust`. Error handling across the boundary is `/rust-errors`.
 Construct-level mapping from C or C++ into Rust is `/port-from-c` and
-`/port-from-cpp` — this skill covers the `unsafe` discipline those ports need,
-not the mapping.
+`/port-from-cpp` — this skill covers the `unsafe` discipline, not the mapping.
 
 ## Verification
-
-This is the one skill where the verification step is the point:
 
 ```bash
 cargo miri test              # requires the miri component on nightly
