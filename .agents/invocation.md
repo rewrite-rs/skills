@@ -33,19 +33,20 @@ fails the check.
 
 ## What is user-invoked in this repo
 
-A skill is user-invoked when running it writes files into the user's repository.
-That is the whole test, and it applies in every bucket. The model may propose
-running such a skill; it may never decide to run one on its own, because the
-first thing the user would learn about the decision is a diff they did not ask
-for.
+A skill is user-invoked when running it writes files into the user's
+repository. That is the rule, and it applies in every bucket. The model may
+propose running such a skill; it may never decide to run one on its own,
+because the first thing the user would learn about the decision is a diff they
+did not ask for.
 
-In the promoted buckets exactly two skills meet that test — `setup-rust-skills`
-(which writes `clippy.toml`, `rustfmt.toml`, and `docs/agents/rust.md`) and
-`rust-skills-map`, which is user-invoked for the second reason: it is a router
-the user consults directly rather than one the model reaches for mid-task.
+One skill is user-invoked without meeting the rule: `rust-skills-map`. It
+writes nothing — it is a router the user consults directly rather than one
+the model reaches for mid-task.
 
-In `misc/`, `setup-rust-ci` and `setup-rust-pre-commit` meet it too — the first
-writes a workflow that runs on every push, the second writes a hook that runs on
+In the promoted buckets, `setup-rust-skills` meets the rule: it writes
+`clippy.toml`, `rustfmt.toml`, and `docs/agents/rust.md`. In `misc/`,
+`setup-rust-ci` and `setup-rust-pre-commit` meet it too — the first writes a
+workflow that runs on every push, the second writes a hook that runs on
 every commit. `rust-supply-chain` does not: it runs audits and reports, and
 writes `deny.toml` only when the user asks for it in the same breath.
 

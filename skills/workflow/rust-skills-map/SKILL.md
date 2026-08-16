@@ -45,7 +45,7 @@ every handoff in this set is a directly typeable `/skill-name`.
 | What does this C++ construct become in Rust? | `/port-from-cpp` | `/ownership-not-clone` — the sharing rules, not the smart-pointer mapping |
 | What does this C construct become in Rust? | `/port-from-c` | `/port-from-cpp` — RAII, templates, and the STL are the other skill |
 | Is this diff ready to merge? | `/rust-code-review` | every craft skill — review routes to them, it does not restate them |
-| How should this repo be configured? | `/setup-rust-skills` | user-invoked; nothing else writes to the repo |
+| How should this repo be configured? | `/setup-rust-skills` | user-invoked; the only promoted skill that writes to the repo |
 
 ## The three flows, one line each
 

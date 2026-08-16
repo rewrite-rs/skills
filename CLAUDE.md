@@ -51,9 +51,11 @@ Sources live in `.agents/sources.md`, not inside any `SKILL.md` or docs page.
 See `.agents/invocation.md` for the full rules on user-invoked versus model-invoked
 skills, and for what agrees between the frontmatter flag in Claude Code and the
 `agents/openai.yaml` policy in Codex.
-Any skill that writes files into the user's repo is user-invoked, in any bucket.
-In the promoted buckets that is `setup-rust-skills` and `rust-skills-map`; in
-`misc/` it is `setup-rust-ci` and `setup-rust-pre-commit`. Every other skill is
+Any skill that writes files into the user's repo is user-invoked, in any
+bucket; `rust-skills-map` is user-invoked without writing files, because it is
+a router the user consults directly. The user-invoked skills are therefore
+`setup-rust-skills` and `rust-skills-map` in the promoted buckets, and
+`setup-rust-ci` and `setup-rust-pre-commit` in `misc/`. Every other skill is
 model-invoked.
 
 ## 7. Router upkeep
