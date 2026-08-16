@@ -6,8 +6,8 @@
 <p>
   <a href="#skills">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/skills-18-f2723f.svg?variant=secondary&logo=rust&mode=dark" />
-      <img alt="18 skills" src="https://shieldcn.dev/badge/skills-18-bc4710.svg?variant=secondary&logo=rust&mode=light" />
+      <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/skills-21-f2723f.svg?variant=secondary&logo=rust&mode=dark" />
+      <img alt="21 skills" src="https://shieldcn.dev/badge/skills-21-bc4710.svg?variant=secondary&logo=rust&mode=light" />
     </picture>
   </a>
   <picture>
