@@ -56,6 +56,7 @@ every handoff in this set is a directly typeable `/skill-name`.
 | An advisory fired, a licence question came up, or the tree grew duplicates | `/rust-supply-chain` | `/rust-code-review` — that one reviews the code, this one the dependencies |
 | Should this be a macro, and is this one written well? | `/rust-macros` | `/idiomatic-rust` — the derives that already exist, before writing one |
 | How should this type cross a wire format? | `/rust-serde` | `/type-driven-design` — what the validated type is, not how it deserializes |
+| How should this Rust code be called from another language? | `/rust-ffi` | `/port-from-c` — moving off C, not designing a boundary to keep |
 
 ## The four flows, one line each
 

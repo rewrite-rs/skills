@@ -110,6 +110,7 @@ Occasional setup and audit skills: CI, hooks, and the dependency tree.
 - [rust-supply-chain](./skills/misc/rust-supply-chain/SKILL.md) — Dependency advisories, licences, and duplicates, each ending in a decision.
 - [rust-macros](./skills/misc/rust-macros/SKILL.md) — Macros as a last resort, by-example first, with errors that point at the caller.
 - [rust-serde](./skills/misc/rust-serde/SKILL.md) — Serde as the validating boundary between a wire format and a domain type.
+- [rust-ffi](./skills/misc/rust-ffi/SKILL.md) — A translating FFI boundary with explicit ownership and no panics crossing it.
 
 **User-invoked**
 
