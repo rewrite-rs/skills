@@ -34,6 +34,21 @@ alone even when the surrounding code also gets touched.
 - **Newtypes** — `struct UserId(u64)` costs nothing at runtime and turns an
   argument-order bug into a compile error.
 
+## Naming
+
+- **Names earn every word** — `Bookings`, not `BookingService`: `Service`,
+  `Manager`, `Helper`, `Util`, `Data`, and `Info` mark a name nobody finished. The
+  test is the call site — `bookings.cancel(id)` against `booking_service.cancel(id)`.
+- **The cost prefixes are a promise** — `as_` is a free borrow-to-borrow view, `to_`
+  allocates or clones, `into_` consumes. A `to_` that is free is merely surprising;
+  an `as_` that allocates is a lie the reader will not check.
+- **Accessors and case** — no `get_` on a field accessor (`fn name(&self)`,
+  `fn name_mut(&mut self)`); acronyms are words (`HttpClient`, `Uuid`); a helper that
+  does not need `Self` is a free function in the module, not an `impl` block used as
+  a namespace.
+
+The tiers table and worked pairs live in `NAMING.md`.
+
 ## Common questions
 
 **Does this skill decide whether to clone here or restructure the borrow?** No — that
@@ -48,6 +63,15 @@ skill will remove repeated `.map_err(...)` closures with `#[from]` (see
 smart pointers. It's wrong specifically when used to forward the whole method
 surface for inheritance-style convenience; see the `Deref` section of
 `BOILERPLATE.md` for the distinction.
+
+**Is `get_` ever right?** Yes — where the operation genuinely looks something up and
+can fail, as in `HashMap::get`, which returns `Option<V>` because the key may be
+absent. On a plain field accessor it is dead weight: the accessor is
+`fn name(&self)`, the mutable one `fn name_mut(&mut self)`.
+
+**Does the `as_`/`to_`/`into_` rule apply to my own types?** Yes — that is the point.
+The convention is only worth anything if every crate keeps it: `as_` stays a free
+view, `to_` earns its allocation, and `into_` consumes its input.
 
 ## It's working if
 
