@@ -5,6 +5,10 @@ summarizes: the situation, the ordered skills, and the handoff signal that
 moves from one step to the next. The choice between two skills that both seem
 right is settled at the end of this file.
 
+One skill deliberately joins no flow: `/rust-macros` is reached from a
+decision — "should this be a macro?" — not from a stage of work, and
+forcing it into a flow would misrepresent when it fires.
+
 ## Starting fresh in a Rust repo
 
 **Situation.** A new Rust repo — or an existing one the set has not yet been
@@ -51,8 +55,9 @@ the question is whether it is ready to merge.
 ## Porting from another language
 
 **Situation.** A Rust implementation is replacing an existing one — C, C++,
-Python, TypeScript, Go, or Java — and the question is how to sequence the work
-so the port does not drift from the behaviour of its source.
+Python, TypeScript, Go, or Java — either outright or behind a boundary that
+stays, and the question is how to sequence the work so the port does not
+drift from the behaviour of its source.
 
 **The route.**
 
@@ -74,13 +79,22 @@ so the port does not drift from the behaviour of its source.
    ported diff. **Handoff:** the ported code reads like Rust rather than
    like a translation, at the level the repo configured, and the report
    leads with a verdict and nothing blocking is open.
+4. `/rust-ffi` — at the end, for the case where the port leaves a
+   permanent boundary rather than replacing the source outright: the seam
+   the other language keeps calling across is designed, not discovered —
+   the layer only translates, no panic crosses, and every pointer states
+   its ownership. The end-state decision in `/port-to-rust` is what tells
+   you whether it applies. **Handoff:** the other side loads the seam and
+   exercises it, create to destroy, under the platform leak checker, so
+   the boundary is checked on both sides rather than one.
 
 ## Making working code production-ready
 
 **Situation.** The code works — the feature is in and the tests pass — and
 the question is what stands between it and production: a measurement says
 it is too slow, the work needs to happen in parallel, a failure in
-production has to be diagnosable, and the crate is about to be published.
+production has to be diagnosable, a type crosses a wire format, and the
+crate is about to be published.
 
 **The route.**
 
@@ -97,7 +111,13 @@ production has to be diagnosable, and the crate is about to be published.
    with named fields, spans for the unit of work, the error chain logged once
    at the boundary that handles it, and no secret in a field. **Handoff:** a
    failure is a query over named fields, not a regex over a formatted string.
-4. `/rust-docs` — before the crate is published: the doc comment states the
+4. `/rust-serde` — where the crate has a wire format: the shape a type
+   takes on the wire is settled before the code is depended on by anything
+   the crate does not control, so a re-shape afterwards is a bug that
+   surfaces in a system the crate does not run. **Handoff:** every type
+   crossing the wire round-trips a real payload from the other side, not
+   just its own output.
+5. `/rust-docs` — before the crate is published: the doc comment states the
    contract a caller must know, the canonical sections carry the failure
    modes, and the doctests run under `cargo test`. **Handoff:** `cargo doc`
    is clean and the doctests pass, so the documented contract is the one the

@@ -77,11 +77,16 @@ signal that moves between them — is in `FLOWS.md`.
   `/port-from-java` for a Java one, `/port-from-cpp` for a C++ one,
   or `/port-from-c` for a C one, for the construct mapping and the
   boundary, `/rust-testing` for the differential harness, the craft
-  skills, and `/rust-code-review` before merge.
+  skills, `/rust-code-review` before merge, and `/rust-ffi` at the end
+  for the case where the port leaves a permanent boundary rather than
+  replacing the source outright — the end-state decision in `/port-to-rust`
+  is what tells you whether it applies.
 - **Making working code production-ready:** `/rust-performance` when a
   measurement says it is too slow, `/rust-concurrency` when the work needs
   to happen in parallel, `/rust-observability` so a failure in production
-  is diagnosable, and `/rust-docs` before the crate is published.
+  is diagnosable, `/rust-serde` where the crate has a wire format,
+  before the code is depended on by anything the crate does not control,
+  and `/rust-docs` before the crate is published.
 
 ## Keeping this map honest
 
