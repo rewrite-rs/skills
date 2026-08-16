@@ -9,7 +9,7 @@
     {
       "name": "rewrite-rs-skills",
       "source": "./",
-      "description": "Agent skills for Rust — idiomatic code, ownership over clone and unwrap, and disciplined porting into Rust.",
+      "description": "The most complete agent skill set for real Rust, plus disciplined porting into it.",
       "category": "engineering",
       "keywords": ["rust", "skills", "porting", "migration"]
     }

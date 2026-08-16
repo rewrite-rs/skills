@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/header/surface.svg?title=rewrite-rs%2Fskills&subtitle=Rust+craft%2C+porting%2C+and+workflow+skills+for+coding+agents&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9InJld3JpdGUucnMiPgogIDx0aXRsZT5yZXdyaXRlLnJzIOKAlCBhdmF0YXIsIHRyYW5zcGFyZW50PC90aXRsZT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMCAyMCkgc2NhbGUoMC42KSI%2BCiAgPHBvbHlnb24gcG9pbnRzPSIxMCwxMCA3OCwxMCAxMCw3OCIgZmlsbD0iIzVjNTM0ZCI%2BPC9wb2x5Z29uPgogIDxwb2x5Z29uIHBvaW50cz0iMTgsOTAgOTAsMTggOTAsOTAiIGZpbGw9IiNiYzQ3MTAiPjwvcG9seWdvbj4KICA8L2c%2BCjwvc3ZnPg%3D%3D&align=left&logoColor=f2723f&bg=0c1015&titleColor=f2723f&subtitleColor=b0b5bd&font=jetbrains-mono&mode=dark" />
-  <img alt="rewrite-rs/skills — Rust craft, porting, and workflow skills for coding agents" src="https://shieldcn.dev/header/surface.svg?title=rewrite-rs%2Fskills&subtitle=Rust+craft%2C+porting%2C+and+workflow+skills+for+coding+agents&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9InJld3JpdGUucnMiPgogIDx0aXRsZT5yZXdyaXRlLnJzIOKAlCBhdmF0YXIsIHRyYW5zcGFyZW50PC90aXRsZT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMCAyMCkgc2NhbGUoMC42KSI%2BCiAgPHBvbHlnb24gcG9pbnRzPSIxMCwxMCA3OCwxMCAxMCw3OCIgZmlsbD0iIzVjNTM0ZCI%2BPC9wb2x5Z29uPgogIDxwb2x5Z29uIHBvaW50cz0iMTgsOTAgOTAsMTggOTAsOTAiIGZpbGw9IiNiYzQ3MTAiPjwvcG9seWdvbj4KICA8L2c%2BCjwvc3ZnPg%3D%3D&align=left&logoColor=5c534d&bg=fcfdff&titleColor=bc4710&subtitleColor=61666e&font=jetbrains-mono&mode=light" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/header/surface.svg?title=rewrite-rs%2Fskills&subtitle=The+most+complete+agent+skills+for+real+Rust%2C+and+for+porting+into+it&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9InJld3JpdGUucnMiPgogIDx0aXRsZT5yZXdyaXRlLnJzIOKAlCBhdmF0YXIsIHRyYW5zcGFyZW50PC90aXRsZT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMCAyMCkgc2NhbGUoMC42KSI%2BCiAgPHBvbHlnb24gcG9pbnRzPSIxMCwxMCA3OCwxMCAxMCw3OCIgZmlsbD0iIzVjNTM0ZCI%2BPC9wb2x5Z29uPgogIDxwb2x5Z29uIHBvaW50cz0iMTgsOTAgOTAsMTggOTAsOTAiIGZpbGw9IiNiYzQ3MTAiPjwvcG9seWdvbj4KICA8L2c%2BCjwvc3ZnPg%3D%3D&align=left&logoColor=f2723f&bg=0c1015&titleColor=f2723f&subtitleColor=b0b5bd&font=jetbrains-mono&mode=dark" />
+  <img alt="rewrite-rs/skills: the most complete agent skills for real Rust, and for porting into it" src="https://shieldcn.dev/header/surface.svg?title=rewrite-rs%2Fskills&subtitle=The+most+complete+agent+skills+for+real+Rust%2C+and+for+porting+into+it&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9InJld3JpdGUucnMiPgogIDx0aXRsZT5yZXdyaXRlLnJzIOKAlCBhdmF0YXIsIHRyYW5zcGFyZW50PC90aXRsZT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMCAyMCkgc2NhbGUoMC42KSI%2BCiAgPHBvbHlnb24gcG9pbnRzPSIxMCwxMCA3OCwxMCAxMCw3OCIgZmlsbD0iIzVjNTM0ZCI%2BPC9wb2x5Z29uPgogIDxwb2x5Z29uIHBvaW50cz0iMTgsOTAgOTAsMTggOTAsOTAiIGZpbGw9IiNiYzQ3MTAiPjwvcG9seWdvbj4KICA8L2c%2BCjwvc3ZnPg%3D%3D&align=left&logoColor=5c534d&bg=fcfdff&titleColor=bc4710&subtitleColor=61666e&font=jetbrains-mono&mode=light" />
 </picture>
 
 <p>
@@ -16,11 +16,15 @@
   </picture>
 </p>
 
-Skills for writing Rust that uses the ownership system rather than working around
-it, and for porting code into Rust without losing behaviour. The org name is
-`rewrite-rs`, but porting is one of three areas here, not the whole story — the
-other two are idiomatic Rust craft and the workflow skills (review, testing, setup)
-that hold a port or a rewrite together end to end.
+The most complete skill set for coding agents writing real Rust. 25 skills that
+teach judgment, not snippets: use the ownership system instead of working around
+it, design errors and APIs that survive review, and port code into Rust without
+losing behaviour.
+
+Three areas. **Rust craft:** idioms, ownership, errors, types, async, unsafe,
+performance, concurrency, observability, docs. **Porting:** one skill per source
+language (C, C++, Go, Java, Python, TypeScript) over a shared migration spine.
+**Workflow:** review, testing, setup, and a router that picks the skill for you.
 
 ## Installation
 

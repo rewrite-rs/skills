@@ -1,7 +1,7 @@
 {
   "name": "rewrite-rs-skills",
   "version": "0.1.0-alpha.1",
-  "description": "Agent skills for Rust — idiomatic code without boilerplate, ownership instead of clone and unwrap, and disciplined porting from C, C++, Python, TypeScript, Go, and Java.",
+  "description": "The most complete agent skill set for real Rust: ownership over clone and unwrap, errors and APIs that survive review, async and unsafe done right, plus disciplined porting into Rust.",
   "author": {
     "name": "rewrite-rs",
     "url": "https://rewrite.rs"
