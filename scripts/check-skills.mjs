@@ -66,11 +66,17 @@ export function checkRepo(repoRoot) {
     const openaiPath = join(skill.dir, "agents", "openai.yaml");
     if (!existsSync(openaiPath)) {
       errors.push(`${label}: missing agents/openai.yaml`);
-    } else if (skill.userInvoked) {
+    } else {
       const yaml = readFileSync(openaiPath, "utf8");
-      if (!/allow_implicit_invocation:\s*false/.test(yaml)) {
+      const policy = /allow_implicit_invocation:\s*false/.test(yaml);
+      if (skill.userInvoked && !policy) {
         errors.push(
           `${label}: user-invoked but agents/openai.yaml lacks policy.allow_implicit_invocation: false`
+        );
+      }
+      if (!skill.userInvoked && policy) {
+        errors.push(
+          `${label}: model-invoked in frontmatter but agents/openai.yaml sets policy.allow_implicit_invocation: false`
         );
       }
     }

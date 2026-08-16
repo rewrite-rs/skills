@@ -111,6 +111,18 @@ test("user-invoked frontmatter without the openai policy is an error", () => {
   assert.ok(errors.some((e) => e.includes("allow_implicit_invocation")));
 });
 
+test("openai policy without the user-invoked frontmatter flag is an error", () => {
+  const root = scaffold();
+  const dir = addSkill(root, "workflow", "rust-skills-map");
+  writeFileSync(
+    join(dir, "agents", "openai.yaml"),
+    'interface:\n  display_name: "rust-skills-map"\n  short_description: "Map"\npolicy:\n  allow_implicit_invocation: false\n'
+  );
+  promote(root, "workflow", "rust-skills-map");
+  const { errors } = checkRepo(root);
+  assert.ok(errors.some((e) => e.includes("model-invoked in frontmatter")));
+});
+
 test("a promoted skill with no docs page is an error", () => {
   const root = scaffold();
   addSkill(root, "rust", "idiomatic-rust", { docs: false });
