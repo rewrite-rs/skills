@@ -5,7 +5,7 @@ through the `npx skills` install route, not through the Claude Code plugin.
 
 ## Model-invoked
 
-None yet in this bucket.
+- [rust-supply-chain](./rust-supply-chain/SKILL.md) — Advisories, licences, and duplicate dependencies, each ending in a decision.
 
 ## User-invoked
 
