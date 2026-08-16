@@ -73,6 +73,21 @@ When a skill is added, renamed, or removed from the set, this map is updated
 in the same change — a router that names a skill nobody can run is worse than
 no router.
 
+## Not shipped in the plugin
+
+Three further skills live in `misc/` and reach only the `npx skills` install
+route, never the Claude Code plugin. They are occasional rather than everyday,
+which is what `misc/` means — not that they are unfinished.
+
+| Skill | Reach for it when |
+|---|---|
+| `/setup-rust-ci` | The repo needs a GitHub Actions workflow that runs what the skills run locally. |
+| `/setup-rust-pre-commit` | Contributors keep pushing unformatted code and CI is catching it late. |
+| `/rust-supply-chain` | An advisory fired, a licence question came up, or the tree grew duplicates. |
+
+If a plugin install does not offer these, that is the promotion boundary working
+as designed.
+
 ## No verification step, and why
 
 This skill makes no claim a machine can settle — it routes between skills, and

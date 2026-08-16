@@ -11,6 +11,11 @@ it, so a reader never has to wonder whether two different words mean the same th
   (`skills/rust/`, `skills/porting/`, `skills/workflow/`). Avoid: "published",
   "released" — those imply a release event; promotion is a bucket membership fact.
 
+- **Misc** — a skill in `skills/misc/`: installable through the `npx skills`
+  route, not shipped in the plugin, and as finished as a promoted skill.
+  Avoid: "unshipped", "unfinished", "experimental" — those read the split as
+  readiness; it is frequency of use, not completeness.
+
 - **Verification step** — the command a skill instructs the agent to run to settle a
   claim a machine can settle, e.g. `cargo clippy`, `cargo test`, `cargo miri test`.
   Avoid: "test step", "check" — too generic, and "check" collides with `npm run
