@@ -55,14 +55,15 @@ every handoff in this set is a directly typeable `/skill-name`.
 | Contributors keep pushing unformatted code | `/setup-rust-pre-commit` | `/setup-rust-ci` — that one is the public gate, this one the local hook |
 | An advisory fired, a licence question came up, or the tree grew duplicates | `/rust-supply-chain` | `/rust-code-review` — that one reviews the code, this one the dependencies |
 
-## The three flows, one line each
+## The four flows, one line each
 
 The full route for each — the situation, the ordered skills, and the handoff
 signal that moves between them — is in `FLOWS.md`.
 
 - **Starting fresh in a Rust repo:** `/setup-rust-skills` to configure and
   record posture, then the craft skills as the code demands them,
-  `/rust-testing` alongside, and `/rust-code-review` before merge.
+  `/rust-testing` and `/rust-docs` alongside, and `/rust-code-review`
+  before merge.
 - **Reviewing someone else's code:** `/rust-code-review` first — it dispatches
   to the craft skills itself; a craft skill directly only when the review
   already named it and the depth is wanted.
@@ -74,6 +75,10 @@ signal that moves between them — is in `FLOWS.md`.
   or `/port-from-c` for a C one, for the construct mapping and the
   boundary, `/rust-testing` for the differential harness, the craft
   skills, and `/rust-code-review` before merge.
+- **Making working code production-ready:** `/rust-performance` when a
+  measurement says it is too slow, `/rust-concurrency` when the work needs
+  to happen in parallel, `/rust-observability` so a failure in production
+  is diagnosable, and `/rust-docs` before the crate is published.
 
 ## Keeping this map honest
 

@@ -1,6 +1,6 @@
 # Flows
 
-The three routes a user of this set actually walks, in the form the map
+The four routes a user of this set actually walks, in the form the map
 summarizes: the situation, the ordered skills, and the handoff signal that
 moves from one step to the next. The choice between two skills that both seem
 right is settled at the end of this file.
@@ -24,7 +24,9 @@ pointed at — and the question is what to do first and in what order.
    `/rust-api-design` before the first published version, and the rest by the
    questions they raise. **Alongside, not after:** `/rust-testing` writes the
    test for each behaviour change as it lands, so the suite never trails the
-   code. **Handoff:** the code compiles clean at the repo lint level, and the
+   code, and `/rust-docs` writes the doc comment for each public item as its
+   signature settles, so the contract never trails the code either.
+   **Handoff:** the code compiles clean at the repo lint level, and the
    questions a review would route to the craft skills are already answered.
 3. `/rust-code-review` — before merge. **Handoff:** the report leads with a
    verdict and nothing blocking is open.
@@ -72,6 +74,34 @@ so the port does not drift from the behaviour of its source.
    ported diff. **Handoff:** the ported code reads like Rust rather than
    like a translation, at the level the repo configured, and the report
    leads with a verdict and nothing blocking is open.
+
+## Making working code production-ready
+
+**Situation.** The code works — the feature is in and the tests pass — and
+the question is what stands between it and production: a measurement says
+it is too slow, the work needs to happen in parallel, a failure in
+production has to be diagnosable, and the crate is about to be published.
+
+**The route.**
+
+1. `/rust-performance` — when a measurement says the code is too slow: the
+   profile is the entry ticket, the change is the one the measurement named,
+   and the codegen flags stay the last five percent. **Handoff:** a re-run of
+   the benchmark shows the number moved where the profile said it would.
+2. `/rust-concurrency` — when the work needs to happen in parallel: the shape
+   of the workload picks the model — data parallelism, scoped threads,
+   channels, shared state last — and the weakest correct atomic ordering
+   wins. **Handoff:** the shape has picked a model, and any ordering in use
+   is the weakest one whose argument fits in two sentences.
+3. `/rust-observability` — so a failure in production is diagnosable: events
+   with named fields, spans for the unit of work, the error chain logged once
+   at the boundary that handles it, and no secret in a field. **Handoff:** a
+   failure is a query over named fields, not a regex over a formatted string.
+4. `/rust-docs` — before the crate is published: the doc comment states the
+   contract a caller must know, the canonical sections carry the failure
+   modes, and the doctests run under `cargo test`. **Handoff:** `cargo doc`
+   is clean and the doctests pass, so the documented contract is the one the
+   code keeps.
 
 ## When two skills both seem right
 
