@@ -55,7 +55,7 @@ signal that moves between them — is in `FLOWS.md`.
 - **Starting fresh in a Rust repo:** `/setup-rust-skills` to configure and
   record posture, then the craft skills as the code demands them,
   `/rust-testing` alongside, and `/rust-code-review` before merge.
-- **Reviewing someone else code:** `/rust-code-review` first — it dispatches
+- **Reviewing someone else's code:** `/rust-code-review` first — it dispatches
   to the craft skills itself; a craft skill directly only when the review
   already named it and the depth is wanted.
 - **Porting from another language:** `/port-to-rust` for the end

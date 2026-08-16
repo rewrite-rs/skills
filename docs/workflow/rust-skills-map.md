@@ -46,7 +46,7 @@ handoff signal between each step:
 - **Starting fresh in a Rust repo** — `/setup-rust-skills` to configure and
   record posture, the craft skills as the code demands them, `/rust-testing`
   alongside, and `/rust-code-review` before merge.
-- **Reviewing someone else code** — `/rust-code-review` first; it dispatches
+- **Reviewing someone else's code** — `/rust-code-review` first; it dispatches
   to the craft skills itself, and a craft skill is reached for directly only
   when the review already named it and the depth is wanted.
 - **Porting from another language** — `/port-to-rust` for the end

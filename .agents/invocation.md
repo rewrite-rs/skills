@@ -9,8 +9,8 @@ option, and a skill must not be half of one and half of the other.
 The model never decides on its own to pull the skill in. This is set with two flags
 that must both be present:
 
-- `disable-model-invocation: true` in the skill's `SKILL.md` frontmatter.
-- `policy.allow_implicit_invocation: false` in the skill's `agents/openai.yaml`.
+- `disable-model-invocation: true` in the `SKILL.md` frontmatter.
+- `policy.allow_implicit_invocation: false` in the `agents/openai.yaml`.
 
 Because a user-invoked skill is found by browsing, not by the model matching a task
 description against it, its `description` is human-facing: a short, plain summary of
@@ -58,7 +58,7 @@ Every other skill in the set is model-invoked.
 When one skill needs another — for example, every porting skill needs the process
 guidance in `port-to-rust` — express that as prose invocation in the skill-shaped,
 directly typeable form: "Run the `/port-to-rust` skill." Never write a cross-reference
-as a relative file link (`../other-skill/FILE.md`) reaching into another skill's
+as a relative file link (`../other-skill/FILE.md`) reaching into another skill
 directory. A skill owns its own directory; nothing outside it should depend on reading
 files inside it directly.
 

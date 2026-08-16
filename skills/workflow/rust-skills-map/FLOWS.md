@@ -30,7 +30,7 @@ pointed at — and the question is what to do first and in what order.
 3. `/rust-code-review` — before merge. **Handoff:** the report leads with a
    verdict and nothing blocking is open.
 
-## Reviewing someone else code
+## Reviewing someone else's code
 
 **Situation.** A diff, branch, or pull request that someone else wrote, and
 the question is whether it is ready to merge.
