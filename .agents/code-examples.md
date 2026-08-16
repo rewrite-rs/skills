@@ -34,6 +34,21 @@ two-line example is worse teaching, and the tag is the cheaper answer.
 Do not reach for `ignore` because a block was not checked. That is the case the
 convention exists to catch.
 
+## Two re-fence cases the compile gate forces
+
+- A block that compiles only at the crate root — a `$crate` path, an inner
+  attribute — takes `rust,ignore` for a harness reason, not a content reason:
+  the gate wraps each untagged block in a `mod example_N`, and inside a module
+  `$crate` resolves to the generated crate root rather than the module that
+  defined the helper, so the expansion fails with E0433 although the same
+  block compiles at the root of a real crate. The standing case is the
+  `_private` helper block in `skills/misc/rust-macros/SKILL.md`.
+- A "before" half that compiles but is semantically unsound may stay untagged:
+  the block passing the gate is itself the evidence the type system cannot
+  catch the bug, and tagging it `ignore` would withdraw that claim. The
+  standing case is the unsound `split_at_mut` in
+  `skills/rust/unsafe-rust/SAFETY-REVIEW.md`, beside its sound fix.
+
 ## Verifying a `rust` block
 
 The check is automated: `npm run check-examples` extracts every untagged block,
