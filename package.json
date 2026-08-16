@@ -12,6 +12,7 @@
   "type": "module",
   "scripts": {
     "check": "node --test tests/*.test.mjs && node scripts/check-skills.mjs && node scripts/sync-plugin-version.mjs --check",
+    "check-examples": "node scripts/check-examples.mjs",
     "check-skills": "node scripts/check-skills.mjs",
     "changeset": "changeset",
     "version": "changeset version && node scripts/sync-plugin-version.mjs",
