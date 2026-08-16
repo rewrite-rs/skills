@@ -38,6 +38,19 @@ public API leakage) live in `TYPESTATE.md`. The decision list: typestate for
 small fixed state machines where out-of-order use ships a bug; a runtime state
 enum with a `Result` when states are many, dynamic, or stored together.
 
+## Numerics: count, measure, identify, or money
+
+- **The type family first.** A count is an unsigned integer, a measurement a
+  float only if it genuinely is one, an identifier a newtype that never does
+  arithmetic, and money an integer of minor units.
+- **`NonZero` for what cannot be zero**, and the overflow operator named
+  explicitly — checked, saturating, or wrapping — rather than plain `+`.
+- **`TryFrom` over `as`** at the boundary, once.
+- **Floats compare badly.** No `==` without an epsilon appropriate to the
+  magnitude, and sorting goes through `total_cmp`.
+- The worked `Cents` versus `Meters` example, with the range-checking
+  constructor, lives in `NUMERICS.md`.
+
 ## Common questions
 
 **Newtypes appear in both `/idiomatic-rust` and here — what is the difference?**
@@ -67,6 +80,8 @@ safety.
   compile-fail expectation.
 - No typestate machine with more than a handful of fixed states was introduced
   for a struct built once.
+- No `as` cast between integer types outside a place where truncation is the
+  documented intent; no float `==`.
 - `cargo test` passes at the lint level configured in the repo.
 
 ## Where it fits

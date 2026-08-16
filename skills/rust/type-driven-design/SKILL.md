@@ -76,6 +76,10 @@ primitive being swapped at a call site. Here the newtype *carries an invariant*:
 the only entrance and whose fields are private. The standard library already
 runs this pattern: `NonZeroU32` and friends, with the niche-optimization payoff
 that `Option<NonZeroU32>` is the same size as `u32`.
+The same argument applies to numbers, where the type system will otherwise let
+a byte count be added to a millisecond count — `NonZero` for what cannot be
+zero, `TryFrom` rather than `as` at every boundary, and `NUMERICS.md` for the
+rest.
 
 ## Typestate for protocol order
 
@@ -89,12 +93,9 @@ real bug class.
 ## When to stop
 
 Type-level modelling has a cost: worse error messages, heavier generics, and a
-refactor tax when the domain changes. Encode an invariant in a type when
-violating it is a real bug class in this codebase — a swap, a missing check, an
-out-of-order call that ships — not when it is merely expressible. A
-five-parameter typestate builder for a struct built once in `main` is
-over-engineering, and this skill says so rather than leaving the call to a
-reviewer.
+refactor tax when the domain changes. A five-parameter typestate builder for a
+struct built once in `main` is over-engineering, and this skill says so rather
+than leaving the call to a reviewer.
 
 ## Deferrals
 
