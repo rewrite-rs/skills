@@ -112,7 +112,7 @@ cargo test
 ```
 
 Run clippy at the lint level configured in the repo — a `clippy.toml` or its own
-lint attributes stays, and a stricter level never goes on top. Then the targeted
+lint attributes stay, and a stricter level never goes on top. Then the targeted
 audit the agent runs itself and reads:
 
 ```bash

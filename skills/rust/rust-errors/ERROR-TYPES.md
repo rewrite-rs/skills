@@ -178,7 +178,7 @@ binary: match what you can name, print the rest as a chain.
 
 ## Converting at the boundary
 
-A `thiserror` enum flows into `anyhow` for free — it implements
+A `thiserror` type flows into `anyhow` for free — it implements
 `std::error::Error + Send + Sync + 'static`, which is all `anyhow` asks for:
 
 ```rust,ignore

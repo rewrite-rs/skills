@@ -58,7 +58,7 @@ The surrounding decisions, per type:
 |---|---|---|
 | External — the default | `{"Named": "x"}`: a one-key wrapper around the variant | the wrapper key is noise when the payload already says what it is |
 | Internal — `tag = "type"` | `{"type": "Named", "name": "x"}`: the tag inside the variant | cannot hold a newtype variant over a non-struct |
-| Adjacent — `tag` plus `content` | `{"type": "Named", "value": "x"}`: tag and payload as siblings | the payload must not own the tag key itself |
+| Adjacent — `tag` plus `content` | `{"type": "Named", "value": "x"}`: tag and payload as siblings | the tag key is reserved in the envelope — a wire shape that already spends it at the top level cannot use this representation |
 | Untagged | the variant shape as-is, no marker | tries every variant in order and reports a useless error when all fail — last resort, never for input you must diagnose |
 
 External is the default; internal and adjacent are what a self-describing

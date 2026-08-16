@@ -43,12 +43,12 @@ points, and the named skill, typed as a `/skill-name`, does the work.
 
 ## Flows
 
-Three routes, in `FLOWS.md` with the situation, the ordered skills, and the
+Four routes, in `FLOWS.md` with the situation, the ordered skills, and the
 handoff signal between each step:
 
 - **Starting fresh in a Rust repo** — `/setup-rust-skills` to configure and
   record posture, the craft skills as the code demands them, `/rust-testing`
-  alongside, and `/rust-code-review` before merge.
+  and `/rust-docs` alongside, and `/rust-code-review` before merge.
 - **Reviewing someone else's code** — `/rust-code-review` first; it dispatches
   to the craft skills itself, and a craft skill is reached for directly only
   when the review already named it and the depth is wanted.
@@ -56,7 +56,17 @@ handoff signal between each step:
   state, the parity contract, the seam, and the phase sequence, then
   the matching `/port-from-<language>` skill for the construct
   mapping and the boundary, `/rust-testing` for the differential
-  harness, the craft skills, and `/rust-code-review` before merge.
+  harness, the craft skills, `/rust-code-review` before merge, and
+  `/rust-ffi` at the end for the case where the port leaves a
+  permanent boundary rather than replacing the source outright — the
+  end-state decision in `/port-to-rust` is what tells you whether it
+  applies.
+- **Making working code production-ready** — `/rust-performance` when a
+  measurement says it is too slow, `/rust-concurrency` when the work
+  needs to happen in parallel, `/rust-observability` so a failure in
+  production is diagnosable, `/rust-serde` where the crate has a wire
+  format, before the code is depended on by anything the crate does not
+  control, and `/rust-docs` before the crate is published.
 
 The tie-breaker when two skills both seem right: which one names the decision
 as its defining constraint, stated on each docs page under `## What it does`.

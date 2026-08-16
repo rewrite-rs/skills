@@ -57,8 +57,8 @@ three worked scenarios are in `TEMPLATES.md`.
 
 ## The tools worth having configured
 
-Four tools cover what lints cannot, and each gets a status line in
-`docs/agents/rust.md`, so no later skill has to guess: `cargo audit`
+Four tools cover what lints cannot, and the `Tooling` line in the posture
+file records each status, so no later skill has to guess: `cargo audit`
 (published advisories in the dependency tree), `cargo hack --feature-powerset
 check` (every feature combination compiles, not just the one CI builds),
 `cargo udeps` (declared but unused dependencies), and `cargo miri test`

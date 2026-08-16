@@ -76,7 +76,8 @@ the old page behind and add a new one.
 Run these before considering skill work done:
 
 - `npm run check` — runs the test harness, the index checker (`check-skills.mjs`),
-  and the plugin-version check (`sync-plugin-version.mjs --check`).
+  the plugin-version check (`sync-plugin-version.mjs --check`), and the example
+  compile gate (`check-examples.mjs`).
 - `claude plugin validate . --strict` — after touching `.claude-plugin/plugin.json`
   or `.claude-plugin/marketplace.json`.
 - `scripts/link-skills.sh` — symlinks skills into the local harness for manual

@@ -83,7 +83,7 @@ impl Cents {
 }
 
 impl Meters {
-    // Anything beyond the radius of the earth is not a measurement here.
+    // Anything beyond the circumference of the earth is not a measurement here.
     fn new(value: i64) -> Option<Self> {
         const LIMIT: i64 = 40_000_000;
         (-LIMIT..=LIMIT).contains(&value).then_some(Meters(value))

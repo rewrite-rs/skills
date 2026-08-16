@@ -58,8 +58,9 @@ meant produces a lagging receiver error nobody expected.
 ## Common questions
 
 **`std::sync::Mutex` or `tokio::sync::Mutex`?** `std` by default, with the
-critical section kept clear of await points. `tokio`'s when the lock must span
-an await — it parks the waiting task instead of blocking the thread.
+critical section kept clear of await points. `tokio::sync::Mutex` when the
+lock must span an await — it parks the waiting task instead of blocking the
+thread.
 
 **Is `join!` enough, or do I need `spawn`?** `join!` runs both futures in the
 current task — structured, no `Send + 'static` requirement. `spawn` runs them in

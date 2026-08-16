@@ -16,15 +16,16 @@
   </picture>
 </p>
 
-The most comprehensive skill set for coding agents writing real Rust. 25 skills that
+The most comprehensive skill set for coding agents writing real Rust. 28 skills that
 teach judgment, not snippets: use the ownership system instead of working around
 it, design errors and APIs that survive review, and port code into Rust without
 losing behaviour.
 
-Three areas. **Rust craft:** idioms, ownership, errors, types, async, unsafe,
+Four areas. **Rust craft:** idioms, ownership, errors, types, async, unsafe,
 performance, concurrency, observability, docs. **Porting:** one skill per source
 language (C, C++, Go, Java, Python, TypeScript) over a shared migration spine.
 **Workflow:** review, testing, setup, and a router that picks the skill for you.
+**Misc:** the occasional setup and audit skills.
 
 ## Installation
 

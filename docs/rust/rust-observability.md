@@ -39,7 +39,7 @@ errors are logged once, at the boundary that handles them, with the whole
 `source` chain rather than the top-level `Display` alone. Secrets sit behind
 a redacting newtype, so no call site — present or future — can log them. And
 field values are passed lazily, so a `debug!` that is off in production costs
-nothing.
+only the enablement check.
 
 ## Common questions
 

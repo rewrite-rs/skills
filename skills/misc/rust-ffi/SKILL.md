@@ -51,7 +51,7 @@ pub unsafe extern "C" fn mylib_client_new(name: *const c_char) -> *mut MylibClie
 /// `client` must be a non-null handle from `mylib_client_new`, freed exactly once.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn mylib_client_free(client: *mut MylibClient) {
-    drop(unsafe { Box::from_raw((*client).0) });
+    drop(unsafe { Box::from_raw(client as *mut Client) });
 }
 ```
 

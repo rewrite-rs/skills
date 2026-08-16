@@ -62,9 +62,9 @@ Every construct in the source encodes two things at once — the domain
 happened to express it). A port that carries both across produces Rust
 that compiles and reads as a transliteration. The concrete tells: a
 `throw_if_null(x)` helper, which never makes sense in a language where
-the absence is in the type; a `BaseHandler` trait with one
-implementor; getters and setters around a struct whose fields could be
-public; an error type per class rather than per failure mode.
+the absence is in the type; getters and setters around a struct whose
+fields could be public; an error type per class rather than per failure
+mode.
 
 The diagnostic is structural, and it is worth stating as a rule an
 agent can apply to its own output: **a striking similarity between the
