@@ -2,7 +2,7 @@
 
 The depth for the cancellation section of `SKILL.md`: the precise definition,
 the `select!` trap, the common-operation table, timeouts as cancellation, the two
-structural fixes, and graceful shutdown.
+structural fixes, graceful shutdown, cancellation tokens, and `JoinSet`.
 
 ## The definition, precisely
 
@@ -99,3 +99,30 @@ shuts down, the task is dropped at its current await point, which is exactly an
 uncontrolled cancellation of whatever it was mid-flight on. A task that checks
 the token is dropped cleanly; one that does not is cancelled, with all the
 data-loss the table above describes.
+
+## Cancellation tokens
+
+Mechanically, the token is a shared flag with a `.cancelled()` future, so a task
+selects it alongside its real work and shuts down at a point it chose, with
+cleanup running on the way out. The contrast is dropping a `JoinHandle`: that
+aborts the task at an arbitrary `.await` and gives the task no chance to
+release anything it holds. To cancel a subtree of tasks, derive child tokens
+from the parent (`child_token()`); cancelling the parent then cancels every
+child. And the rule that bounds the whole approach: a token check is only as
+good as the interval between checks — a worker that checks once a second cannot
+stop mid-second, so the interval must stay shorter than the deadline the
+shutdown actually has.
+
+```rust,ignore
+// The task picks its own exit point and gets to clean up.
+tokio::select! {
+    result = do_work() => result,
+    _ = token.cancelled() => cleanup().await,
+}
+```
+
+## JoinSet
+
+`JoinSet` for a dynamic group of tasks: completion is observed as it happens,
+and dropping the set aborts the rest — an uncontrolled cancellation of every
+task still running, with no chance to clean up.

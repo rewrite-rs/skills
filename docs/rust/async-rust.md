@@ -45,7 +45,15 @@ half-done and loses no data already taken. The `select!` trap (take input before
 the race), the common-operation table (`recv` and `sleep` safe; a transaction
 future not), timeouts as scheduled drops, and the two structural fixes
 (write-then-acknowledge; resumable checkpoints) live in `CANCELLATION.md`,
-alongside the graceful-shutdown pattern.
+alongside the graceful-shutdown pattern and the cancellation-token mechanics.
+
+## Channel shapes
+
+Pick the channel by what it means, not by speed: `mpsc` for many producers to
+one consumer, `oneshot` for a single reply, `watch` for the latest value where
+missing intermediate values is correct, `broadcast` for every receiver seeing
+every message with a bounded backlog. Picking `broadcast` where `watch` was
+meant produces a lagging receiver error nobody expected.
 
 ## Common questions
 
@@ -66,10 +74,12 @@ ordering bugs. Run the changed path with
 
 - No `std::sync` guard is held across an `.await`.
 - No blocking call sits directly in an `async fn`.
+- No CPU-bound loop runs without either `spawn_blocking` or a yield.
 - Concurrent work uses `join!`/`spawn` rather than sequential `.await`s.
 - Every `select!` branch is cancellation-safe or documented as the deliberate
   loser.
 - A timeout wraps only operations that are safe to drop mid-flight.
+- Shutdown is a token, not a dropped handle.
 - `cargo test` passes — with the multi-thread flavour where the repo already
   uses `#[tokio::test]`.
 
