@@ -2,6 +2,9 @@
 
 Language-craft skills for writing and reviewing Rust.
 
+Every skill here can be invoked by the user, by name; the heading decides
+whether the agent may also pull it in on its own.
+
 ## Model-invoked
 
 - [idiomatic-rust](./idiomatic-rust/SKILL.md) — Rust that reads like Rust, without boilerplate.

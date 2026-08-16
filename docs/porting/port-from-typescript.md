@@ -20,7 +20,8 @@ works. It does not cover how a port is run (that is `/port-to-rust`),
 the differential harness (`/rust-testing`), or the shape of the Rust
 that comes out (`/idiomatic-rust` and the other craft skills). There
 is no separate JavaScript skill: JavaScript is the same runtime
-without the erased layer.
+without the erased layer. The user can run it directly, as
+`/port-from-typescript`.
 
 ## Prerequisites
 

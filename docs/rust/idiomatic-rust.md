@@ -16,7 +16,8 @@ or when asked to make code more idiomatic or less repetitive. It does not cover
 ownership tradeoffs (that's `/ownership-not-clone`), error type design (that's
 `/rust-errors`), or type-level modelling of invalid states (that's
 `/type-driven-design`) — those are shape-preserving decisions this skill leaves
-alone even when the surrounding code also gets touched.
+alone even when the surrounding code also gets touched. The user can run it
+directly, as `/idiomatic-rust`.
 
 ## Iterators, conversions, derives, newtypes
 

@@ -15,7 +15,8 @@ something, when adding a dependency to a project with a licence policy, when
 a build pulls in two versions of the same crate, or when the user asks about
 supply chain risk in Rust. It does not write the schedule that runs the audit
 on purpose — that is `/setup-rust-ci` — and it keeps the audit out of
-pre-commit hooks, where it costs network time on every commit.
+pre-commit hooks, where it costs network time on every commit. The user can run
+it directly, as `/rust-supply-chain`.
 
 ## Prerequisites
 

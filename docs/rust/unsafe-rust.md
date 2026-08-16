@@ -15,7 +15,7 @@ unsafe code, when working across an FFI boundary, when raw pointers or
 whether an `unsafe` block is justified. It does not cover construct-level
 mapping from C or C++ (the `port-from-c` and `port-from-cpp` skills), whether
 the wrapper should be public (`/rust-api-design`), or error handling across the
-boundary (`/rust-errors`).
+boundary (`/rust-errors`). The user can run it directly, as `/unsafe-rust`.
 
 ## Prerequisites
 

@@ -56,6 +56,12 @@ Pick the skills you want, and which coding agents to install them on.
 
 ## Skills
 
+Every skill in the set can be invoked by the user, by typing its name. The
+label under each bucket decides whether the agent may also pull the skill in
+on its own: **model-invoked** skills are pulled in automatically when the
+task matches the description; **user-invoked** skills never are — the agent
+may suggest one, but the user starts it.
+
 ### Rust
 
 Language-craft skills for writing and reviewing Rust.

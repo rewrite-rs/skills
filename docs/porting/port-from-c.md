@@ -18,7 +18,8 @@ C construct becomes, or how the boundary works. It does not cover C++
 codebases — RAII, templates, and the STL are `/port-from-cpp` — how a port is
 run (`/port-to-rust`), the differential harness (`/rust-testing`), the
 `unsafe` discipline of the shim (`/unsafe-rust`), or the shape of the Rust
-that comes out (`/idiomatic-rust` and the other craft skills).
+that comes out (`/idiomatic-rust` and the other craft skills). The user can run
+it directly, as `/port-from-c`.
 
 ## Prerequisites
 

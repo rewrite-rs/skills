@@ -16,7 +16,8 @@ construct becomes, or how the seam works. It does not cover how a port
 is run (`/port-to-rust`), the differential harness (`/rust-testing`),
 the runtime rules the goroutine-to-task mapping defers to
 (`/async-rust`), or the shape of the Rust that comes out
-(`/idiomatic-rust` and the other craft skills).
+(`/idiomatic-rust` and the other craft skills). The user can run it directly, as
+`/port-from-go`.
 
 ## Prerequisites
 

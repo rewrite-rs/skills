@@ -3,6 +3,9 @@
 Review, testing, setup, and router skills that hold a port or a rewrite together
 end to end.
 
+Every skill here can be invoked by the user, by name; the heading decides
+whether the agent may also pull it in on its own.
+
 ## Model-invoked
 
 - [rust-testing](./rust-testing/SKILL.md) — Tests that fail when behaviour changes, including port parity.

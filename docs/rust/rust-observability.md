@@ -13,7 +13,8 @@ tracing to Rust code, when reviewing `println!` or string-interpolated log
 messages, when a library installs a subscriber, or when asked how to
 instrument Rust code. It does not cover what an error type contains and how it
 chains (`/rust-errors`), span behaviour across cancellation (`/async-rust`),
-or whether the redacting newtype fits a domain (`/type-driven-design`).
+or whether the redacting newtype fits a domain (`/type-driven-design`). The user
+can run it directly, as `/rust-observability`.
 
 ## Events, not sentences
 

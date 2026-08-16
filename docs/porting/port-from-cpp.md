@@ -17,7 +17,7 @@ what `unique_ptr`, a template, or an STL container becomes in Rust.
 It does not cover how a port is run (that is `/port-to-rust`), the
 differential harness (`/rust-testing`), the `unsafe` discipline the
 boundary needs (`/unsafe-rust`), or a C codebase — C is a separate
-skill, `/port-from-c`.
+skill, `/port-from-c`. The user can run it directly, as `/port-from-cpp`.
 
 ## Prerequisites
 

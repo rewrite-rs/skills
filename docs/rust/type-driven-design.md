@@ -14,7 +14,8 @@ sites, when boolean flags multiply, or when asked how to model a domain in Rust.
 It does not cover how the constructor reports rejection (`/rust-errors`),
 whether tightening a published type breaks callers (`/rust-api-design`), or
 borrow-checker pain that an ownership fix resolves first
-(`/ownership-not-clone`).
+(`/ownership-not-clone`). The user can run it directly, as
+`/type-driven-design`.
 
 ## Enums, newtypes, and parsing
 

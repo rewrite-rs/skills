@@ -15,7 +15,7 @@ doc comments, when a public item is undocumented, when a doctest is failing
 or marked `ignore`, or when a magic value appears with no recorded reason. It
 does not cover whether the item should be public at all
 (`/rust-api-design`) or whether the function should panic rather than return
-an error (`/rust-errors`).
+an error (`/rust-errors`). The user can run it directly, as `/rust-docs`.
 
 ## The contract test
 

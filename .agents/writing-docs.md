@@ -20,7 +20,9 @@ not a nearby one. Not a bullet list; a short paragraph.
 State the invocation mode (user-invoked or model-invoked — see
 `.agents/invocation.md`) and the trigger boundary: what task shape pulls this skill
 in, and, as important, what shape it does *not* cover, so a reader can tell this skill
-apart from its neighbours before opening it.
+apart from its neighbours before opening it. For a model-invoked skill, state both
+halves: that the agent may pull it in on its own, and that the user can run it
+directly by name.
 
 ## `## Prerequisites`
 

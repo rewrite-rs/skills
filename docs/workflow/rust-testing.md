@@ -15,7 +15,8 @@ should take, when a port needs parity evidence, or when the user asks about
 `proptest`, `insta`, `rstest`, or test coverage. It does not cover the design
 of error variants (`/rust-errors`), Miri verification of `unsafe` code
 (`/unsafe-rust`), async test flavours and time control (`/async-rust`), or the
-parity contract of a port, which belongs to `/port-to-rust`.
+parity contract of a port, which belongs to `/port-to-rust`. The user can run it
+directly, as `/rust-testing`.
 
 ## Choosing the form
 

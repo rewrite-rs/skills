@@ -15,7 +15,8 @@ when asked whether a particular clone is necessary. It does not cover expression
 level (iterators, `From`/`Into`, derives — `/idiomatic-rust`), the decision of
 whether a shared structure should be an arena, a graph of `Rc`s, or something
 else entirely (the modelling half of that is `/type-driven-design`), or locks
-held across `.await` points (`/async-rust`).
+held across `.await` points (`/async-rust`). The user can run it directly, as
+`/ownership-not-clone`.
 
 ## Borrows, splits, and signatures
 

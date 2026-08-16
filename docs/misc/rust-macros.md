@@ -13,7 +13,8 @@ Model-invoked: the agent pulls this in on its own when writing or reviewing
 added, when macro hygiene or `$crate` comes up, or when the user asks whether
 something should be a macro. It does not decide whether the generated API
 should exist at all — that is `/rust-api-design` — and it does not cover
-serde attribute behaviour — that is `/rust-serde`.
+serde attribute behaviour — that is `/rust-serde`. The user can run it directly,
+as `/rust-macros`.
 
 ## Before writing a macro
 

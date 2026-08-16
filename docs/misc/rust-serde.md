@@ -16,7 +16,8 @@ or `Deserialize`, when choosing an enum wire representation, when a JSON or
 YAML shape does not match the Rust type, or when the user asks how to validate
 deserialized data. It is not the domain model itself — what the validated type
 should be is `/type-driven-design` — and it is not derive mechanics: a custom
-derive that goes beyond what the serde attributes cover is `/rust-macros`.
+derive that goes beyond what the serde attributes cover is `/rust-macros`. The
+user can run it directly, as `/rust-serde`.
 
 ## The parse boundary
 

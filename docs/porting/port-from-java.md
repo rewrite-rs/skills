@@ -16,7 +16,7 @@ interface — and the question is what a Java construct becomes, or how
 the seam works. It does not cover how a port is run (that is
 `/port-to-rust`), the differential harness (`/rust-testing`), or the
 shape of the Rust that comes out (`/idiomatic-rust` and the other craft
-skills).
+skills). The user can run it directly, as `/port-from-java`.
 
 ## Prerequisites
 

@@ -2,6 +2,9 @@
 
 Migration skills for moving code into Rust without losing behaviour.
 
+Every skill here can be invoked by the user, by name; the heading decides
+whether the agent may also pull it in on its own.
+
 ## Model-invoked
 
 - [port-to-rust](./port-to-rust/SKILL.md) — Parity contract, phase sequence, and differential proof for a port.

@@ -18,7 +18,8 @@ not cover construct mapping from any one language (the per-language
 skills), the mechanics of the differential harness
 (`/rust-testing`), the shape of the Rust that comes out
 (`/idiomatic-rust` and the other craft skills), or the review pass
-over a ported diff (`/rust-code-review`).
+over a ported diff (`/rust-code-review`). The user can run it directly, as
+`/port-to-rust`.
 
 ## Prerequisites
 

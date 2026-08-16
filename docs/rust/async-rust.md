@@ -13,7 +13,8 @@ error appears on a spawned task, when a runtime stalls or deadlocks, or when
 asked about `tokio`, `select!`, or `spawn_blocking`. It does not cover error
 types for timeouts and cancellation (`/rust-errors`), the general
 shared-ownership test (`/ownership-not-clone`), or the semver cost of a public
-`async` function (`/rust-api-design`).
+`async` function (`/rust-api-design`). The user can run it directly, as
+`/async-rust`.
 
 ## Prerequisites
 

@@ -14,7 +14,8 @@ object, when adding a trait method or enum variant to a released crate, or when
 asked whether a change is a breaking change. It does not decide what an argument
 type should model (`/type-driven-design`), the shape of the error type
 (`/rust-errors`), whether a public function should be `async` (`/async-rust`), or
-the safety contract of a `pub unsafe fn` (`/unsafe-rust`).
+the safety contract of a `pub unsafe fn` (`/unsafe-rust`). The user can run it
+directly, as `/rust-api-design`.
 
 ## Prerequisites
 

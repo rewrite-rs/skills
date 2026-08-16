@@ -15,7 +15,8 @@ pull request, or branch, when asked whether a change is ready to merge, or
 when a review needs to cover more than what clippy already reports. It does
 not rewrite the code — findings, not patches — it does not restate the rules
 the craft skills own, and it does not decide the parity contract of a
-port, which belongs to `/port-to-rust`.
+port, which belongs to `/port-to-rust`. The user can run it directly, as
+`/rust-code-review`.
 
 ## Prerequisites
 

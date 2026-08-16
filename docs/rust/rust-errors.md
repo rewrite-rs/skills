@@ -20,7 +20,8 @@ choosing between `thiserror` and `anyhow`, or when asked how errors should be
 handled or propagated. It does not cover making the illegal state
 unrepresentable so the error cannot occur (`/type-driven-design`), semver
 consequences of changing a published error type (`/rust-api-design`), or
-cancellation and timeouts as error cases (`/async-rust`).
+cancellation and timeouts as error cases (`/async-rust`). The user can run it
+directly, as `/rust-errors`.
 
 ## Panic policy
 

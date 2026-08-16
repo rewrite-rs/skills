@@ -13,7 +13,7 @@ another language, when reviewing an `extern` surface, or when a DLL or
 shared library keeps state. It is not for migrating off C — the bindgen and
 cbindgen walkthroughs, and the mechanics of linking Rust into an existing
 build, are `/port-from-c` — and it is not for `unsafe` soundness, which is
-`/unsafe-rust`.
+`/unsafe-rust`. The user can run it directly, as `/rust-ffi`.
 
 ## Prerequisites
 

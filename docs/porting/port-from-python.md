@@ -15,7 +15,8 @@ module, a Python tool becoming a Rust binary, or a hot Python function
 being replaced by a native extension — and the question is what a Python
 construct becomes, or how the seam works. It does not cover how a port is run (that is
 `/port-to-rust`), the differential harness (`/rust-testing`), or the shape
-of the Rust that comes out (`/idiomatic-rust` and the other craft skills).
+of the Rust that comes out (`/idiomatic-rust` and the other craft skills). The
+user can run it directly, as `/port-from-python`.
 
 ## Prerequisites
 

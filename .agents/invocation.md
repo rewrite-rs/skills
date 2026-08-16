@@ -1,7 +1,9 @@
 # Invocation
 
 Every skill in this repo is either user-invoked or model-invoked. There is no third
-option, and a skill must not be half of one and half of the other.
+option, and a skill must not be half of one and half of the other. The split is one
+thing only: whether the agent may pull the skill in on its own. Every skill remains
+user-invokable by name.
 
 ## The two modes
 
@@ -18,10 +20,12 @@ what the skill does. Strip trigger phrasing — there is no need to say "use whe
 user mentions X," because invocation is never automatic.
 
 **Model-invoked.** The default. Both flags above are omitted. The model reads the
-`description` field against the current task and decides whether to pull the skill in
-without being asked. Because that matching is the whole mechanism, the `description`
-stays model-facing and keeps rich trigger phrasing — "Use when the user wants…,
-mentions…, asks about…" — so the right skill fires on the right task.
+`description` field against the current task and decides whether to pull the
+skill in without being asked. The user can invoke it by name, too — the mode
+changes who else may, not whether the user may. Because that matching is the
+whole mechanism, the `description` stays model-facing and keeps rich trigger
+phrasing — "Use when the user wants…, mentions…, asks about…" — so the right
+skill fires on the right task.
 
 ## The two harness settings must agree
 

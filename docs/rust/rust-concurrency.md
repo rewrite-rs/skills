@@ -16,7 +16,7 @@ appear, when a deadlock or data race is suspected, or when the user asks
 how to parallelize code. It does not cover async runtimes and task
 concurrency (`/async-rust`), whether the state should be shared at all
 (`/ownership-not-clone`), or the soundness of an `unsafe impl`
-(`/unsafe-rust`).
+(`/unsafe-rust`). The user can run it directly, as `/rust-concurrency`.
 
 ## The shape picks the model
 

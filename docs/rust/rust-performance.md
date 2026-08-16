@@ -13,7 +13,7 @@ inside a loop, or when release-profile and codegen flags come up. It does not
 cover async throughput or executor stalls (`/async-rust`), `unsafe` for speed
 (`/unsafe-rust` — the answer there is a soundness argument, not a benchmark),
 or whether a clone the profile found should exist at all
-(`/ownership-not-clone`).
+(`/ownership-not-clone`). The user can run it directly, as `/rust-performance`.
 
 ## Prerequisites
 
