@@ -11,6 +11,7 @@ Language-craft skills for writing and reviewing Rust.
 - [rust-api-design](./rust-api-design/SKILL.md) — Public surface, trait design, and semver discipline.
 - [async-rust](./async-rust/SKILL.md) — Runtimes, Send bounds, cancellation safety, and blocking work.
 - [unsafe-rust](./unsafe-rust/SKILL.md) — Justify, document, and verify unsafe blocks with Miri.
+- [rust-performance](./rust-performance/SKILL.md) — Profile first, cut allocation, and treat codegen flags as the last five percent.
 
 ## User-invoked
 
