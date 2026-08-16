@@ -100,7 +100,10 @@ are `/async-rust`; any `unsafe` in an FFI shim is `/unsafe-rust`; the review
 pass over a ported diff is `/rust-code-review`. The deferral matters most
 here: mid-port is exactly when an agent reaches for `clone` and `unwrap` to
 make a translation compile, and those two are the signature of a port that
-will read like its source forever.
+will read like its source forever. Separate the domain aspects from the
+language aspects before writing the Rust; a construct that exists only for
+a source-language limitation is not ported; structural similarity to the
+source is a signal to re-examine — the entry is in `ANTIPATTERNS.md`.
 
 ## Anti-patterns
 

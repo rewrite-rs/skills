@@ -55,6 +55,29 @@ drift.
 **Instead.** Write the behaviour, and add the abstraction when a
 second caller demands it.
 
+## The port that mirrors its source
+
+Every construct in the source encodes two things at once — the domain
+(what the business rule is) and the language (how that source language
+happened to express it). A port that carries both across produces Rust
+that compiles and reads as a transliteration. The concrete tells: a
+`throw_if_null(x)` helper, which never makes sense in a language where
+the absence is in the type; a `BaseHandler` trait with one
+implementor; getters and setters around a struct whose fields could be
+public; an error type per class rather than per failure mode.
+
+The diagnostic is structural, and it is worth stating as a rule an
+agent can apply to its own output: **a striking similarity between the
+Rust module structure and the source module structure indicates an
+architectural problem, not a faithful port.** The domain constraints
+survive a port; the language constraints do not, and if both survived,
+the second was never examined.
+
+The counter-pressure that keeps this honest: parity is about
+behaviour, not structure. Restructuring is allowed precisely because
+the parity contract is written in terms of observable behaviour —
+which is why the contract comes first.
+
 ## Porting dead code
 
 **Tell.** A module ported that no caller could be found for.

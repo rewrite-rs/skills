@@ -94,6 +94,13 @@ public API with semver, per-platform packaging, and docs. The
 answer goes in the parity contract, because it changes what the
 unit of parity is.
 
+**How faithful should the structure be?** Behaviour is faithful,
+structure is not. The domain survives a port; the source module
+layout does not. Restructuring is allowed precisely because the
+parity contract is written in terms of observable behaviour — and a
+Rust structure that mirrors the source is a signal to re-examine; the
+entry is in `ANTIPATTERNS.md`.
+
 **How does this relate to the per-language skills?** Those carry
 the construct mapping and FFI mechanics for one source language
 each; this skill carries the process they all share, and it runs
@@ -111,6 +118,7 @@ first and stays running through the port.
 - No commit mixes a behaviour change with a port.
 - The source implementation was deleted at cut-over rather than
   left in place.
+- The Rust module structure was chosen, not inherited.
 
 ## Where it fits
 
