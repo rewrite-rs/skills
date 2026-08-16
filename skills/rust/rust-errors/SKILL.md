@@ -14,8 +14,9 @@ is `/type-driven-design`; whether shape changes break callers, `/rust-api-design
 
 `unwrap` and `expect` are assertions about invariants, not error handling.
 Acceptable: in tests, in `main` for a startup precondition, and after a check
-the compiler cannot see. Unacceptable: in library code on any input-derived
-value, or anywhere the justification is "this can't fail" without saying why.
+the compiler cannot see — where `expect` names the invariant and carries the
+values. Unacceptable: in library code on any input-derived value, or anywhere
+the justification is "this can't fail" without saying why.
 
 Not every failure is a `Result`. A broken internal invariant with no
 caller-recoverable path should panic — the program is already in a state the type
@@ -99,10 +100,9 @@ in release builds, `debug_assert!` keeps the check in dev and test builds.
 
 ## Deferrals
 
-Making the illegal state unrepresentable so the error cannot occur at all is
-`/type-driven-design`; whether changing the error shape is a semver break is
-`/rust-api-design`; cancellation and timeouts are `/async-rust`; expression-level
-cleanup of error handling is `/idiomatic-rust`.
+Making the illegal state unrepresentable is `/type-driven-design`; whether a
+shape change is a semver break is `/rust-api-design`; cancellation and timeouts
+are `/async-rust`; expression-level cleanup is `/idiomatic-rust`.
 
 ## Verification
 
