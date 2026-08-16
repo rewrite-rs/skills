@@ -108,6 +108,7 @@ Occasional setup and audit skills: CI, hooks, and the dependency tree.
 **Model-invoked**
 
 - [rust-supply-chain](./skills/misc/rust-supply-chain/SKILL.md) — Dependency advisories, licences, and duplicates, each ending in a decision.
+- [rust-macros](./skills/misc/rust-macros/SKILL.md) — Macros as a last resort, by-example first, with errors that point at the caller.
 
 **User-invoked**
 

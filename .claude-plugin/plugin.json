@@ -42,6 +42,7 @@
     "./skills/porting/port-from-c",
     "./skills/misc/setup-rust-ci",
     "./skills/misc/setup-rust-pre-commit",
-    "./skills/misc/rust-supply-chain"
+    "./skills/misc/rust-supply-chain",
+    "./skills/misc/rust-macros"
   ]
 }

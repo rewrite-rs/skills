@@ -6,6 +6,7 @@ audit skills. The bucket means frequency of use, not availability.
 ## Model-invoked
 
 - [rust-supply-chain](./rust-supply-chain/SKILL.md) — Advisories, licences, and duplicate dependencies, each ending in a decision.
+- [rust-macros](./rust-macros/SKILL.md) — Macros as a last resort, by-example first, with errors that point at the caller.
 
 ## User-invoked
 
