@@ -66,6 +66,7 @@ Language-craft skills for writing and reviewing Rust.
 - [unsafe-rust](./skills/rust/unsafe-rust/SKILL.md) — Justify, document, and verify unsafe blocks with Miri.
 - [rust-performance](./skills/rust/rust-performance/SKILL.md) — Profile first, cut allocation, and treat codegen flags as the last five percent.
 - [rust-concurrency](./skills/rust/rust-concurrency/SKILL.md) — Threads, channels, locks, and atomics — the model that fits the workload.
+- [rust-observability](./skills/rust/rust-observability/SKILL.md) — Structured events with named fields, spans, and no secrets in logs.
 
 **User-invoked**
 
