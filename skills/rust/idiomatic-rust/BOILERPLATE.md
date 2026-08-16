@@ -57,7 +57,7 @@ fn with_timeout(config: &Config, timeout_ms: u64) -> Config {
 
 After:
 
-```rust
+```rust,ignore
 let updated = Config { timeout_ms: 5_000, ..config };
 ```
 
@@ -71,7 +71,7 @@ of changing one or two fields on an otherwise-complete value.
 
 Before:
 
-```rust
+```rust,ignore
 let name = match user.nickname {
     Some(n) => n,
     None => user.legal_name.clone(),
@@ -85,7 +85,7 @@ let upper = match user.nickname {
 
 After:
 
-```rust
+```rust,ignore
 let name = user.nickname.clone().unwrap_or_else(|| user.legal_name.clone());
 let upper = user.nickname.as_ref().map(|n| n.to_uppercase());
 ```
@@ -100,6 +100,18 @@ distinct to one branch.
 Before:
 
 ```rust
+#[derive(serde::Deserialize)]
+struct Config {
+    timeout_ms: u64,
+    retries: u32,
+    verbose: bool,
+}
+
+enum AppError {
+    Io(std::io::Error),
+    Parse(toml::de::Error),
+}
+
 fn load(path: &str) -> Result<Config, AppError> {
     let text = std::fs::read_to_string(path).map_err(|e| AppError::Io(e))?;
     let config: Config = toml::from_str(&text).map_err(|e| AppError::Parse(e))?;
@@ -110,6 +122,13 @@ fn load(path: &str) -> Result<Config, AppError> {
 After:
 
 ```rust
+#[derive(serde::Deserialize)]
+struct Config {
+    timeout_ms: u64,
+    retries: u32,
+    verbose: bool,
+}
+
 #[derive(Debug, thiserror::Error)]
 enum AppError {
     #[error("io error: {0}")]
@@ -134,7 +153,7 @@ a call for `/rust-errors` to make, not this skill.
 
 Before:
 
-```rust
+```rust,ignore
 struct LoggingConnection {
     inner: Connection,
 }
@@ -152,7 +171,7 @@ impl LoggingConnection {
 
 It's tempting to delete all of these with:
 
-```rust
+```rust,ignore
 impl std::ops::Deref for LoggingConnection {
     type Target = Connection;
     fn deref(&self) -> &Connection {

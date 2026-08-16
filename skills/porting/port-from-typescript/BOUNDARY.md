@@ -11,7 +11,7 @@ A native addon is a `cdylib` that Node, Deno, and Bun `require`
 exactly like the JS module it replaces, which is what makes the swap
 invisible to call sites. A minimal addon:
 
-```rust
+```rust,ignore
 use napi_derive::napi;
 
 #[napi]
@@ -69,7 +69,7 @@ The output is an npm package: `wasm-pack build --target web` emits a
 `pkg/` directory the JavaScript imports from, and the same build for
 an edge runtime takes `--target nodejs`.
 
-```rust
+```rust,ignore
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

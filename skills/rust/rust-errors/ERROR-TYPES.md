@@ -67,7 +67,7 @@ For the closed set of failures — an internal crate, an error the caller only
 ever prints — the enum is the cheaper, better answer. Every variant shape, with
 when it is the right one:
 
-```rust
+```rust,ignore
 #[derive(Debug, thiserror::Error)]
 pub enum ApiError {
     /// The upstream error is the whole story: #[from] generates the From impl,
@@ -152,7 +152,7 @@ the actual values: `assert_eq!(len, cap)` over `assert!(len == cap)`, and an
 with a path in it — because the closure defers the allocation to the failure
 path:
 
-```rust
+```rust,ignore
 let data = std::fs::read_to_string(path)
     .with_context(|| format!("reading config file {}", path.display()))?;
 ```
@@ -162,7 +162,7 @@ explanation: `anyhow!("no worker claimed job {id} within the deadline")`. And fo
 the rare case where a binary must inspect a concrete error type, `downcast_ref`
 reaches back through the box:
 
-```rust
+```rust,ignore
 fn report(err: &anyhow::Error) -> ExitCode {
     if err.downcast_ref::<ConfigError>()
         .is_some_and(|e| e.is_not_found())
@@ -181,7 +181,7 @@ binary: match what you can name, print the rest as a chain.
 A `thiserror` enum flows into `anyhow` for free — it implements
 `std::error::Error + Send + Sync + 'static`, which is all `anyhow` asks for:
 
-```rust
+```rust,ignore
 fn main() -> anyhow::Result<()> {
     let config = config::load()?; // ConfigError becomes anyhow::Error silently
     run(config)
@@ -198,6 +198,8 @@ published library never puts `anyhow::Error` in a public type.
 Before:
 
 ```rust
+use std::fmt;
+
 #[derive(Debug)]
 pub struct ParseError {
     inner: toml::de::Error,
@@ -226,7 +228,8 @@ After:
 
 ```rust
 #[derive(Debug, thiserror::Error)]
-pub struct ParseError(#[error("parse error: {0}")] #[from] toml::de::Error);
+#[error("parse error: {0}")]
+pub struct ParseError(#[from] toml::de::Error);
 ```
 
 What the derive eliminated: the `Display` impl, the `Error` impl (with the

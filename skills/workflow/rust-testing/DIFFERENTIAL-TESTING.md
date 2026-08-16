@@ -62,7 +62,7 @@ agreed to ignore.
 A small test that shells out to the source implementation, feeds both a corpus
 directory, and reports the first differing case with both outputs:
 
-```rust
+```rust,ignore
 // tests/differential.rs
 use std::io::Write;
 

@@ -24,7 +24,7 @@ Go runtime and the Rust side each want their own threads, Rust panics
 and Go panics do not cross the boundary safely, and any pointer passed
 across is subject to the cgo pointer-passing rules. A minimal surface:
 
-```rust
+```rust,ignore
 #[no_mangle]
 pub extern "C" fn normalize(input: *const c_char, out: *mut c_char, out_len: usize) -> i32 {
     // SAFETY: caller guarantees `input` is a NUL-terminated C string and that

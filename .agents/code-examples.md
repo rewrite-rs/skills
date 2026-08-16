@@ -34,17 +34,17 @@ two-line example is worse teaching, and the tag is the cheaper answer.
 Do not reach for `ignore` because a block was not checked. That is the case the
 convention exists to catch.
 
-## Verifying a `rust` block by hand
+## Verifying a `rust` block
 
-Until the check is automated, verify a complete block the direct way:
+The check is automated: `npm run check-examples` extracts every untagged block,
+compiles them as modules of one generated crate under `target/skill-examples/`,
+and reports each failure against its source file and line. To check a single
+block without running the whole gate, paste it into a scratch crate and run
+`cargo check`, adding a `fn main` only if the block needs one. A block that
+needs a dependency needs that dependency in the scratch `Cargo.toml` — which is
+itself a signal worth noticing, because the surrounding prose has to name the
+crate for the reader too.
 
-```bash
-mkdir -p /tmp/skill-example/src && cd /tmp/skill-example
-printf '[package]\nname = "x"\nversion = "0.0.0"\nedition = "2021"\n' > Cargo.toml
-# paste the block into src/lib.rs, adding a `fn main` only if the block needs one
-cargo check
-```
-
-A block that needs a dependency needs that dependency in the scratch `Cargo.toml` —
-which is itself a signal worth noticing, because the surrounding prose has to name
-the crate for the reader too.
+A block that needs a crate not already in the generated manifest is either given
+that dependency or re-fenced, and the choice is made on whether compiling it is
+teaching anything.

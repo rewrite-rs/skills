@@ -18,7 +18,7 @@ runtime: the runtime will drop futures whether you ask it to or not.
 that were not ready are dropped. A branch that takes input and then awaits
 something irreversible loses the input when another branch wins:
 
-```rust
+```rust,ignore
 // `queue.pop()` runs when the branch future is built, before the race. If
 // shutdown wins, `process` is dropped — and the popped item is gone.
 tokio::select! {
@@ -29,7 +29,7 @@ tokio::select! {
 
 The fix is to take the input *before* the race, so a drop cannot reach it:
 
-```rust
+```rust,ignore
 let item = queue.pop(); // outside the select: dropping a branch cannot lose it
 tokio::select! {
     _ = process(item) => {}
@@ -74,7 +74,7 @@ wrap it.
 sits between things where a retry is harmless — write-then-acknowledge, never
 acknowledge-then-write:
 
-```rust
+```rust,ignore
 // The append is irreversible and runs first. A drop between the two loses the
 // acknowledgement, not the work — the sender retries, and the append is
 // idempotent on the job id.

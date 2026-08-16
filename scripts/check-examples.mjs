@@ -102,18 +102,21 @@ export function renderCrate(blocks) {
   return parts.join("\n");
 }
 
-// Starter dependencies for the examples; Task 15's triage finds what the
-// shipped blocks actually need. Pinned to edition 2021 — pin 2024 here (with
-// a note on which block forced it) only if a block needs a 2024-only form.
+// Dependencies of the generated crate, pruned to exactly what the surviving
+// untagged blocks use (the Task 15 triage is the source of truth): thiserror
+// and toml for the rust-errors and idiomatic-rust examples, serde for the
+// rust-serde and deserialization examples. Edition 2024, forced by the
+// `#[unsafe(no_mangle)]` / `unsafe extern` blocks in rust-ffi and
+// unsafe-rust/SAFETY-REVIEW, which only parse under the 2024 attribute form.
 const CARGO_TOML = `[package]
 name = "skill-examples"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 publish = false
 
 [dependencies]
 thiserror = "2"
-anyhow = "1"
+toml = "0.8"
 serde = { version = "1", features = ["derive"] }
 `;
 

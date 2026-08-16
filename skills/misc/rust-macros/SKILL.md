@@ -63,7 +63,7 @@ _private`, referenced through `$crate::_private::…`, so it is reachable by
 the expansion and marked as no part of the public API. Without it, the
 helpers become public surface you cannot change.
 
-```rust
+```rust,ignore
 #[doc(hidden)]
 pub mod _private {
     use std::sync::atomic::{AtomicUsize, Ordering};

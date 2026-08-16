@@ -23,7 +23,7 @@ aborts the JVM rather than raising an exception. The `unsafe` involved is
 `/unsafe-rust`; whether the boundary earns its keep is a `/port-to-rust`
 strategy question.
 
-```rust
+```rust,ignore
 #[no_mangle]
 pub extern "system" fn Java_com_example_Engine_normalize(
     mut env: JNIEnv,

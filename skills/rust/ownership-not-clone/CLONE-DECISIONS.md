@@ -16,7 +16,7 @@ banned; an unexplained clone is.
 
 Before:
 
-```rust
+```rust,ignore
 fn first_word(text: &str) -> &str { ... }
 
 fn report(name: String) {
@@ -29,7 +29,7 @@ report("hello world".to_string());
 
 After:
 
-```rust
+```rust,ignore
 fn report(name: &str) {
     println!("{:?}", first_word(name));
 }
@@ -117,7 +117,7 @@ two fields borrow independently.
 
 ## A clone that stays — with the explanation
 
-```rust
+```rust,ignore
 fn spawn_workers(jobs: Vec<Job>, workers: usize) -> Vec<JoinHandle<Worker>> {
     let mut handles = Vec::with_capacity(workers);
     for _ in 0..workers {

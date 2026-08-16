@@ -16,7 +16,7 @@ it can reach, what it costs to run, and a worked example for each.
 **Unit** — the default for a pure function with interesting edges, and the
 only form that reaches private items:
 
-```rust
+```rust,ignore
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -36,7 +36,7 @@ module. The same assertion from `tests/` would not compile.
 **Integration** — the assertion is about what a real caller sees, so the test
 imports the crate the way a consumer would:
 
-```rust
+```rust,ignore
 // tests/load_config.rs
 use mycrate::Config;
 use std::path::Path;
@@ -75,7 +75,7 @@ and easy to find.
 **Property** — the rule holds for a whole input space, so the test states the
 rule once and lets the generator supply the inputs:
 
-```rust
+```rust,ignore
 proptest! {
     #[test]
     fn config_roundtrips(config in any::<Config>()) {
@@ -100,7 +100,7 @@ property shapes worth reaching for first:
 **Snapshot** — the output is large enough that an inline expected value would
 be unreadable, so it is stored and diffed:
 
-```rust
+```rust,ignore
 #[test]
 fn render_error_report() {
     let report = render_error_report(&err);
@@ -129,7 +129,7 @@ When the artifact is a file rather than a value — generated bindings,
 formatted output, an emitted template — commit the expected artifact and diff
 against it:
 
-```rust
+```rust,ignore
 #[test]
 fn generated_bindings_are_current() {
     let expected = std::fs::read_to_string("tests/fixtures/bindings.expected.rs")
@@ -151,7 +151,7 @@ each test binary with `mod common;`, and file-shaped inputs live under
 `tests/fixtures/`. A builder beats a 40-line struct literal repeated in nine
 tests:
 
-```rust
+```rust,ignore
 // tests/common/mod.rs
 pub fn config_with(workers: usize) -> mycrate::Config {
     let mut config = mycrate::Config::default();

@@ -59,6 +59,8 @@ The same trick tracks required fields, so `build()` only exists once all of them
 are set:
 
 ```rust
+use std::marker::PhantomData;
+
 struct Missing;
 struct Complete;
 

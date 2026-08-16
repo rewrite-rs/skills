@@ -15,7 +15,7 @@ An `async fn` yields a future that does nothing until polled. Concurrency comes
 from the runtime and from combining futures — `join!`, `select!`, `spawn` — not
 from the `async` keyword:
 
-```rust
+```rust,ignore
 // Serial: the second fetch starts only after the first completes.
 let a = fetch_user(id).await;
 let b = fetch_orders(id).await;
@@ -53,7 +53,7 @@ small.
 must be `Send` — where `Rc` and `RefCell` fail to compile, and where a
 `std::sync::MutexGuard` held across an `.await` becomes a deadlock:
 
-```rust
+```rust,ignore
 // Deadlock waiting to happen: the std guard is held across the await.
 let mut guard = state.lock().unwrap();
 guard.value = fetch().await;

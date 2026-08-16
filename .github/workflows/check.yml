@@ -16,7 +16,7 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -24,6 +24,18 @@ jobs:
           node-version: "20"
           cache: npm
       - run: npm ci
+      - name: Rust toolchain
+        run: |
+          rustup toolchain install stable --profile minimal --no-self-update
+          rustup default stable
+          cargo --version
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/skill-examples/target
+          key: skill-examples-${{ runner.os }}-${{ hashFiles('scripts/check-examples.mjs') }}
       - name: Tests, skill index, version sync
         run: npm run check
       - name: Check internal Markdown links resolve

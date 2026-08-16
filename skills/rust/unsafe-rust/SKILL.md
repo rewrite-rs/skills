@@ -48,7 +48,7 @@ A block that does not sit under one of these three has an author reaching for
 
 The comment states the invariant the caller upholds, not what the code does:
 
-```rust
+```rust,ignore
 // SAFETY: `ptr` came from `Vec::as_mut_ptr` on a vec of at least `len`
 // elements that is still alive for this scope, and no other reference to it
 // exists here.

@@ -15,7 +15,7 @@ Default to private and export deliberately: a type `pub` only because a `pub fn`
 returns it is still part of the API, impls and public fields included. Make
 `pub(crate)` the habit; re-export the surface from `lib.rs`, module paths private:
 
-```rust
+```rust,ignore
 // lib.rs
 pub use crate::internal::parser::Parser; // the surface
 mod internal;                            // the tree stays private
@@ -70,14 +70,17 @@ implement it, though downstream code can still name the trait as a bound.
 Readers reproduce the pattern wrong from memory, so here it is:
 
 ```rust
+struct Widget;
+
 mod sealed {
     pub trait Sealed {}
-    impl Sealed for Widget {}
 }
 
 pub trait WidgetBuilder: sealed::Sealed {
     fn new() -> Self;
 }
+
+impl sealed::Sealed for Widget {}
 
 impl WidgetBuilder for Widget {
     fn new() -> Self {

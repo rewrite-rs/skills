@@ -42,7 +42,7 @@ bug lived, not an end-to-end test that happens to cover it.
 
 One test, a table of cases, one loop:
 
-```rust
+```rust,ignore
 #[test]
 fn parses_durations() {
     let cases = [

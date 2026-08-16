@@ -89,5 +89,6 @@ a snippet using symbols defined elsewhere, a signature with no body, illustrativ
 pseudocode — is fenced ` ```rust,ignore `. Untagged means "this compiles", so an
 untagged block that does not compile is a bug. See `.agents/code-examples.md`.
 
-Skills authored from now on are written to this convention. The existing blocks are
-retro-tagged, and the check automated, as a separate change.
+Skills authored from now on are written to this convention. `npm run check`
+compiles every untagged block; an untagged block that does not compile fails the
+check.

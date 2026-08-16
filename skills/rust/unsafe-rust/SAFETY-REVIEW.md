@@ -73,12 +73,12 @@ unsafe extern "C" {
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn rust_add(a: u32, b: u32) -> u32 {
+pub unsafe extern "C" fn rust_add(a: u32, b: u32) -> u32 {
     a.wrapping_add(b)
 }
 
 #[unsafe(export_name = "add")]
-pub extern "C" fn rust_add_named(a: u32, b: u32) -> u32 {
+pub unsafe extern "C" fn rust_add_named(a: u32, b: u32) -> u32 {
     a.wrapping_add(b)
 }
 ```
@@ -98,7 +98,7 @@ pointer arithmetic trusts it:
 
 ```rust
 /// Splits a slice at `mid`, returning two mutable references.
-pub fn split_at_mut(slice: &mut [T], mid: usize) -> (&mut [T], &mut [T]) {
+pub fn split_at_mut<T>(slice: &mut [T], mid: usize) -> (&mut [T], &mut [T]) {
     let ptr = slice.as_mut_ptr();
     // No check: a caller passing `mid > slice.len()` computes a pointer past
     // the end — and `slice.len() - mid` underflows. No current caller needs to
@@ -114,7 +114,7 @@ Sound: the check runs in the safe code before the pointer arithmetic, and the
 `// SAFETY:` comment states only what is true *after* it:
 
 ```rust
-pub fn split_at_mut(slice: &mut [T], mid: usize) -> (&mut [T], &mut [T]) {
+pub fn split_at_mut<T>(slice: &mut [T], mid: usize) -> (&mut [T], &mut [T]) {
     assert!(mid <= slice.len(), "mid out of range: {mid} > {}", slice.len());
     let len = slice.len();
     let ptr = slice.as_mut_ptr();

@@ -81,6 +81,8 @@ check, and the cycle-leak risk (a `Rc` cycle is a leak, not freed even at
 shutdown):
 
 ```rust
+struct Node;
+
 struct Graph {
     nodes: Vec<Node>,
     edges: Vec<(usize, usize)>, // (from, to) by index
@@ -95,7 +97,7 @@ impl Graph {
     fn neighbours(&self, id: usize) -> impl Iterator<Item = &Node> {
         self.edges
             .iter()
-            .filter(|(from, _)| *from == id)
+            .filter(move |(from, _)| *from == id)
             .map(|(_, to)| &self.nodes[*to])
     }
 

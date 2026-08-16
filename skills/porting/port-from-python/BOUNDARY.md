@@ -13,7 +13,7 @@ The extension module is a `cdylib` that PyO3 exposes to the interpreter.
 For a new module, `maturin init --bindings pyo3` scaffolds the crate and
 the `pyproject.toml`. A minimal module:
 
-```rust
+```rust,ignore
 use pyo3::prelude::*;
 
 #[pyfunction]
@@ -60,7 +60,7 @@ signatures: a `#[pyclass]` with a `#[pymethods]` block, where `__init__`
 becomes `#[new]`, registered with `m.add_class::<Counter>()?` in the
 module function:
 
-```rust
+```rust,ignore
 #[pyclass]
 struct Counter {
     value: i64,

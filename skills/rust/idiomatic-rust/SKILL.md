@@ -25,7 +25,7 @@ v[i] ... }` almost always has an iterator equivalent, and the iterator version f
 to compile on bad bounds instead of panicking at runtime. Collect into the type you
 want, not a `Vec` you then convert:
 
-```rust
+```rust,ignore
 // Reads like a translation.
 let mut names = Vec::new();
 for user in &users {
@@ -40,6 +40,8 @@ let names: Vec<String> = users.iter().map(|u| u.name.clone()).collect();
 that last is how `?` composes with iteration.
 
 ```rust
+use std::num::ParseIntError;
+
 fn parse_all(lines: &[&str]) -> Result<Vec<i64>, ParseIntError> {
     lines.iter().map(|line| line.parse::<i64>()).collect::<Result<Vec<_>, _>>()
 }

@@ -24,7 +24,7 @@ numbers is the surface where bugs live.
 Two booleans make four states; if only three are valid, the fourth is a latent
 bug:
 
-```rust
+```rust,ignore
 // Four states, three valid: is_draft && is_published is nonsense.
 struct Post {
     is_draft: bool,
@@ -52,7 +52,7 @@ function that takes `Email` — constructible only through
 `Email::parse(&str) -> Result<Email, EmailError>` — checks once at the boundary
 and never again. The type is the proof the check ran.
 
-```rust
+```rust,ignore
 struct Email(String); // private field: the constructor is the only way in
 
 impl Email {

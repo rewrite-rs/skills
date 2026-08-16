@@ -12,7 +12,7 @@ defect. The end-state decision is `/port-to-rust`.
 both sides, strings and vectors cross as safe types, and ordinary
 calls need no hand-written `unsafe`. A minimal bridge:
 
-```rust
+```rust,ignore
 #[cxx::bridge(namespace = "engine")]
 mod ffi {
     extern "Rust" {

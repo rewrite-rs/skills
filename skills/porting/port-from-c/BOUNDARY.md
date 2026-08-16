@@ -20,7 +20,7 @@ codebase. That wrapper is where the ownership and nullability decisions from
 `cbindgen` generates a C header from the Rust side, so existing C code can
 call the ported module without editing call sites. The exported shape:
 
-```rust
+```rust,ignore
 #[no_mangle]
 pub extern "C" fn engine_normalize(
     input: *const c_char,
