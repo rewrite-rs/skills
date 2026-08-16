@@ -32,13 +32,16 @@ whether a Miri job earns its slot. If the file is absent, say so and offer to
 run `/setup-rust-skills` first — do not guess a posture and bake the guess
 into CI.
 
-## The four jobs that always earn their place
+## The three jobs that always earn their place
 
-`fmt` (`cargo fmt --check`), `clippy` at the configured level, `test`, and
-`build`. Each with its own job so a red tick names the failure without opening
-logs. State plainly what does not belong in the default set: a coverage gate,
-a benchmark run, and a cross-compilation matrix are all things a repo adds
-when it needs them, not things a setup skill imposes.
+`fmt` (`cargo fmt --check`), `clippy` at the configured level, and `test`.
+Each with its own job so a red tick names the failure without opening logs.
+`build` is not a fourth default job — it earns its place in exactly two
+spots: the `no_std` variant, where `cargo test` cannot run on a bare-metal
+target so the job builds only, and the MSRV job, whose command is
+`cargo build`. State plainly what does not belong in the default set: a
+coverage gate, a benchmark run, and a cross-compilation matrix are all
+things a repo adds when it needs them, not things a setup skill imposes.
 
 ## MSRV is a job, not a hope
 
