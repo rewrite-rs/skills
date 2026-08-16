@@ -7,6 +7,7 @@ audit skills. The bucket means frequency of use, not availability.
 
 - [rust-supply-chain](./rust-supply-chain/SKILL.md) — Advisories, licences, and duplicate dependencies, each ending in a decision.
 - [rust-macros](./rust-macros/SKILL.md) — Macros as a last resort, by-example first, with errors that point at the caller.
+- [rust-serde](./rust-serde/SKILL.md) — Serde as the validating boundary between a wire format and a domain type.
 
 ## User-invoked
 
