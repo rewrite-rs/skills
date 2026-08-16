@@ -14,7 +14,7 @@ Model-invoked: the agent pulls this in on its own when reviewing a Rust diff,
 pull request, or branch, when asked whether a change is ready to merge, or
 when a review needs to cover more than what clippy already reports. It does
 not rewrite the code — findings, not patches — it does not restate the rules
-the seven craft skills own, and it does not decide the parity contract of a
+the craft skills own, and it does not decide the parity contract of a
 port, which belongs to `/port-to-rust`.
 
 ## Prerequisites
@@ -48,6 +48,24 @@ test that would have caught it. The baseline never re-runs clippy at a
 stricter level to manufacture defects; it layers on the configuration the
 repo set.
 
+## The smells that come from generated code
+
+The most distinctive thing this skill now does: four smells that pass review
+because they look like diligence, and that are what an agent produces when it
+optimises for resembling correct work. The review names the skill that
+settles each one and leaves the rule there:
+
+- A test asserting ground truth it computed itself — the expected value
+  derived from the logic under test; settled by `/rust-testing`
+- The same item public at two paths — a `pub use` added beside the original
+  rather than replacing it, so both keep working; settled by
+  `/rust-api-design`
+- A design journal or compliance table in user-facing docs — rule tables,
+  iteration narration, or rationale in item docs; settled by `/rust-docs`
+- A port shaped like its source — `throw_if_null`-style helpers, a class
+  hierarchy transliterated to traits, a striking structural similarity to
+  the original; settled by `/port-to-rust`
+
 ## Common questions
 
 **What happens when both passes flag the same line?** The more severe framing
@@ -73,6 +91,8 @@ verdict rather than a dump of tool output.
   summary of the change.
 - Every finding carries a severity and a concrete fix; a finding without a
   fix is phrased as a question.
+- The review names which skill settles each finding rather than restating
+  that skill guidance inline.
 - Nothing clippy already reports appears as a finding.
 - Findings that contradict the repo lint configuration are phrased as
   proposals.

@@ -8,7 +8,7 @@ description: Review Rust changes on two axes at once — standards (idioms, owne
 A review is a statement about what a change owes — to the request that asked
 for it, and to the standards the repo already lives by. This skill runs both
 statements as separate passes and merges them into one report led by a
-verdict. It never restates a rule a smell maps to: the seven craft skills and
+verdict. It never restates a rule a smell maps to: the craft skills and
 `/rust-testing` own the standards, and the review routes to them.
 
 ## Two axes, run separately
@@ -33,7 +33,9 @@ see: the judgment call, the missing edge case, the scope that crept in.
 `#![deny(...)]` in the crate root. A finding that contradicts a level the repo
 deliberately set is not a finding — it is a proposal, and it says so
 explicitly. Never re-run at a stricter level than the repo configures and
-report the extra hits as defects.
+report the extra hits as defects. The smell baseline layers on top of this
+configuration, never in place of it — a finding that the repo lint config
+already permits is a finding about the config, raised separately.
 
 ## The smell baseline
 
@@ -49,6 +51,12 @@ owning skill — is `SMELLS.md`. The top ones:
 - blocking work inside an async function — `/async-rust`
 - an `unsafe` block with no `// SAFETY:` comment — `/unsafe-rust`
 - a behaviour change with no test that would have caught it — `/rust-testing`
+
+An `#[allow(lint)]` that outlived its reason is invisible and permanent.
+`#[expect(lint, reason = "...")]` fails once the situation it was written for
+goes away, which turns a silenced lint into one that reports itself when it
+becomes stale. In review, an `#[allow]` with no reason is a finding; with a
+reason it is a conversation.
 
 ## Severity, and saying nothing
 
