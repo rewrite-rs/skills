@@ -128,7 +128,9 @@ exclusive feature flags make the union fail to compile even though every
 individual feature is fine. For that case the tool is `cargo hack` — run the
 check per feature (or over the feature powerset) rather than with all of them
 on. In a workspace, point the MSRV read at the root manifest; `.packages[0]`
-does not guarantee the root package.
+does not guarantee the root package. A virtual workspace has no root package,
+so `.packages[0].rust_version` can be `null`; there, read `rust-version` from
+the workspace member that declares it.
 
 ## Three worked scenarios
 

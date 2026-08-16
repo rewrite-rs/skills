@@ -91,9 +91,10 @@ printf 'fn  main( ) {}\n' > /tmp/hook-probe.rs && cp /tmp/hook-probe.rs src/hook
 git add src/hook_probe.rs
 git commit -m "probe: hook must reject this"   # expected: rejected, naming the file
 git restore --staged src/hook_probe.rs && rm src/hook_probe.rs
+# the reset in step 2 is only valid because step 1 was rejected — if that commit landed, fix the install before step 2
 # 2. confirm a clean commit still passes, and time it
 time git commit --allow-empty -m "probe: hook must allow this"
-git reset --hard HEAD~1
+git reset HEAD~1
 ```
 
 Report the measured time. Over two seconds, cut the hook down rather than shipping

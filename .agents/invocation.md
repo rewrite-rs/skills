@@ -47,8 +47,9 @@ In the promoted buckets, `setup-rust-skills` meets the rule: it writes
 `clippy.toml`, `rustfmt.toml`, and `docs/agents/rust.md`. In `misc/`,
 `setup-rust-ci` and `setup-rust-pre-commit` meet it too — the first writes a
 workflow that runs on every push, the second writes a hook that runs on
-every commit. `rust-supply-chain` does not: it runs audits and reports, and
-writes `deny.toml` only when the user asks for it in the same breath.
+every commit. `rust-supply-chain` is the second exception: it runs audits and
+reports, and writes `deny.toml` only on an explicit request in the same
+invocation, which is not an unasked-for diff.
 
 Every other skill in the set is model-invoked.
 

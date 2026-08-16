@@ -142,8 +142,9 @@ Install, once per clone:
     chmod +x .githooks/pre-commit
     git config core.hooksPath .githooks
 
-What it runs, in under two seconds: `cargo fmt --check` on the staged Rust
-files, then `cargo clippy --all-targets` at the lint level the repo configured.
+What it runs, in under two seconds once the target directory is warm:
+`cargo fmt --check` on the staged Rust files, then
+`cargo clippy --all-targets -- --no-deps` at the lint level the repo configured.
 Format and lint only — tests, builds, and anything network-bound run in CI,
 and CI is the gate.
 

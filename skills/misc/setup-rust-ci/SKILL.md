@@ -47,9 +47,10 @@ things a repo adds when it needs them, not things a setup skill imposes.
 
 If `rust-version` is set in `Cargo.toml`, CI must build on exactly that
 toolchain, because nothing else will catch the day a contributor uses a newer
-standard-library method. Pin with `dtolnay/rust-toolchain@<pinned-ref>` and the
-MSRV value read from `Cargo.toml`, never `stable`. The job builds and does not
-test — `WORKFLOWS.md` says why.
+standard-library method. The version, not the ref, is what is pinned: the
+`toolchain` input takes the MSRV read from `Cargo.toml`, never `stable`, as the
+read step in `WORKFLOWS.md` does. The job builds and does not test —
+`WORKFLOWS.md` says why.
 
 ## What makes a workflow safe to hand someone
 
@@ -76,12 +77,14 @@ predate this skill.
 ## Verification
 
 Before committing the workflow, prove every command in it actually passes
-locally:
+locally — with the `WORKFLOWS.md` caveat that `--all-features` is sometimes
+wrong (mutually exclusive features), a repo in that case proves at the feature
+set its CI actually runs:
 
 ```bash
 cargo fmt --check
-cargo clippy --all-targets   # at the level the repo configured
-cargo test
+cargo clippy --all-targets --all-features   # at the level the repo configured
+cargo test --all-features
 actionlint .github/workflows/rust.yml   # if available; report if not installed
 ```
 

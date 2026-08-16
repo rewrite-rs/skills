@@ -24,8 +24,9 @@ unactioned advisory list is noise, and noise trains people to ignore the tool.
 
 `cargo audit` reads the RustSec advisory database and answers exactly one
 question: is anything in the tree known-vulnerable. `cargo deny` answers four
-— `advisories`, `bans`, `licenses`, `sources` — including that same one, and
-needs a policy file to answer them. A repo running `cargo deny check` does not
+— `advisories`, `bans`, `licenses`, `sources` — including that same one,
+against a policy file; with no deny.toml it runs on built-in defaults that
+encode no policy. A repo running `cargo deny check` does not
 need `cargo audit` separately; a repo that wants only advisory checking and no
 policy file is better off with `cargo audit` alone. Say which the repo should
 run and why, rather than adding both. The policy file in full, annotated, is

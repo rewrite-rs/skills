@@ -118,6 +118,8 @@ crate = "example-crate"
 license = "MIT"
 ```
 
+The `[[licenses.exceptions]]` block replaces the `exceptions = []` line in the starter file — TOML will not parse both in one file.
+
 Note the interaction with `confidence-threshold`: below about 0.8, the tool
 starts matching licences it is guessing at, and a low threshold turns
 "unclear licence" into "accepted licence." Raise the threshold and let the
@@ -127,7 +129,9 @@ threshold that hides it.
 ## The [patch.crates-io] escape hatch
 
 For the case where an advisory has a fix upstream that is not released yet:
-point the build at the fixed commit instead of waiting for the release.
+point the build at the fixed commit instead of waiting for the release. The
+block belongs in the workspace-root `Cargo.toml`, not in `deny.toml` — the
+build reads it, the policy tool does not.
 
 ```toml
 [patch.crates-io]
@@ -181,5 +185,6 @@ decision, not a supply-chain one, so the policy decision is narrower: keep
 `multiple-versions = "warn"`, name the duplicate and both pullers in a comment
 at the `[bans]` section, and set the re-check trigger — whichever framework
 next releases a version with a compatible range. The duplicate stays visible
-on every run until it is resolved; the comment is what stops a future
-`warn`-to-`deny` flip from failing the build over a known, accepted fact.
+on every run until it is resolved; the comment is what makes a future
+`warn`-to-`deny` flip that fails on this known, accepted fact an expected cost,
+not a mystery.
