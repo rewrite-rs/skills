@@ -73,6 +73,48 @@ The read and the count are one pass over references; there is nothing to snapsho
 so nothing to clone. The signature taking `&[String]` rather than `&Vec<String>`
 is the same cheapest-thing rule as the first pair.
 
+## A borrow that spans the loop, the clone hoisted
+
+Before:
+
+```rust,ignore
+// The borrow spans the whole loop, so the push conflicts.
+let first = &items[0];
+for _ in 0..n {
+    items.push(first.clone()); // E0502: items is borrowed immutably by `first`
+}
+```
+
+After:
+
+```rust,ignore
+// One clone, taken before the mutable borrow begins. Explainable: the value
+// must outlive the loop that mutates the vector.
+let first = items[0].clone();
+for _ in 0..n {
+    items.push(first.clone());
+}
+```
+
+If the element is `Copy`, the read lifts out of the loop with no clone at all —
+the borrow ends at the `let`.
+
+## The `&mut self` field conflict, resolved by destructuring
+
+```rust,ignore
+// Rejected: self is mutably borrowed by the loop, so self.log is unreachable.
+impl Server {
+    fn handle(&mut self) {
+        for conn in &mut self.connections {
+            self.log.record(conn.id()); // E0502
+        }
+    }
+}
+```
+
+The reflex is to clone `self.connections`; the answer is to destructure, so the
+two fields borrow independently.
+
 ## A clone that stays — with the explanation
 
 ```rust

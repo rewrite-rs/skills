@@ -21,6 +21,45 @@ then read panics in the user process, where the `E0502` used to stop the build.
 Reach for it only when the borrow structure is genuinely dynamic — determined by
 data at runtime, not by the shape of the code.
 
+## The handle clone
+
+A service type that owns a connection pool, a client, or a background task does not
+get copied when you clone it. It holds an `Arc<Inner>`, and `#[derive(Clone)]` on
+the outer type clones one pointer. Every task gets its own handle to the same
+thing, which is the shape `tokio::spawn` and axum state want, and it is the reason
+those APIs ask for `Clone` types without asking you to copy your database.
+
+```rust
+use std::sync::Arc;
+
+struct Inner {
+    endpoint: String,
+}
+
+#[derive(Clone)]
+pub struct ApiClient {
+    inner: Arc<Inner>,
+}
+
+impl ApiClient {
+    pub fn new(endpoint: String) -> Self {
+        Self { inner: Arc::new(Inner { endpoint }) }
+    }
+
+    pub fn endpoint(&self) -> &str {
+        &self.inner.endpoint
+    }
+}
+```
+
+The boundary, stated plainly so this does not become a loophole: this is not an
+exception to the rule, it is the rule passing. The test has always been "can you
+explain the clone in one sentence" — "each task needs its own handle to the shared
+client" is that sentence. What fails the test is unchanged: cloning a `Vec` because
+a borrow was inconvenient, cloning a `String` to hand to a function that wanted
+`&str`, and wrapping data in an `Arc` because a borrow error appeared rather than
+because two owners genuinely exist.
+
 ## The four-question test before `Rc<RefCell<T>>`
 
 1. **Does the data genuinely have multiple owners?** A single owner with an

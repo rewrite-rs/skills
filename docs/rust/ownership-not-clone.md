@@ -1,7 +1,7 @@
 ## What it does
 
 Decides who owns what and for how long — every `clone` must be explainable in one
-sentence, and the skill reaches for borrowing, signature changes, and
+sentence, and the skill reaches for borrowing, moves, signature changes, and
 destructuring before it reaches for a copy. It does not reshape how correct code
 is expressed (that is `/idiomatic-rust`), design error types (that is
 `/rust-errors`), or model invariants into types (that is `/type-driven-design`).
@@ -32,6 +32,12 @@ held across `.await` points (`/async-rust`).
   call site, and the bug is in the signature.
 - **`Cow` for genuine borrow-or-own.** The common path borrows, the rare path
   allocates; anything else is a plain owned type.
+- **`mem::take` and `mem::replace`.** Move a value out of a `&mut` by leaving a
+  default in its place — the answer to "I need to own this but I only have a
+  mutable borrow".
+- **Avoid statics.** A `static` with mutable or lazily-initialised state is a
+  lifetime nobody wrote down and an ownership story nobody can follow — pass the
+  value, or hold it in the type that owns the work.
 
 ## When shared ownership is the answer
 
@@ -40,13 +46,21 @@ single one outliving the rest; `RefCell`/`Mutex` only when the mutation is
 dynamic or cross-thread. The four-question test and the arena alternative (a
 graph as `Vec<Node>` plus index edges, no runtime borrow check, no cycle leak)
 live in `SHARED-STATE.md`; the situation-by-situation verdicts live in
-`CLONE-DECISIONS.md`.
+`CLONE-DECISIONS.md`. The handle clone — a service type that derives `Clone`
+over an `Arc<Inner>` and copies one pointer, not the pool — passes the
+one-sentence test and is covered in `SHARED-STATE.md`.
 
 ## Common questions
 
 **Is the goal zero clones?** No — the goal is no unexplained clones. A clone with
 a one-sentence justification a reviewer would accept (an owned value that must
 outlive the borrow) stays, with the justification in a comment.
+
+**My service type derives `Clone` — is that a smell?** No, when it clones an
+`Arc` handle — the outer type holds an `Arc<Inner>`, and the derive copies one
+pointer, so every task gets its own handle to the same client. Yes, when it
+copies the data: a `Clone` that deep-copies a pool or a buffer is the
+unexplained clone the one-sentence test exists to catch.
 
 **When is `RefCell` the right call over `Mutex`?** Single-thread interior
 mutability where the borrow structure is determined by data at runtime. Both move
@@ -65,6 +79,8 @@ function that takes the two fields as separate arguments.
   value.
 - `Rc<RefCell<_>>` appears only where the four-question test in `SHARED-STATE.md`
   passes.
+- Handle clones are recognisable as such — a service type that derives `Clone`
+  copies the `Arc` pointer, not the data it owns.
 - Borrow conflicts between two fields are resolved by destructuring, not by
   cloning a field.
 - `cargo test` passes and no clone was removed on a path the tests do not cover.
