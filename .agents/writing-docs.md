@@ -1,6 +1,7 @@
 # Writing docs pages
 
-Every promoted skill (one in `skills/rust/`, `skills/porting/`, or `skills/workflow/`)
+Every promoted skill (one in `skills/rust/`, `skills/porting/`, `skills/workflow/`,
+or `skills/misc/`)
 gets exactly one human-facing page at `docs/<bucket>/<name>.md`. This is the template
 every such page follows, section by section, in order.
 
