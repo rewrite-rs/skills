@@ -3,6 +3,13 @@
 A checklist to apply to a diff line by line. Each entry names what to look for
 and the question that settles it.
 
+## UB is not a bad outcome at runtime
+
+`unsafe` means undefined behaviour, not "dangerous", and the distinction is
+load-bearing: it is the compiler being permitted to assume the situation
+cannot arise — which is why UB shows up as an unrelated function miscompiling
+six months later.
+
 ## Per `unsafe` block
 
 - Is there a `// SAFETY:` comment?
@@ -11,6 +18,15 @@ and the question that settles it.
 - Is the invariant actually true for *every* caller, not just the current one?
 - Is the block as small as it can be? The check that makes the invariant true
   belongs in the safe code just outside.
+
+## Assume the code you call misbehaves
+
+Inside an `unsafe` block, assume the code you call misbehaves. A closure can
+panic mid-operation and leave your structure half-updated — poison the state or
+restore the invariant before the unwind escapes. A `Deref` impl can return a
+different reference each call, a `Clone` can panic, a `Drop` can run at a
+moment you did not choose. Any invariant you derive from a user-supplied trait
+impl is an invariant you do not have.
 
 ## Per `unsafe fn`
 
@@ -45,6 +61,27 @@ and the question that settles it.
   to write?
 - Are the `#[repr(C)]` layouts confirmed on both sides of the boundary,
   including field order and padding assumptions?
+- Are the edition 2024 marks in place — `unsafe extern { }` around extern
+  declarations, `#[unsafe(no_mangle)]`, `#[unsafe(export_name = "...")]`?
+  Those attributes always were unsafe assertions, and the edition now says so.
+
+All three marks, on a minimal boundary:
+
+```rust
+unsafe extern "C" {
+    fn strlen(s: *const u8) -> usize;
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn rust_add(a: u32, b: u32) -> u32 {
+    a.wrapping_add(b)
+}
+
+#[unsafe(export_name = "add")]
+pub extern "C" fn rust_add_named(a: u32, b: u32) -> u32 {
+    a.wrapping_add(b)
+}
+```
 
 ## Per hand-written `Send`/`Sync` impl
 

@@ -8,8 +8,7 @@ description: Justify, document, and verify unsafe Rust — safety invariants on 
 `unsafe` is a promise, not a permission: the code inside may break the rules,
 but the code around it must keep them. This skill governs *soundness* — whether
 a safe caller can trigger undefined behaviour — and it never treats "the tests
-pass" as evidence of soundness. Whether the wrapper should be public is
-`/rust-api-design`; error handling across the boundary is `/rust-errors`.
+pass" as evidence of soundness.
 
 ## `unsafe` does not turn off the borrow checker
 
@@ -22,12 +21,24 @@ resolve a borrow error is always wrong. That case is `/ownership-not-clone`.
 
 ## The justification test
 
-`unsafe` is justified in exactly three situations: an FFI boundary; a data
-structure the borrow checker genuinely cannot express (intrusive lists,
-self-referential types, custom allocators); and a measured performance win
-where the safe version was benchmarked and lost. "It was easier" is not on the
-list. Require the reason to be written down — in the `// SAFETY:` comment or the
-PR description — not remembered by whoever wrote it.
+`unsafe` is justified for exactly three reasons. Each has a question that must
+be answered before the block is written — and the reason written down, in the
+`// SAFETY:` comment or the PR description, not remembered by whoever wrote it.
+
+1. **FFI.** Calling into or out of another language. The checklist: who owns the
+   memory on each side, what happens on a panic crossing the boundary (it must
+   not), whether the foreign function is thread-safe, and what the lifetime of
+   every pointer received actually is. Hand the boundary design to `/rust-ffi`.
+2. **A performance win the profile named.** The checklist: what did the
+   measurement say, what invariant is being asserted in place of the check,
+   and is the safe version genuinely on the hot path — `/rust-performance`
+   first, and the answer there is usually that the allocation was the problem.
+3. **A primitive the language cannot express safely.** Intrusive structures,
+   custom allocators, self-referential types. The checklist: does a crate
+   already do this correctly, and is the invariant writable in two sentences.
+
+A block that does not sit under one of these three has an author reaching for
+`unsafe` to make an error go away, and the error was right.
 
 ## Every `unsafe` block carries a `// SAFETY:` comment
 
@@ -48,22 +59,26 @@ set.
 
 ## Soundness is the bar, not "it works"
 
-A safe API is sound when no safe caller can trigger undefined behaviour, for any
-input, including malicious ones. An `unsafe` block that is correct for every
-current caller but would break if someone added a new one is unsound and must be
-fixed or made `unsafe fn`. The encapsulation rule: keep the `unsafe` block as
-small as it can be, and put the safe/unsafe boundary where the invariant is
-actually enforceable — the check belongs in the safe code that guards the block,
-not in the block itself.
+A safe API is sound when no safe caller can trigger undefined behaviour, for
+any input, including malicious ones. Unsound code is never acceptable: there is
+no "unsound but only in a case that cannot happen here" — soundness is a
+property of the API, and a safe function that can cause UB from safe caller
+code is a bug regardless of who currently calls it; fix it or make it
+`unsafe fn`. The encapsulation rule: keep the `unsafe` block as small as it can
+be, and put the safe/unsafe boundary where the invariant is actually
+enforceable — the check belongs in the safe code that guards the block, not in
+the block itself. Inside the block, assume the code you call misbehaves — the
+depth is in `SAFETY-REVIEW.md`.
 
 ## The UB hazards that actually appear
 
-One sentence each; the review depth is in `SAFETY-REVIEW.md`.
+One point each; the review depth is in `SAFETY-REVIEW.md`.
 
 - **Aliasing:** a `&mut` coexisting with any other live reference to the same
   place.
-- **Uninitialized memory:** producing a reference to it — use `MaybeUninit`,
-  never `mem::zeroed` for a type with a validity invariant.
+- **Uninitialized memory:** producing a reference to it — use `MaybeUninit<T>`,
+  never `mem::zeroed()`: zero is a valid `u32` and an invalid `&T`, `bool`, or
+  enum — and the invalidity is instant UB, not a bad value you will notice.
 - **Invalid values:** a `bool` that is not 0 or 1, a `char` outside the scalar
   ranges, a null reference.
 - **`transmute`:** between types with different layouts, or without
