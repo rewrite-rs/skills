@@ -163,6 +163,50 @@ pub fn config_with(workers: usize) -> mycrate::Config {
 A helper that itself has branching logic needs its own test, or it is
 untested code deciding whether other code is tested.
 
+## Making a dependency substitutable
+
+Two patterns, and the rule that picks between them.
+
+**A trait plus a mock** — for an abstraction the crate owns and would
+define anyway: a repository, a gateway, a policy. The trait is worth its
+keep independently of testing, so the test does not distort the design.
+
+**A private enum core behind a `test-util` feature** — for syscalls,
+clocks, and entropy inside a library shipped to others. The type stays
+concrete, the enum inside it has a real variant and a fake variant, and
+the fake constructor is `#[cfg(feature = "test-util")]`:
+
+```rust,ignore
+pub struct Clock {
+    core: Core,
+}
+
+enum Core {
+    System,                  // the real thing
+    #[cfg(feature = "test-util")]
+    Fake(FakeClock),         // the test double, absent from a normal build
+}
+
+#[cfg(feature = "test-util")]
+impl Clock {
+    pub fn with_fake(clock: FakeClock) -> Self {
+        Self { core: Core::Fake(clock) }
+    }
+}
+```
+
+**The rule**, stated as the reason rather than a preference: a trait for a
+substitutable clock costs a public generic parameter or a vtable on every
+type that touches it — a permanent change to the public API paid for a
+test-only need. When the abstraction only exists to be swapped in tests,
+keep it private.
+
+Feature-gate test utilities under a named feature so downstream crates
+can use the fakes deliberately, and so they are absent from a normal
+build. Integration tests live under `tests/`, where they see only the
+public API — which is what makes them a check on the surface rather
+than on the internals.
+
 ## What not to test
 
 Derived `Debug`, `Clone`, and `Default` — the derive either works or it does

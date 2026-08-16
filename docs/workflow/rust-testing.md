@@ -33,8 +33,8 @@ The corollary: a bug found in production earns a test at the level the bug
 lived, not an end-to-end test that happens to cover it. Table-driven cases
 carry the input in the assertion message, so a failure names the case. The
 file locations, reach, costs, and worked examples for each form are in
-`TEST-DESIGN.md`, along with snapshot discipline, golden files, fixtures, and
-the list of what not to test.
+`TEST-DESIGN.md`, along with snapshot discipline, golden files, fixtures,
+making a dependency substitutable, and the list of what not to test.
 
 ## Proving a port matches its source
 
@@ -61,12 +61,20 @@ to touch lines.
 does — it is the parity baseline CI can run forever. Side-by-side execution
 retires with the source runtime; it is the bridge, not the destination.
 
+**Should I use `mockall` or a fake?** The rule picks the pattern first: a
+trait plus a mock (what `mockall` generates) for an abstraction the crate
+owns and would define anyway; a private enum core with a fake variant behind
+a `test-util` feature for syscalls, clocks, and entropy in a shipped library
+— where there is no public trait for `mockall` to mock.
+
 ## It's working if
 
 - Every new test was observed failing before being accepted — the fix
   commented out or the assertion inverted, and the failure read.
 - Failures name the case, not just a line number.
 - Error-path assertions match on variants rather than message strings.
+- No test computes its expectation from the logic under test.
+- Test-only helpers sit behind a feature.
 - No test reads the wall clock or the network, and every generator seed is
   explicit.
 - Snapshot diffs were read before acceptance.
@@ -79,5 +87,7 @@ retires with the source runtime; it is the bridge, not the destination.
 `/rust-code-review` defers the test design to, and the one the porting
 skills invoke for the differential harness. It defers
 error-variant design to `/rust-errors`, `unsafe` verification to
-`/unsafe-rust`, and async test flavours to `/async-rust`. See `rust-skills-map`
-for how the full set of Rust skills relates.
+`/unsafe-rust`, async test flavours to `/async-rust`, the concurrency model
+behind a `loom` test to `/rust-concurrency`, and benchmarking to
+`/rust-performance`. See `rust-skills-map` for how the full set of Rust
+skills relates.

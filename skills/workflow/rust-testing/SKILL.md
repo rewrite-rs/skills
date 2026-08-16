@@ -69,6 +69,12 @@ behaviour, so any error-type change passes it. Assert the error *variant* a
 caller would match on, not the `Display` string — the string is not the
 contract. Which variant exists at all is `/rust-errors`.
 
+A test that computes its expectation with the same logic it is testing asserts
+nothing. It is easy to miss: it looks thorough — a loop over inputs building
+the expected value with the function under test, or a constant from the same
+formula. The expected value is human-written, or from an independent source:
+a reference implementation, a published vector, a hand-worked example.
+
 ## Determinism is a property of the test, not the machine
 
 Seed every generator explicitly, inject time and randomness rather than
@@ -78,11 +84,8 @@ flake teaches everyone to re-run instead of read.
 
 ## Coverage is a signal, not a target
 
-`cargo llvm-cov` finds untested branches worth looking at — the code nobody
-thought to give a case. A coverage percentage as a merge gate produces tests
-written to touch lines, and a touched line is not verified behaviour. This
-skill endorses the first use: read the uncovered branches, and write the tests
-the behaviour earns. Do not chase the number.
+`cargo llvm-cov` finds branches worth testing; a percentage gate produces
+tests that touch lines, not verified behaviour. Do not chase the number.
 
 ## Differential testing for ports
 
@@ -99,8 +102,10 @@ supplies the mechanism, not the contract.
 Error-variant design is `/rust-errors`. Testing `unsafe` code means Miri,
 which is `/unsafe-rust`. Async test flavours, time control, and why a
 `#[tokio::test]` with a real sleep is a flake generator are `/async-rust`.
-Whether a change *needs* a test at all, as a review verdict, is
-`/rust-code-review`.
+`loom` covers the concurrency test that explores interleavings rather than
+hoping for one — `/rust-concurrency`. `criterion` covers the test that is
+really a benchmark — `/rust-performance`. Whether a change *needs* a test
+at all, as a review verdict, is `/rust-code-review`.
 
 ## Verification
 
