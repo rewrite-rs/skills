@@ -147,3 +147,85 @@ test("a skill missing agents/openai.yaml is an error", () => {
   const { errors } = checkRepo(root);
   assert.ok(errors.some((e) => e.includes("openai.yaml")));
 });
+
+test("a README badge count that disagrees with the manifest is an error", () => {
+  const root = scaffold();
+  addSkill(root, "rust", "idiomatic-rust");
+  promote(root, "rust", "idiomatic-rust");
+  writeFileSync(
+    join(root, "README.md"),
+    `# Skills\n\n[![skills](https://example.com/badge/skills-2-f2723f.svg)](#skills)\n\n- [idiomatic-rust](./skills/rust/idiomatic-rust/SKILL.md) — does the thing\n`
+  );
+  const { errors } = checkRepo(root);
+  assert.ok(errors.some((e) => e.includes("badge") && e.includes("skills-2")));
+});
+
+test("README prose skill count that disagrees with the manifest is an error", () => {
+  const root = scaffold();
+  addSkill(root, "rust", "idiomatic-rust");
+  promote(root, "rust", "idiomatic-rust");
+  writeFileSync(
+    join(root, "README.md"),
+    `# Skills\n\n25 skills that teach judgment.\n\n- [idiomatic-rust](./skills/rust/idiomatic-rust/SKILL.md) — does the thing\n`
+  );
+  const { errors } = checkRepo(root);
+  assert.ok(errors.some((e) => e.includes("prose") && e.includes("25 skills")));
+});
+
+test("README counts that agree with the manifest pass", () => {
+  const root = scaffold();
+  addSkill(root, "rust", "idiomatic-rust");
+  promote(root, "rust", "idiomatic-rust");
+  writeFileSync(
+    join(root, "README.md"),
+    `# Skills\n\n[![1 skill](https://example.com/badge/skills-1-bc4710.svg)](#skills)\n\n1 skill that teaches judgment.\n\n- [idiomatic-rust](./skills/rust/idiomatic-rust/SKILL.md) — does the thing\n`
+  );
+  const { errors } = checkRepo(root);
+  assert.deepEqual(errors, []);
+});
+
+test("a stale bucket count phrase in shipped prose is an error", () => {
+  const root = scaffold();
+  addSkill(root, "rust", "idiomatic-rust");
+  addSkill(root, "workflow", "rust-testing");
+  const path = join(root, ".claude-plugin", "plugin.json");
+  const manifest = JSON.parse(readFileSync(path, "utf8"));
+  manifest.skills.push("./skills/rust/idiomatic-rust", "./skills/workflow/rust-testing");
+  writeFileSync(path, JSON.stringify(manifest, null, 2));
+  writeFileSync(
+    join(root, "README.md"),
+    `# Skills\n\nFour areas of judgment.\n\n- [idiomatic-rust](./skills/rust/idiomatic-rust/SKILL.md) — does the thing\n- [rust-testing](./skills/workflow/rust-testing/SKILL.md) — does the thing\n`
+  );
+  const { errors } = checkRepo(root);
+  assert.ok(errors.some((e) => e.includes("Four areas") && e.includes("2 buckets")));
+});
+
+test("a stale route count in the router docs page is an error", () => {
+  const root = scaffold();
+  const dir = addSkill(root, "workflow", "rust-skills-map", { userInvoked: true });
+  writeFileSync(
+    join(dir, "SKILL.md"),
+    `---\nname: rust-skills-map\ndescription: The router for the set.\ndisable-model-invocation: true\n---\n\n# Rust Skills Map\n\n## The three flows, one line each\n\n- **One** — first\n- **Two** — second\n- **Three** — third\n`
+  );
+  promote(root, "workflow", "rust-skills-map");
+  writeFileSync(
+    join(root, "docs", "workflow", "rust-skills-map.md"),
+    "## What it does\n\nFour routes, in `FLOWS.md`.\n"
+  );
+  const { errors } = checkRepo(root);
+  assert.ok(errors.some((e) => e.includes("Four routes") && e.includes("3 flows")));
+});
+
+test("a router flows heading that disagrees with its bullet list is an error", () => {
+  const root = scaffold();
+  const dir = addSkill(root, "workflow", "rust-skills-map", { userInvoked: true });
+  writeFileSync(
+    join(dir, "SKILL.md"),
+    `---\nname: rust-skills-map\ndescription: The router for the set.\ndisable-model-invocation: true\n---\n\n# Rust Skills Map\n\n## The four flows, one line each\n\n- **One** — first\n- **Two** — second\n`
+  );
+  promote(root, "workflow", "rust-skills-map");
+  const { errors } = checkRepo(root);
+  assert.ok(
+    errors.some((e) => e.includes("The four flows") && e.includes("lists 2"))
+  );
+});

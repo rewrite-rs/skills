@@ -53,3 +53,14 @@ repo or the output from their own agent and know whether the skill did its job.
 
 The role this skill plays in the set, its neighbours (skills it's commonly used alongside or
 confused with), and a link to `rust-skills-map` for the full picture.
+
+## Count phrases are checked
+
+`check-skills.mjs` compares the count phrases in `README.md`, the router's `SKILL.md` and
+`FLOWS.md`, and `docs/workflow/rust-skills-map.md` against what the set actually contains:
+"28 skills" and the badge against the `plugin.json` skill length, "Four areas" and "Four
+buckets" against the bucket count in `plugin.json`, and "Four routes" and "The four flows"
+against the flow bullet list in the router `SKILL.md`. When a change adds or removes a
+skill, a bucket, or a route, the count
+phrases move in the same change — this check is what enforces the same-change rule above at
+wave close, where a stale "Three routes" or "25 skills" would otherwise ship.
