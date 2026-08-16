@@ -67,10 +67,13 @@ requirement forks your crate.
 Take `impl AsRef<str>` or `impl Into<String>` where callers plausibly hold
 either form, `impl AsRef<Path>` over `&Path` for a path parameter, and
 `impl RangeBounds<usize>` over three overloads. Return `impl Iterator<Item = T>`
-rather than `Vec<T>` when the caller may not want the allocation. And derive
-the common traits — `Debug` always, `Clone` and `PartialEq` where they make
-sense — while adding them is still cheap: which side of that line a given
-derive falls on is in `SEMVER.md`.
+rather than `Vec<T>` when the caller may not want the allocation. Use sans-IO
+design where the protocol logic is a state machine the caller drives, so it
+works under any runtime and tests without a network. And derive the common
+traits — `Debug` always, `Clone` and `PartialEq` where they make sense — while
+adding them is still cheap: a missing derive can become a breaking change to
+add later when it creates inference ambiguity or conflicts with a downstream
+impl, and which side of that line a given derive falls on is in `SEMVER.md`.
 
 ## Public types are `Send`, `Debug`, and sometimes `Display`
 

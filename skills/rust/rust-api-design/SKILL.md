@@ -7,8 +7,7 @@ description: Design a Rust public API — trait design, generics versus dyn, sea
 
 Everything `pub` from the crate root is a promise to every downstream caller. This
 skill governs *what callers can see and rely on* — the exported surface, the shape
-of its traits and generics, and which changes break the promise; everything it says
-about internals is incidental.
+of its traits and generics, and which changes break the promise.
 
 ## The surface is the contract
 
@@ -67,7 +66,8 @@ for T` closes the door on any later `impl Bar for SomeType` that does not satisf
 
 A sealed trait exists to let the crate add methods without breaking downstream
 implementers: the supertrait lives in a private module, so only this crate can
-implement it. Readers reproduce the pattern wrong from memory, so here it is:
+implement it, though downstream code can still name the trait as a bound.
+Readers reproduce the pattern wrong from memory, so here it is:
 
 ```rust
 mod sealed {
