@@ -40,6 +40,7 @@ every handoff in this set is a directly typeable `/skill-name`.
 | Why is this slow, and what should I change? | `/rust-performance` | `/async-rust` — executor stalls and blocking work are the runtime question, not the throughput one |
 | Which concurrency model fits this work? | `/rust-concurrency` | `/async-rust` — tasks and executors; this row is threads, locks, and atomics |
 | How should this code report what it is doing? | `/rust-observability` | `/rust-errors` — what the error carries, not how it gets logged |
+| What has to be written down about this API? | `/rust-docs` | `/rust-api-design` — whether the item is public at all, not how it documents |
 | Does this change deserve a test, and which kind? | `/rust-testing` | `/rust-code-review` — designing the test versus judging its absence |
 | How do I move this code into Rust without losing behaviour? | `/port-to-rust` | `/rust-testing` — the harness mechanism, not what the harness has to prove |
 | What does this Python construct become in Rust? | `/port-from-python` | `/port-to-rust` — the process and the contract, not the construct |

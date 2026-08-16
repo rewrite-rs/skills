@@ -14,6 +14,7 @@ Language-craft skills for writing and reviewing Rust.
 - [rust-performance](./rust-performance/SKILL.md) — Profile first, cut allocation, and treat codegen flags as the last five percent.
 - [rust-concurrency](./rust-concurrency/SKILL.md) — Threads, channels, locks, and atomics — the model that fits the workload.
 - [rust-observability](./rust-observability/SKILL.md) — Structured events with named fields, spans, and no secrets in logs.
+- [rust-docs](./rust-docs/SKILL.md) — Doc comments as API contract, with doctests that actually run.
 
 ## User-invoked
 

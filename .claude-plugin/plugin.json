@@ -28,6 +28,7 @@
     "./skills/rust/rust-performance",
     "./skills/rust/rust-concurrency",
     "./skills/rust/rust-observability",
+    "./skills/rust/rust-docs",
     "./skills/workflow/rust-testing",
     "./skills/workflow/rust-code-review",
     "./skills/workflow/setup-rust-skills",
