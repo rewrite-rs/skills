@@ -5,8 +5,7 @@ description: Write Rust that reads like Rust — iterator pipelines over index l
 
 # Idiomatic Rust
 
-Rust rewards code shaped around its own idioms. This skill is about *expression*:
-what form does a Rust reader expect to see?
+This skill is about *expression*: what form does a Rust reader expect to see?
 
 ## The shape of idiomatic Rust
 
@@ -94,11 +93,10 @@ concept (an ID, a currency amount) rather than a number.
 
 Names earn every word: `Bookings`, not `BookingService` — `Service`, `Manager`,
 `Helper`, `Util`, `Data`, and `Info` mark a name nobody finished. The
-`as_`/`to_`/`into_` prefixes promise a cost — free view, allocation, consumption —
-and the promise is load-bearing: an `as_` that allocates is a lie. No `get_` on a
-field accessor; acronyms are words (`HttpClient`, `Uuid`); a helper that does not
-need `Self` is a free function, not an `impl` block used as a namespace. The tiers
-table and worked pairs live in `NAMING.md`.
+`as_`/`to_`/`into_` prefixes promise a cost — free view, allocation, consumption.
+No `get_` on a field accessor; acronyms are words (`HttpClient`, `Uuid`); a helper
+that does not need `Self` is a free function, not an `impl` block used as a
+namespace. The tiers table and worked pairs live in `NAMING.md`.
 
 ## Boilerplate that is actually a design signal
 

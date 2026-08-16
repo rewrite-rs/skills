@@ -24,10 +24,9 @@ mod internal;                            // the tree stays private
 `Parser` is reachable by one path only: renaming the module, moving the file,
 splitting the crate — none of it is a breaking change, because none of it is visible.
 
-The surface also refuses three shapes: an item public at two paths; an `Arc`, `Rc`,
+The surface refuses three shapes: an item public at two paths; an `Arc`, `Rc`,
 `Box` or `RefCell` in a public signature; and a dependency type in a signature,
-which makes that dependency part of the semver contract. Take the ergonomics that
-cost nothing while they are cheap. The depth of all of it is in `SURFACE.md`.
+making that dependency part of the semver contract. The depth is in `SURFACE.md`.
 
 ## Getting a dependency in
 
@@ -48,9 +47,8 @@ cost of each rung is in `DEPENDENCY-INJECTION.md`.
 | Return position in a public API | named type or `impl Trait` | `impl Trait` hides the type — a deliberate choice, not a shortcut |
 
 Object safety usually settles it: generic methods, methods returning `Self` by
-value, or associated constants used through the object rule out `dyn` — the
-generic is the only option; a heterogeneous registry cannot be generic without an
-enum or a trait object — the object is the only option.
+value, or associated constants used through the object rule out `dyn`; a
+heterogeneous registry cannot be generic without an enum or a trait object.
 
 ## Trait design
 
@@ -95,9 +93,8 @@ The headline cases: adding a variant to a public enum breaks exhaustive matches
 (unless the enum is `#[non_exhaustive]`); adding a required trait method breaks
 implementers, a default body does not; adding a field to a public struct that is
 not `#[non_exhaustive]` breaks literal construction; narrowing an argument type
-breaks callers; widening a return type breaks callers who programmed against the
-old one. The full table — including the non-obvious ones, like adding a trait
-impl or raising the MSRV — is in `SEMVER.md`.
+breaks callers; widening a return type breaks callers who programmed against
+the old one. The full table, including the non-obvious ones, is in `SEMVER.md`.
 
 ## Deferrals
 

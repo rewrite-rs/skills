@@ -9,7 +9,7 @@
     {
       "name": "rewrite-rs-skills",
       "source": "./",
-      "description": "The most complete agent skill set for real Rust, plus disciplined porting into it.",
+      "description": "The most comprehensive agent skill set for real Rust, plus disciplined porting into it.",
       "category": "engineering",
       "keywords": ["rust", "skills", "porting", "migration"]
     }

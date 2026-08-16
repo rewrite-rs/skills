@@ -1,7 +1,7 @@
 {
   "name": "rewrite-rs-skills",
   "version": "0.1.0-alpha.1",
-  "description": "The most complete agent skill set for real Rust: ownership over clone and unwrap, errors and APIs that survive review, async and unsafe done right, plus disciplined porting into Rust.",
+  "description": "The most comprehensive agent skill set for real Rust: ownership over clone and unwrap, errors and APIs that survive review, async and unsafe done right, plus disciplined porting into Rust.",
   "author": {
     "name": "rewrite-rs",
     "url": "https://rewrite.rs"
