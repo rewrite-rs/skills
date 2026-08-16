@@ -53,3 +53,38 @@ jobs:
             --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=superpowers . \
             | sed -E 's/^([^:]+):[0-9]+:\]\((.*)\)$/\1:\2/')
           exit $fail
+
+  # Advisory, deliberately separate from the check job: "Miri-clean" is a
+  # second claim with a second gate, not part of the rule 10 compile promise.
+  # The generated crate carries no unit tests today, so this verifies that
+  # every untagged example builds under Miri instrumentation; when an
+  # example earns a #[test], Miri interprets it for real. --lib excludes
+  # doctests: a doctest nested in a wrapped block resolves stand-in names
+  # (use mycrate::...) only in a real crate, so running them against the
+  # synthetic crate is an artifact, not a finding. A red miri job is
+  # visible and worth fixing, but it does not block the compile gate.
+  miri:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - name: Nightly Rust toolchain with Miri
+        run: |
+          rustup toolchain install nightly --profile minimal --component miri --no-self-update
+          cargo +nightly miri --version
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/skill-examples/target
+          key: skill-examples-miri-${{ runner.os }}-${{ hashFiles('scripts/check-examples.mjs') }}
+      - name: Generate the examples crate
+        run: npm run check-examples
+      - name: Miri test
+        run: cargo +nightly miri test --lib --manifest-path target/skill-examples/Cargo.toml
