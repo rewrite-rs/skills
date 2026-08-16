@@ -2,10 +2,14 @@
 
 Decides how failure is represented and propagated — the panic policy for
 `unwrap`/`expect`, the `Result` path from the point of failure to the boundary
-that can actually decide, and the error type itself: `thiserror` enums for
-libraries, `anyhow` for binaries, context added once per layer. It does not make
-the failure impossible in the first place (that is `/type-driven-design`), and it
-does not decide whether changing the error type breaks callers (that is
+that can actually decide, and the error type itself. The shape of the error
+type is settled by the boundary question: does the error cross a public API
+boundary you will maintain across releases? No — a closed set of failures — and
+it is a `thiserror` enum. Yes — a published library — and it is a struct
+wrapping a private kind, exposing the questions callers actually ask. Binaries
+use `anyhow`, with context added once per layer. It does not make the failure
+impossible in the first place (that is `/type-driven-design`), and it does not
+decide whether changing the error type breaks callers (that is
 `/rust-api-design`).
 
 ## When to reach for it
@@ -22,20 +26,37 @@ cancellation and timeouts as error cases (`/async-rust`).
 
 `unwrap` and `expect` are assertions about invariants, not error handling. They
 stand in tests, in `main` for a startup precondition, and after a check the
-compiler cannot see — and the `expect` message names the invariant violated, not
-the operation that failed. Input validation is always a `Result`; a broken
-internal invariant with no caller-recoverable path is the one failure that
-should panic loudly.
+compiler cannot see — and the `expect` message names the invariant violated,
+not the operation that failed, and carries the actual values. Not every failure
+is a `Result`: input validation is always a `Result`, and a broken internal
+invariant with no caller-recoverable path is the one failure that should stop
+the program.
 
-## thiserror, anyhow, and the boundary between them
+## Which shape: the boundary decides
 
-A library error is an API callers match on, so it is an enum with named, stable
-variants. A binary error is a message a human reads once, so a boxed dynamic
-error with context is enough. A `thiserror` enum flows into `anyhow` for free at
-the boundary; the reverse throws the API away. The complete variant shapes
-(`#[from]`, `#[source]`, `#[error(transparent)]`), the `anyhow` side
-(`.context` vs `.with_context`, `downcast_ref`), and what the derive eliminates
-from hand-rolled `Display`/`Error`/`From` impls live in `ERROR-TYPES.md`.
+One question settles it: does the error cross a public API boundary you will
+maintain across releases?
+
+- No — an internal crate, a closed set of failures, an error the caller only
+  ever prints: a `thiserror` enum. The enum is the cheaper, better answer, and
+  callers can match it exhaustively.
+- Yes — a published library whose callers upgrade without editing their code:
+  a struct wrapping a private kind, exposing the questions callers actually ask
+  as predicates (`is_not_found()`, `path()`), the shape of `std::io::Error`.
+  The public enum fails at that boundary: a variant carrying a dependency type
+  promises that dependency for ever, adding a variant breaks caller matches,
+  and `#[non_exhaustive]` removes the exhaustive matching that was the reason
+  to expose the enum.
+
+Binaries use `anyhow`: a binary error is a message a human reads once, so a
+boxed dynamic error with context is enough, and `anyhow` in a published library
+forces every downstream caller to give up matching on concrete types — the
+actual reason for the split. `thiserror` does the mechanical work either way.
+The full compiling struct pattern, the closed enum shapes (`#[from]`,
+`#[source]`, `#[error(transparent)]`), context and message style, the `anyhow`
+side (`.context` vs `.with_context`, `downcast_ref`), and what the derive
+eliminates from hand-rolled `Display`/`Error`/`From` impls live in
+`ERROR-TYPES.md`.
 
 ## Common questions
 
@@ -51,16 +72,25 @@ downstream caller to give up matching; that is the actual reason for the
 per module inside the internal library crates of a large binary, per crate for
 published ones.
 
+**My library already ships a public enum error — is this a breaking change to
+fix?** Yes. The honest answer is to make the change at the next major, with the
+predicates callers are already deriving by hand added now as non-breaking
+additions.
+
 ## It's working if
 
 - No `unwrap` or `expect` remains outside tests and documented startup
   preconditions, and every surviving one has a one-line justification.
-- Every `expect` message states the invariant violated, not the operation.
-- Library crates expose `thiserror` enums; the binary surfaces `anyhow` with
-  context only at the top.
+- Every `expect` message states the invariant violated, not the operation, and
+  carries the actual values.
+- No public error variant carries a type from a dependency, and every public
+  error answers the questions callers ask through predicates rather than
+  through a variant match.
+- Library crates expose `thiserror` errors shaped by the boundary — an enum for
+  the closed case, a struct with a private kind for the published case — and
+  the binary surfaces `anyhow` with context only at the top.
 - No error reaches a user as a bare OS message, and no fact is restated at more
   than one layer.
-- Published enums are `#[non_exhaustive]` where variants will be added.
 - `cargo test` passes at the lint level configured in the repo.
 
 ## Where it fits

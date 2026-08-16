@@ -1,11 +1,71 @@
 # Error types
 
-The depth for `SKILL.md`: complete enum shapes, the `anyhow` side, the boundary
+The depth for `SKILL.md`: the public struct error in full, the closed enum and
+its variant shapes, context and message style, the `anyhow` side, the boundary
 between the two, and what `thiserror` eliminates from hand-rolled code.
 
-## A full `thiserror` enum
+## The public struct error, in full
 
-Every variant shape, with when it is the right one:
+The published-library answer to the boundary question, compiling with
+`thiserror` as the only dependency:
+
+```rust
+use std::io;
+use std::path::{Path, PathBuf};
+
+#[derive(Debug, thiserror::Error)]
+#[error("{kind}")]
+pub struct ConfigError {
+    #[source]
+    kind: ErrorKind,
+}
+
+#[derive(Debug, thiserror::Error)]
+enum ErrorKind {
+    #[error("cannot read {path}")]
+    Read {
+        path: PathBuf,
+        #[source]
+        source: io::Error,
+    },
+    #[error("malformed config in {path}")]
+    Parse {
+        path: PathBuf,
+        #[source]
+        source: io::Error,
+    },
+}
+
+impl ConfigError {
+    pub fn is_not_found(&self) -> bool {
+        matches!(&self.kind, ErrorKind::Read { source, .. } if source.kind() == io::ErrorKind::NotFound)
+    }
+
+    pub fn path(&self) -> &Path {
+        match &self.kind {
+            ErrorKind::Read { path, .. } | ErrorKind::Parse { path, .. } => path,
+        }
+    }
+}
+```
+
+The kind is private because the privacy is the whole mechanism: with a private
+kind, new variants and dependency swaps are internal changes, not breaking
+ones.
+
+Choose the predicates from the questions callers would otherwise answer by
+matching — one per question. If no caller can name a question, the error needs
+no predicates and probably no struct.
+
+A caller then writes `if err.is_not_found() { /* create the default */ }`
+instead of matching a variant and inspecting an `io::ErrorKind` the crate
+already knew about.
+
+## The enum, for the closed case
+
+For the closed set of failures — an internal crate, an error the caller only
+ever prints — the enum is the cheaper, better answer. Every variant shape, with
+when it is the right one:
 
 ```rust
 #[derive(Debug, thiserror::Error)]
@@ -37,6 +97,54 @@ variant is right when the error needs its own facts alongside the source —
 right only while no context of your own exists; the day one appears, the variant
 was never a pass-through and the `#[error(...)]` message gets the layer fact.
 
+`?` converts through `From`, which is why a `#[from]` on an enum variant removes
+a `map_err` closure at every call site. `Config` below is a `serde` type so the
+example is self-contained:
+
+```rust
+#[derive(Debug, thiserror::Error)]
+enum AppError {
+    #[error("io error: {0}")]
+    Io(#[from] std::io::Error),
+    #[error("parse error: {0}")]
+    Parse(#[from] toml::de::Error),
+}
+
+#[derive(serde::Deserialize)]
+struct Config {
+    name: String,
+}
+
+// No map_err closures — ? converts through the From impls.
+fn load(path: &str) -> Result<Config, AppError> {
+    let text = std::fs::read_to_string(path)?;
+    let config = toml::from_str(&text)?;
+    Ok(config)
+}
+```
+
+## Context and message style
+
+Each layer adds what it uniquely knows — which path, which config key, which
+request ID — and adds it once. The two failure modes to reject in review: no
+context at all, where the error arrives as a bare OS message —
+`No such file or directory (os error 2)` names the syscall, not the mistake —
+and the same fact restated at four layers, where the message ends up as
+`opening config: opening config: failed to read /etc/app/config.toml`.
+
+Error message style: lowercase, no trailing period, no `error:` prefix — the
+message is composed into someone else's sentence, and `Display` output that
+starts with a capital and ends in a period reads as broken when it is.
+
+## Panic and expect messages
+
+An `expect` message describes the invariant that was violated, not the
+operation that failed — `expect("config path is set by the caller")`, not
+`expect("failed to get config")`. The second reads like a log line; the first
+tells the next debugger exactly which assumption broke. A panic message carries
+the actual values: `assert_eq!(len, cap)` over `assert!(len == cap)`, and an
+`expect` that names the invariant and the value that broke it.
+
 ## The `anyhow` side
 
 `.context("...")` is the common form. Use the closure form,
@@ -57,7 +165,7 @@ reaches back through the box:
 ```rust
 fn report(err: &anyhow::Error) -> ExitCode {
     if err.downcast_ref::<ConfigError>()
-        .is_some_and(|e| matches!(e, ConfigError::NotFound { .. }))
+        .is_some_and(|e| e.is_not_found())
     {
         eprintln!("hint: run `app init` to create the config file");
     }

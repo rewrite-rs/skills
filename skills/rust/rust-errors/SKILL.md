@@ -6,114 +6,103 @@ description: Design Rust error types and panic policy — Result over unwrap, th
 # Rust Errors
 
 An error type is a contract about what can go wrong and what the caller does
-about it. This skill is about how failure is *represented and propagated* — which
-failures panic, which become a `Result`, which shape the enum takes, and how much
-context survives the call stack. It does not make the failure impossible in the
-first place (that is `/type-driven-design`), and it does not decide whether
-changing the shape breaks callers (that is `/rust-api-design`).
+about it: which failures panic, which become a `Result`, which shape the error
+takes, how much context survives the call stack. Making the failure impossible
+is `/type-driven-design`; whether shape changes break callers, `/rust-api-design`.
 
 ## The panic policy
 
 `unwrap` and `expect` are assertions about invariants, not error handling.
-Acceptable: in tests, in `main` for a startup precondition whose failure means the
-program cannot run, and after a check that the compiler cannot see — where
-`expect` carries the reason. Unacceptable: in library code on any input-derived
-value, and anywhere the justification is "this can't fail" without saying why.
+Acceptable: in tests, in `main` for a startup precondition, and after a check
+the compiler cannot see. Unacceptable: in library code on any input-derived
+value, or anywhere the justification is "this can't fail" without saying why.
 
-The phrasing rule: an `expect` message describes the invariant that was violated,
-not the operation that failed — `expect("config path is set by the caller")`, not
-`expect("failed to get config")`. The second reads like a log line; the first
-tells the next debugger exactly which assumption broke.
+Not every failure is a `Result`. A broken internal invariant with no
+caller-recoverable path should panic — the program is already in a state the type
+system promised it would not reach. Input validation is the opposite: whatever
+the input, the caller can respond, so it is always a `Result`.
 
 ## `Result` all the way to a boundary
 
 Errors propagate with `?` to the layer that can actually decide — retry, report,
-exit. The layers in the middle add context and get out of the way. `?` converts
-through `From`, which is why a `#[from]` on an enum variant removes a `map_err`
-closure at every call site:
+exit. `?` converts through `From`, which is why a `#[from]` on an enum variant
+removes a `map_err` closure at every call site.
 
-```rust
+## Which shape: the boundary decides
+
+One question settles it: **does this error cross a public API boundary you will
+maintain across releases?**
+
+No — an internal crate, a closed set of failures, an error the caller only ever
+prints — it is an enum, and the enum is the cheaper, better answer:
+
+```rust,ignore
 #[derive(Debug, thiserror::Error)]
-enum AppError {
-    #[error("io error: {0}")]
-    Io(#[from] std::io::Error),
-    #[error("parse error: {0}")]
-    Parse(#[from] toml::de::Error),
-}
-
-// No map_err closures — ? converts through the From impls.
-fn load(path: &str) -> Result<Config, AppError> {
-    let text = std::fs::read_to_string(path)?;
-    let config = toml::from_str(&text)?;
-    Ok(config)
+enum LoadError {
+    #[error("cannot read {path}")]
+    Read { path: PathBuf, #[source] source: std::io::Error },
+    #[error("malformed config in {path}")]
+    Parse { path: PathBuf, #[source] source: toml::de::Error },
 }
 ```
 
-## Libraries: `thiserror`. Binaries: `anyhow`.
+Yes — a published library whose callers upgrade without editing their code — it is
+a struct wrapping a private kind, exposing the questions callers actually ask:
 
-A library error is part of the public API: callers match on it, so it is an enum
-with named variants and a stable shape. A binary error is a message a human reads
-once, so a boxed dynamic error with context is enough.
+```rust,ignore
+pub struct ConfigError { kind: ErrorKind }
 
-```rust
-// Library: the caller can match, so the variants are the API.
-#[derive(Debug, thiserror::Error)]
-pub enum ConfigError {
-    #[error("config file not found at {path}")]
-    NotFound { path: PathBuf },
-    #[error("invalid TOML in config")]
-    Parse(#[from] toml::de::Error),
-}
-
-// Binary: the caller is a human reading stderr.
-fn main() -> anyhow::Result<()> {
-    let config = load_config().context("loading config")?;
-    run(config)
+impl ConfigError {
+    pub fn is_not_found(&self) -> bool { /* match on the private kind */ }
+    pub fn path(&self) -> &Path { /* ... */ }
 }
 ```
 
-Two caveats. A binary large enough to have internal library crates uses
-`thiserror` inside them and `anyhow` only at the top. And `anyhow` in a published
-library forces every downstream caller to give up matching on concrete error
-types — that is the actual reason for the split, not taste.
+The full struct pattern, compiling, is in `ERROR-TYPES.md`.
 
-## Context is what makes an error actionable
+The public enum fails at that boundary in four independent ways: a variant like
+`Parse(toml::de::Error)` promises for ever which TOML crate you use; adding a
+failure mode breaks caller matches; `#[non_exhaustive]` does not save it, because
+it forces every caller into a `_ =>` arm from day one and so removes the exhaustive
+matching that was the reason to expose an enum; and it pushes work onto callers,
+who re-derive "the config file is missing" from
+`ConfigError::Io(e) if e.kind() == NotFound`. The precedent is `std::io::Error`,
+which is exactly this pattern.
 
-`No such file or directory (os error 2)` names the syscall, not the mistake. Each
-layer adds what it uniquely knows — which path, which config key, which request
-ID — and adds it once. The two failure modes to reject in review: no context at
-all, where the error arrives as a bare OS message, and the same fact restated at
-four layers, where the message ends up as `opening config: opening config: failed
-to read /etc/app/config.toml`.
+`thiserror` still does the mechanical work either way — `#[source]` chaining and
+`Display` forwarding. Binaries use `anyhow`: a binary error is a message a human
+reads once, so a boxed dynamic error with context is enough. A binary large enough
+to have internal library crates uses `thiserror` inside them and `anyhow` only at
+the top, and `anyhow` in a published library forces every downstream caller to give
+up matching on concrete types — that is the actual reason for the split, not taste.
 
 ## Error taxonomy
 
 Split the enum by what the caller does about it, not by where it was raised. If
 two variants always get identical handling, they are one variant. If one variant
-is retryable and another is fatal, they must be distinguishable without
+is retryable and another fatal, they must be distinguishable without
 string-matching a message — an `is_retryable()` or `kind()` accessor on a coarse
-enum is the standard shape. Mark a published enum `#[non_exhaustive]` so adding a
-variant later is not a breaking change; the semver rules for what does and does
-not break live in `/rust-api-design`.
+enum. On a public struct error the growth question does not arise, because the
+kind is private and adding to it is not a breaking change; `#[non_exhaustive]` is
+for the enum that is public despite the guidance above, buying non-breaking
+growth at the cost of exhaustive matching. The semver rules live in
+`/rust-api-design`.
 
 ## Panics that are the right answer
 
-Not every failure is a `Result`. A broken internal invariant in code with no
-caller-recoverable path should panic loudly rather than propagate a nonsense
-value — the program is already in a state the type system promised it would not
-reach. Input validation is the opposite: whatever the input, the caller can
-respond, so it is always a `Result`. For invariants too costly to check in
-release builds, `debug_assert!` keeps the check in dev and test builds and
-documents the assumption for the reader.
+Panic means stop the program, not "return an error loudly": a detected bug — a
+violated internal invariant — panics rather than returning an `Error`, because
+there is no caller who can do anything correct with it. `catch_unwind` is a
+last resort, followed by a controlled restart of the unit that panicked, never
+by carrying on as though nothing happened. For invariants too costly to check
+in release builds, `debug_assert!` keeps the check in dev and test builds.
 
 ## Deferrals
 
 Making the illegal state unrepresentable so the error cannot occur at all is
-`/type-driven-design` — the best error handling is a type that makes the error
-impossible. Whether changing the error enum is a semver break is
-`/rust-api-design`. Cancellation and timeouts as error cases are `/async-rust`.
-Expression-level cleanup of error handling — `map_err` closures, `Option`
-combinators — is `/idiomatic-rust`.
+`/type-driven-design`; whether changing the error shape is a semver break is
+`/rust-api-design`; cancellation and timeouts are `/async-rust`; expression-level
+cleanup of error handling is `/idiomatic-rust`.
 
 ## Verification
 
@@ -122,16 +111,14 @@ cargo clippy --all-targets   # add -- -D warnings only if the repo has no lint c
 cargo test
 ```
 
-Run clippy at the lint level configured in the repo — a repo with a `clippy.toml`
-or its own lint attributes keeps them, and a stricter level never goes on top.
-Then the targeted audit the agent runs itself and reads, rather than acting on
-blindly:
+Run clippy at the lint level configured in the repo — a `clippy.toml` or its own
+lint attributes stays, and a stricter level never goes on top. Then the targeted
+audit the agent runs itself and reads:
 
 ```bash
 rg '\.unwrap\(\)|\.expect\(' --glob '!**/tests/**' --glob '!**/benches/**' src/
 ```
 
 Every surviving hit needs a one-line justification. `clippy::unwrap_used` and
-`clippy::expect_used` are `restriction`-group lints: propose them for the repo
-lint config, do not switch them on unilaterally, and never override a level
-already configured.
+`clippy::expect_used` are `restriction` lints: propose them for the repo lint
+config, do not switch them on unilaterally, or override a level already set.
