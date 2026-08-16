@@ -81,3 +81,13 @@ Run these before considering skill work done:
   or `.claude-plugin/marketplace.json`.
 - `scripts/link-skills.sh` — symlinks skills into the local harness for manual
   testing.
+
+## 10. Code examples
+
+A complete, self-contained Rust example is fenced ` ```rust `. A deliberate fragment —
+a snippet using symbols defined elsewhere, a signature with no body, illustrative
+pseudocode — is fenced ` ```rust,ignore `. Untagged means "this compiles", so an
+untagged block that does not compile is a bug. See `.agents/code-examples.md`.
+
+Skills authored from now on are written to this convention. The existing blocks are
+retro-tagged, and the check automated, as a separate change.
