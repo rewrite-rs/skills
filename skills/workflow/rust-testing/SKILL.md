@@ -36,7 +36,16 @@ one-line rule for each:
 | Snapshot test (`insta`) | The output is large, structured, and reviewed by eye — rendered text, generated code, error reports |
 
 The corollary: a bug found in production earns a unit test at the level the
-bug lived, not an end-to-end test that happens to cover it.
+bug lived, not an end-to-end test that happens to cover it. When either a unit
+or an integration test would do, take the integration test: it keeps working
+through refactors of the internals. Two more forms sit outside the table: a
+runnable program in `examples/`, which `cargo test --examples` compiles so
+usage samples cannot rot, and fuzzing with `cargo-fuzz` for any code that
+parses untrusted input, where the point is inputs nobody thought to write.
+
+Follow the test framework the repo already uses. The tools above are
+recommendations for a repo with no convention; a repo with its own harness
+gets tests in that harness, not a second one beside it.
 
 ## Table-driven over copy-paste
 
@@ -114,6 +123,11 @@ cargo test --all-features
 cargo test --doc
 cargo clippy --all-targets --all-features   # add -- -D warnings only if the repo has no lint config
 ```
+
+Test every feature combination that is meant to work, not only the
+all-features build (`cargo hack` can walk them), and run the suite on each
+platform that has its own code paths: a `cfg(windows)` branch is untested
+until something runs on Windows.
 
 Clippy runs at the lint level configured in the repo — a repo with a
 `clippy.toml` or its own lint attributes keeps them, and a stricter level

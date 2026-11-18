@@ -108,3 +108,29 @@ silently.
 It happens. The requirement: it is edited in one place, with a line
 saying what changed and why, and the harness is updated in the same
 commit. A contract that drifts to match the port is not a contract.
+
+## `PORTING.md`, the reviewer-facing companion
+
+The contract is the standing agreement the harness enforces. A port also
+ships a short notes file for the person reviewing it, named `PORTING.md`
+unless the user names another file. It does not restate the contract: it
+opens with one line pointing at the contract file (or, when no contract
+file exists, states the unit and the acceptable and unacceptable
+differences in a few lines), then holds what only a reviewer needs:
+
+- **Item correspondence** — a table pairing each source item with the Rust
+  item that replaces it.
+- **Test correspondence** — for every source test, the Rust test that
+  covers the same case.
+- **Intended divergences** — what behaves differently now and the reason:
+  a failure mode that cannot occur, a limit that was lifted, rare input
+  where `std` and the source runtime disagree.
+- **Quirks kept intact** — oddities retained deliberately, so a later
+  cleanup does not erase them.
+- **Follow-ups** — fixes deferred so the port stays attributable.
+- **Verification** — the commands run and what they returned, or a plain
+  statement that they could not run.
+
+A deliberate difference that changes what a caller can branch on is a
+contract change, and it goes through the triage above rather than being
+recorded only here.

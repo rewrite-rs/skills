@@ -96,6 +96,30 @@ and it costs twice: it disables `deny_unknown_fields` on the containing type,
 and it forces buffering during deserialization. Worth it for composition, not
 for saving four lines.
 
+## Serde in a library crate
+
+A library whose public types describe data (records, messages, configuration
+shapes) should let callers serialize them: implement `Serialize` and
+`Deserialize` on those types. Make it opt-in, because most users never touch
+a wire format and should not compile serde for it. The feature carries the
+bare name `serde`, so downstream crates enable it by the name they already
+expect, and the derives are gated on it:
+
+```rust,ignore
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct Reading {
+    pub sensor: String,
+    pub celsius: f64,
+}
+```
+
+The feature must stay additive: enabling it adds impls and changes nothing
+else, and the attributes inside the type stay behind `cfg_attr` too. The
+dependency itself is optional and declared with `features = ["derive"]`.
+Types that are not plain data (handles, guards, anything holding a
+resource) get no impls, because a wire form for them would be a lie.
+
 ## Errors from the boundary
 
 A deserialization failure is user-facing input error, not a bug: it carries the

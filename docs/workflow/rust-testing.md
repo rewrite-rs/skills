@@ -31,7 +31,13 @@ The form follows the assertion, not the habit:
 | Snapshot test (`insta`) | The output is large, structured, and reviewed by eye — rendered text, generated code, error reports |
 
 The corollary: a bug found in production earns a test at the level the bug
-lived, not an end-to-end test that happens to cover it. Table-driven cases
+lived, not an end-to-end test that happens to cover it. When either a unit or an
+integration test would do, take the integration test. `examples/` programs
+(run by `cargo test --examples`) keep usage samples compiling, `cargo-fuzz`
+covers untrusted input, every working feature combination and every platform
+with its own code gets tested, and a repo with an existing test framework keeps
+it. Test-only fakes, mock handles, and generators share one `test-util`
+feature, and no type that performs I/O offers a `Default`. Table-driven cases
 carry the input in the assertion message, so a failure names the case. The
 file locations, reach, costs, and worked examples for each form are in
 `TEST-DESIGN.md`, along with snapshot discipline, golden files, fixtures,

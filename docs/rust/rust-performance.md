@@ -29,7 +29,17 @@ the code worse in exchange for nothing — are why the measurement is the entry
 ticket. A profile exists to find the one function that holds the time, which
 is almost never the one that looked expensive while reading. Part of the
 measurement is `[profile.bench]` with `debug = 1`: without it, the profiler
-shows addresses instead of function names.
+shows addresses instead of function names. First settle whether speed matters for
+the crate, record hot spots in comments beside the code, and pass
+benchmark values through `std::hint::black_box`. Where an iterator chain and a
+loop compete, benchmark both.
+
+## Throughput and indirection
+
+Optimise for items per CPU cycle: offer batched entry points, never spin
+waiting for work, and avoid per-item work a pass over the batch could do.
+Stacked `Arc` layers on hot types add dependent loads, and a hot field such as
+`retry_limit: u8` belongs in the owning struct, not behind a shared pointer.
 
 ## Allocation
 
@@ -37,17 +47,21 @@ The highest-yield category: `Vec::with_capacity` when the size is known,
 clear-and-reuse over allocate-per-iteration, `Box<[T]>` and `Box<str>` for an
 owned sequence that will never grow, `mem::take` to move a value out of a
 `&mut` without cloning, no `format!` in a hot loop, and `Cow` for the
-borrow-or-own case. The buffer-passing shapes and the reuse patterns behind
-each are in `ALLOCATION.md`.
+borrow-or-own case. Reusable types offer `clear()`, and `try_reserve` replaces
+aborting growth where memory is limited. The buffer-passing shapes and the
+reuse patterns behind each are in `ALLOCATION.md`.
 
 ## Common questions
 
 **Is `target-cpu=native` safe to commit?** No — the binary is then tied to
 the build host and faults on an older machine. It is an application decision,
-stated alongside the gain, never a library default.
+stated alongside the gain, never a library default. A server application may
+instead set the highest `target-cpu` its deployment guarantees (for example
+`x86-64-v3`) and may adopt `mimalloc` as its global allocator after measuring;
+a library does neither.
 
 **Does the default hasher matter?** Only when the keys are not
-attacker-controlled — internal IDs, enum discriminants, interned strings. The
+attacker-controlled — internal IDs, enum discriminants, interned strings, where `foldhash` or `FxHash` are faster. The
 default is DoS-resistant and correspondingly slow; with attacker-controlled
 keys the swap is a denial-of-service surface, and the risk goes in the commit
 message rather than the code.

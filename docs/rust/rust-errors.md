@@ -31,7 +31,18 @@ compiler cannot see — and the `expect` message names the invariant violated,
 not the operation that failed, and carries the actual values. Not every failure
 is a `Result`: input validation is always a `Result`, and a broken internal
 invariant with no caller-recoverable path is the one failure that should stop
-the program.
+the program. Other legitimate panics are `const` contexts, methods that unwrap on
+request, poisoned locks, developer-facing tools, and tests. Where a panic for
+misuse is justified, a fallible sibling sits beside it, with the panic documented
+under `# Panics`. Return `Option` when absence is the one obvious failure
+(`checked_add`) and `Result` when the cause is useful to the caller.
+
+**`catch_unwind`.** Never catch and continue inside first-party logic. It is
+allowed at an FFI boundary (required there), per request in a server followed by
+a controlled restart, and as defence in depth that nothing relies on. It does
+nothing under `panic = "abort"`, and a library never catches on its caller
+behalf. Every function also owes minimal panic-safety: order the work so no
+intermediate state breaks an invariant. Detail in `PANICS.md`.
 
 ## Which shape: the boundary decides
 
@@ -49,15 +60,30 @@ maintain across releases?
   and `#[non_exhaustive]` removes the exhaustive matching that was the reason
   to expose the enum.
 
-Binaries use `anyhow`: a binary error is a message a human reads once, so a
+A public library leans to situation-specific error structs, one reused by
+similar functions (one parse error for both parsers) rather than a type per
+function; the enum stays for internal or closed sets. Every public error
+implements `std::error::Error`, is `Send + Sync`, is never `()`, never
+implements `description()`, and wraps a bare string in a struct because of the
+orphan rule; small plain-data errors derive `Copy`; an error carried in a box is
+typed `Box<dyn Error + Send + Sync + 'static>`, so the bounds let it cross
+threads and `downcast_ref` still works. A struct error may capture a `Backtrace` at construction, and a fallible function that consumes
+its argument returns it inside the error.
+
+Binaries use `anyhow` (or `eyre`, a close equivalent): a binary error is a message a human reads once, so a
 boxed dynamic error with context is enough, and `anyhow` in a published library
 forces every downstream caller to give up matching on concrete types — the
 actual reason for the split. `thiserror` does the mechanical work either way.
-The full compiling struct pattern, the closed enum shapes (`#[from]`,
-`#[source]`, `#[error(transparent)]`), context and message style, the `anyhow`
+`map_err` is for foreign errors or adding context, otherwise write a `From`; one
+application settles on a single top-level error type. Each `Display` prints only its own
+layer; the top-level report at the application boundary prints the summary, the
+backtrace, and the whole `source()` chain once. `assert!` messages say what was
+misused or which promise broke and never echo the condition. The full compiling
+struct pattern, the closed enum shapes (`#[from]`,
+`#[source]`, `#[error(transparent)]`), context and message style (short, lowercase, no trailing period), the `anyhow`
 side (`.context` vs `.with_context`, `downcast_ref`), and what the derive
 eliminates from hand-rolled `Display`/`Error`/`From` impls live in
-`ERROR-TYPES.md`.
+`ERROR-TYPES.md`; panic detail lives in `PANICS.md`.
 
 ## Common questions
 
@@ -90,6 +116,8 @@ additions.
 - Library crates expose `thiserror` errors shaped by the boundary — an enum for
   the closed case, a struct with a private kind for the published case — and
   the binary surfaces `anyhow` with context only at the top.
+- No `catch_unwind` exists outside an FFI boundary, a per-request server
+  boundary, or a never-relied-on backstop.
 - No error reaches a user as a bare OS message, and no fact is restated at more
   than one layer.
 - `cargo test` passes at the lint level configured in the repo.

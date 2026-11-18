@@ -57,6 +57,26 @@ banning the crate. The licence policy itself runs on an axis from
 permissive-only to copyleft-tolerated; the skill names the axis, the repo
 decides, and the decision is recorded in the policy file.
 
+## Versions, lockfile, and licences
+
+Each added crate lengthens compiles, grows the binary, and widens the set of
+authors you trust, `build.rs` and proc macros included. Cargo lets incompatible versions coexist and never
+two compatible ones, so a duplicate means a range stuck on an older line.
+
+| Requirement | Meaning |
+|---|---|
+| `"1.4"` | any compatible newer release; the preferred form |
+| `"~1.4.2"` | patch releases only |
+| `"=1.4.2"` | one exact version; avoid in libraries |
+| `"*"` | anything; avoid |
+
+Commit `Cargo.lock` for binaries. `cargo tree --edges features` shows what
+turns a feature on. On licences the skill stays neutral about what a repo may
+accept, but notes that permissive-only dependencies keep a permissive crate
+freely redistributable, that the licence and default features are part of the
+public contract, and that the ecosystem default for a published crate is
+`MIT OR Apache-2.0` with both licence files.
+
 ## Common questions
 
 **What does "accept" mean?** A written reason and an expiry — an annotated

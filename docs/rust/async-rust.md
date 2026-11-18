@@ -32,8 +32,15 @@ runtime, is made before it applies.
   where a `std::sync` guard held across the await becomes a deadlock. Default:
   `std::sync::Mutex` with a critical section that never crosses an `.await`;
   `tokio::sync::Mutex` only when the lock must span one.
+- **Future size.** Shrink state held across an `.await`, move non-suspending
+  setup outside the `async` block, and pin a hot future with a `size_of_val`
+  test.
+- **Runtime-agnostic I/O.** Libraries accept `futures::io::AsyncRead` and
+  `AsyncWrite` bounds. The explicit `impl Future` form is for trait methods and
+  hot functions only.
 - **Blocking work.** `spawn_blocking` for blocking I/O and short CPU work,
-  `rayon` for sustained CPU, never `std::thread::sleep` in a task. The symptom
+  `rayon` for sustained CPU, never `std::thread::sleep` in a task. When yielding
+  instead, `yield_now().await` after roughly 10 to 100 microseconds of work (a rule of thumb). The symptom
   is latency on unrelated tasks, not the offending one.
 - **Shared state.** `Arc<Mutex<T>>` for shared mutation, channels for handing
   work between tasks, message passing when the state has one logical owner.

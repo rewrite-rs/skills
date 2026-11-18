@@ -32,7 +32,7 @@ when it compiles.
 | `BigDecimal` | `rust_decimal` | Never `f64` for money |
 | `BigInteger` | `i128` / `num-bigint` | Actual range |
 | `ArrayList` | `Vec<T>` | Nothing hidden |
-| `HashMap` | `HashMap` | Iteration order leaking into output |
+| `HashMap` | `HashMap` | Output that depends on the order the map yields entries |
 | `LinkedHashMap` | `IndexMap` | Insertion order was load-bearing |
 | `TreeMap` | `BTreeMap` | The comparator, if custom |
 | `HashSet` / `TreeSet` | `HashSet` / `BTreeSet` | Same ordering question |

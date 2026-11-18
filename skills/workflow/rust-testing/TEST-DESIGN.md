@@ -13,6 +13,14 @@ it can reach, what it costs to run, and a worked example for each.
 | Property | A `proptest!` block, in unit or integration | Whatever the enclosing form reaches | 250 iterations by default, plus a regression file on failure |
 | Snapshot | An `assert_snapshot!` in unit or integration | Whatever the enclosing form reaches | Trivial once the snapshot exists — the cost is the review |
 
+Two further forms sit beside these. **Examples** are programs under
+`examples/`, built and run by `cargo test --examples`; they show a realistic
+whole-program use of the public API and fail the build when the API drifts
+away from them. **Fuzzing** (`cargo-fuzz`) feeds mutated bytes to a parser or
+decoder of untrusted input and keeps whatever crashes it; it complements
+property tests by finding shapes nobody described, and every crash it finds
+becomes a regression test.
+
 **Unit** — the default for a pure function with interesting edges, and the
 only form that reaches private items:
 
@@ -22,15 +30,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn entry_at_rejects_negative_and_oversize() {
-        let entries = [10, 20, 30];
-        assert_eq!(entry_at(&entries, -1), None);
-        assert_eq!(entry_at(&entries, 3), None);
+    fn slot_lookup_rejects_out_of_range() {
+        let slots = ["a", "b"];
+        assert_eq!(slot_lookup(&slots, -2), None);
+        assert_eq!(slot_lookup(&slots, 2), None);
     }
 }
 ```
 
-`entry_at` is private, and this test can call it because it lives in the
+`slot_lookup` is private, and this test can call it because it lives in the
 module. The same assertion from `tests/` would not compile.
 
 **Integration** — the assertion is about what a real caller sees, so the test
@@ -200,6 +208,17 @@ substitutable clock costs a public generic parameter or a vtable on every
 type that touches it — a permanent change to the public API paid for a
 test-only need. When the abstraction only exists to be swapped in tests,
 keep it private.
+
+Constructors for such types return the type together with a control handle,
+for example `with_fake_clock() -> (Self, ClockHandle)`, so the test can
+advance the clock after construction. Never give a type that does I/O
+a `Default` implementation: `Default::default()` reads as free and safe, and a
+hidden file or network access behind it surprises every generic caller.
+
+Everything test-only lives behind the single feature: fakes and mocks,
+inspection of sensitive data that production code must not expose, overrides
+of safety checks, and generators of fake data. One feature name means a
+downstream crate opts in once, and a normal build contains none of it.
 
 Feature-gate test utilities under a named feature so downstream crates
 can use the fakes deliberately, and so they are absent from a normal

@@ -113,6 +113,10 @@ costs less and reads better at that size.
   `Connection<_>` that holds both, unless the states are erased behind an enum
   or a trait object — which gives back part of what the type parameter took
   away.
+- **Binary size.** Each distinct state parameter is a separate type, and generic
+  code is compiled once per instantiation, so many states and many methods grow
+  the binary. Rarely decisive for a handful of states; real when the generic
+  surface is large.
 - **Public API.** The state parameter leaks into every caller signature. A
   library that hands out `Connection<Disconnected>` has committed its users to
   the type, and adding a state later is a change to review with care — the
@@ -123,6 +127,10 @@ costs less and reads better at that size.
 - Use typestate when out-of-order use is a real bug class *and* the state count
   is small and fixed — a connection lifecycle, a two-step protocol, a builder
   with three required fields.
+- Use a builder when the split is only at construction time: the stages exist to
+  collect fields, and the finished value needs no further state.
+- Use a strategy (a trait or an enum of behaviours) when the states differ only in
+  what a method does, not in which methods exist; no type parameter is needed.
 - Use a runtime state enum with a `Result` when the states are many, dynamic, or
   stored together in a collection.
 - Use plain methods with documented order when the cost of a mistake is a

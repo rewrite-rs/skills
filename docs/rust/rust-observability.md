@@ -23,7 +23,8 @@ Fields stay fields: `error!(user_id, %path, "config load failed")` keeps
 interpolated message becomes a string someone will later write a regex
 against. Events are named `component.operation.state` — `config.load.failed`,
 `pool.connection.acquired` — because a consistent scheme is what makes a
-dashboard possible. The layers: `println!` for a CLI producing output the
+dashboard possible, with field names taken from the OpenTelemetry semantic
+attributes where one exists. The layers: `println!` for a CLI producing output the
 user asked for, `log` when the dependency budget is tight, `tracing` as the
 default. Levels earn their meaning at the boundary: `error!` means someone
 should look, so a handled and expected failure is `warn!` or `debug!` at most.
@@ -40,7 +41,8 @@ errors are logged once, at the boundary that handles them, with the whole
 `source` chain rather than the top-level `Display` alone. Secrets sit behind
 a redacting newtype, so no call site — present or future — can log them. And
 field values are passed lazily, so a `debug!` that is off in production costs
-only the enablement check.
+only the enablement check. Hot inner loops carry no telemetry at all: one event
+around the loop or per batch instead.
 
 ## Common questions
 

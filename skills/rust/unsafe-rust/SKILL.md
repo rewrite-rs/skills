@@ -65,14 +65,22 @@ set.
 
 A safe API is sound when no safe caller can trigger undefined behaviour, for
 any input, including malicious ones. Unsound code is never acceptable: there is
-no "unsound but only in a case that cannot happen here" — soundness is a
-property of the API, and a safe function that can cause UB from safe caller
-code is a bug regardless of who currently calls it; fix it or make it
-`unsafe fn`. The encapsulation rule: keep the `unsafe` block as small as it can
+no "unsound but only in a case that cannot happen here". Soundness belongs
+to the API, so a safe function that lets safe caller code reach UB is a bug
+whoever calls it today; fix it, or mark it `unsafe fn`. The encapsulation rule: keep the `unsafe` block as small as it can
 be, and put the safe/unsafe boundary where the invariant is actually
 enforceable — the check belongs in the safe code that guards the block, not in
 the block itself. Inside the block, assume the code you call misbehaves — the
 depth is in `SAFETY-REVIEW.md`.
+
+The unit of soundness is the module. Fields and helpers private to a module
+cannot be touched by outside code, so the module is where an invariant can be
+defended: choose the narrowest module that is still able to guarantee the
+invariant, put the `unsafe` there, and expose only a safe interface. `String` is the model — a `Vec<u8>` whose
+private field and safe methods keep the bytes valid UTF-8, so safe callers
+cannot break the invariant the unchecked internals rely on. When the
+invariant is large or the dependencies many, isolate the code in its own small
+crate with few dependencies, so the audit surface is a short list of files.
 
 ## The UB hazards that actually appear
 
@@ -86,7 +94,11 @@ One point each; the review depth is in `SAFETY-REVIEW.md`.
 - **Invalid values:** a `bool` that is not 0 or 1, a `char` outside the scalar
   ranges, a null reference.
 - **`transmute`:** between types with different layouts, or without
-  `#[repr(C)]`/`#[repr(transparent)]` pinning the layout.
+  `#[repr(C)]`/`#[repr(transparent)]` pinning the layout. Two uses are off
+  the table outright: casting an integer to an enum through `transmute` (a
+  value with no variant is instant UB; use a `TryFrom` or a `match`), and
+  stretching a lifetime with `transmute` to make a borrow check pass (the
+  checker was right; restructure the ownership).
 - **Unwinding across FFI:** a Rust panic unwinding through a C stack frame.
 - **Data races:** shared state mutated without synchronization.
 
@@ -97,6 +109,12 @@ One point each; the review depth is in `SAFETY-REVIEW.md`.
 for an existing C library. Auditing `unsafe` you did not write is cheaper than
 justifying it — the audit is the published, reviewed one.
 
+The same reasoning rules out `unsafe impl Send` or `Sync` used to silence a
+bound the compiler reported. If a type holding a raw pointer or an `Rc` is
+rejected by a `Send` requirement, the type is the problem; a hand-written
+impl is for a type whose fields really are safe to move across threads, with
+the argument in a comment (`SAFETY-REVIEW.md`, per hand-written impl).
+
 ## Deferrals
 
 Whether the wrapper should be `pub`, and what its `unsafe fn` signature commits
@@ -106,6 +124,12 @@ Construct-level mapping from C or C++ into Rust is `/port-from-c` and
 `/port-from-cpp` — this skill covers the `unsafe` discipline, not the mapping.
 
 ## Verification
+
+New unsafe abstractions get more testing than ordinary code, because the
+compiler is not helping. Write tests that act as adversarial callers: pass
+boundary values and zero-length input, a closure that panics halfway, a trait
+impl that lies (a `Deref` that changes its answer, a `Clone` that panics),
+and drop order that surprises. Run them under Miri below.
 
 ```bash
 cargo miri test              # requires the miri component on nightly

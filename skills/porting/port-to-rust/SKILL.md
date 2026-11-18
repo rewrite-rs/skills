@@ -105,6 +105,32 @@ language aspects before writing the Rust; a construct that exists only for
 a source-language limitation is not ported; structural similarity to the
 source is a signal to re-examine — the entry is in `ANTIPATTERNS.md`.
 
+## Size the port to the source
+
+Behave like the source on the inputs it actually receives, and let `std`
+cover the rest rather than rebuilding the source runtime; where `std`
+diverges on rare input, say so in the notes. Expose the same public items
+plus the conventional trait impls, keep the algorithm unless it is wrong,
+and read code size (tests and comments left out) as a warning light: close
+to the source for C and C++, often two to three times for Python,
+JavaScript, and TypeScript, and suspect beyond that. Tens of
+representative inputs, error paths included, are enough to judge parity;
+the habits and their fixes are in `ANTIPATTERNS.md`.
+
+## Leave notes for the reviewer
+
+Ship `PORTING.md` (or the file name the user gives) beside the code: item
+correspondence, test correspondence, intended divergences, quirks kept
+intact, follow-ups, and verification. It is the reviewer-facing companion to the
+parity contract, not a second copy of it; the layout is in
+`PARITY-CONTRACT.md`.
+
+## Formatting
+
+Run `cargo fmt` only on files the port created. Do not reformat the source
+or Rust files you were not asked to change; if `cargo fmt --check` flags
+untouched files, leave them and mention it in the notes.
+
 ## Anti-patterns
 
 The top three: transliteration, big-bang rewrite, and improving while
@@ -112,13 +138,19 @@ porting; the full list, with the tell for each, is in `ANTIPATTERNS.md`.
 
 ## Verification
 
+Run these yourself and fix what they report:
+
 ```bash
+cargo build --all-targets --all-features
 cargo test --all-features        # includes the differential and characterization tests
 cargo clippy --all-targets --all-features   # add -- -D warnings only if the target repo has no lint config
-cargo fmt --check
+rustfmt --check <files the port created>   # never reformat files outside the port
 ```
 
-Plus the port-specific check the compiler cannot make: run the differential
-harness over the recorded corpus and report the count of inputs compared and
-the count of differences, not a pass/fail. Zero differences over nine inputs
-is not parity, and a report that hides the denominator hides that.
+Run the source tests too when the source toolchain is available, and
+compare results with the Rust tests on the same inputs. Then run the
+differential harness over the recorded corpus and report the count of
+inputs compared and the count of differences, not a pass/fail. Zero
+differences over nine inputs is not parity, and a report that hides the
+denominator hides that. Whatever could not run goes in the verification
+section of `PORTING.md` as a plain statement.

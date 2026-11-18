@@ -7,25 +7,79 @@ repo, the template is the proposal for a diff, not a replacement.
 
 ## `Cargo.toml` lint block
 
-Single-crate form — the full default set from `SKILL.md`. `missing_docs`
-sits in `[lints.rust]` for a library; a binary crate drops it when adapting:
+Single-crate form — the full default set from `SKILL.md`, library variant.
+An application drops the rows tagged [lib] in the comments, and any row the
+repo already sets stays exactly as it is. Group entries carry `priority = -1`
+so a lint set by name always overrides the group:
 
 ```toml
 [lints.rust]
 unsafe_op_in_unsafe_fn = "deny"
-missing_docs = "warn"
+missing_docs = "warn"                    # [lib]
 missing_debug_implementations = "warn"
 unreachable_pub = "warn"
-rust_2018_idioms = "warn"
+rust_2018_idioms = { level = "warn", priority = -1 }
 
 [lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+
+# Unsafe code
 undocumented_unsafe_blocks = "deny"
+multiple_unsafe_ops_per_block = "deny"
 missing_safety_doc = "deny"
-allow_attributes_without_reason = "deny"
+
+# Panics: unwrap_used and expect_used stay denied by default
 unwrap_used = "deny"
 expect_used = "deny"
-pedantic = { level = "warn", priority = -1 }
+panic_in_result_fn = "warn"
+missing_assert_message = "warn"
+missing_panics_doc = "warn"              # [lib]
+missing_errors_doc = "warn"              # [lib]
+
+# Suppression attributes
+allow_attributes_without_reason = "deny" # needs MSRV 1.81
+allow_attributes = "warn"                # needs MSRV 1.81; nudges allow toward expect
+map_err_ignore = "deny"
+
+# Ownership and smart pointers
+clone_on_ref_ptr = "warn"
+redundant_clone = "warn"
+rc_buffer = "warn"
+
+# Type and public-surface design
+fn_params_excessive_bools = "warn"
+struct_excessive_bools = "warn"
+exhaustive_enums = "warn"                # [lib]
+
+# Numeric conversions
+as_conversions = "warn"
+cast_possible_truncation = "warn"
+cast_sign_loss = "warn"
+
+# Strings and imports
+string_add = "warn"
+wildcard_imports = "warn"
+
+# Debug output and unfinished work
+dbg_macro = "warn"
+todo = "warn"
+print_stdout = "warn"                    # [lib]
+print_stderr = "warn"                    # [lib]
+
+# Pedantic members re-allowed because they mostly produce noise; present only
+# when pedantic is on
+module_name_repetitions = "allow"        # the module path is visible at the call site
+must_use_candidate = "allow"             # suggests #[must_use] more often than a reviewer would
+module_inception = "allow"               # lets src/parser/parser.rs hold the main Parser
+enum_glob_use = "allow"                  # a local glob import inside one match function reads fine
 ```
+
+The `expect_used` line is the house default. A repo that prefers "unwrap is
+banned, expect with a message is the sanctioned panic" sets
+`expect_used = "allow"` and keeps `unwrap_used = "deny"`; when detection finds
+that level, it stays, per the never-override rule. The two `allow_attributes`
+lines are written only when the detected MSRV is 1.81 or later; with an older
+or unknown MSRV they are omitted and the report says why.
 
 For a workspace, the same set lives in `[workspace.lints]` at the root plus
 the per-member `lints.workspace = true` opt-in — the full block is in the
@@ -41,7 +95,7 @@ assertions red.
 The default set from `SKILL.md`, as a workspace, with the mechanics that keep
 it behaving. `missing_docs` is deliberately absent from `[workspace.lints]` —
 a binary member has no public surface to document, so it goes in the library
-members instead.
+members instead, together with every other [lib] row.
 
 ```toml
 # Cargo.toml at the workspace root
@@ -49,16 +103,20 @@ members instead.
 unsafe_op_in_unsafe_fn = "deny"
 missing_debug_implementations = "warn"
 unreachable_pub = "warn"
-rust_2018_idioms = "warn"
+rust_2018_idioms = { level = "warn", priority = -1 }
 
 [workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
 undocumented_unsafe_blocks = "deny"
+multiple_unsafe_ops_per_block = "deny"
 missing_safety_doc = "deny"
 allow_attributes_without_reason = "deny"
 unwrap_used = "deny"
 expect_used = "deny"
-pedantic = { level = "warn", priority = -1 }
-missing_errors_doc = "allow"
+map_err_ignore = "deny"
+must_use_candidate = "allow"
+# ...the remaining rows from the single-crate block, minus the [lib] rows,
+# which go in the library members' own [lints.clippy] tables.
 ```
 
 ```toml
@@ -67,7 +125,7 @@ missing_errors_doc = "allow"
 workspace = true
 ```
 
-The `missing_errors_doc = "allow"` line is the `priority = -1` mechanic shown
+The `must_use_candidate = "allow"` line is the `priority = -1` mechanic shown
 concretely: the group entry registers first, so the member re-allow sticks. A
 group entry at the default priority wins against a later `allow` on one of
 its members, and the exception is silently discarded.
@@ -78,7 +136,11 @@ not, clippy suggests an API newer than the declared MSRV, and the oldest
 job goes red on a change nobody made.
 
 The edition is stated, not assumed: once in `[workspace.package]` for the
-workspace, or per package, and never left to the default.
+workspace, or per package, and never left to the default. A new crate takes
+the latest stable edition and sets `rust-version` at creation, and members
+inherit both with `edition.workspace = true` and `rust-version.workspace =
+true`; shared dependency versions go in `[workspace.dependencies]` as
+described in `WORKSPACE.md`.
 
 ## `clippy.toml`
 
@@ -86,16 +148,22 @@ Knobs only — this file cannot set lint levels, and a level written here is
 silently ignored:
 
 ```toml
-msrv = "1.75"
+msrv = "1.85"
+max-fn-params-bools = 0
 allow-unwrap-in-tests = true
 allow-expect-in-tests = true
+allow-print-in-tests = true
 ```
 
-`msrv` is what lets clippy check that the code builds on the recorded MSRV —
-set it to the detected value, not to an aspiration. The two `allow-*-in-tests`
-flags are the `#[cfg(test)]` carve-out the deny levels in the lint block
-depend on. If the repo already has a `clippy.toml`, read it first: an existing
-`msrv` wins, and the carve-out flags are added only if missing.
+`msrv` lets clippy check the code against the recorded minimum compiler, so
+set it to the detected value, not to an aspiration. With
+`max-fn-params-bools = 0`, `fn_params_excessive_bools` reports every function
+that takes a bool, where the default threshold waits for four. The three
+`allow-*-in-tests` flags are the `#[cfg(test)]` carve-out that the deny and
+warn levels in the lint block rely on. If the repo already has a
+`clippy.toml`, read it first: an existing `msrv` wins, and the carve-out flags
+and `max-fn-params-bools` are added only if missing. A different
+`max-fn-params-bools` value already in the repo stays.
 
 ## `rustfmt.toml`
 
@@ -113,13 +181,25 @@ max_width = 100
 # with a nightly-pinned rust-toolchain.toml, and is removed when the pin is
 # dropped.
 # group_imports = "StdExternalCrate"
+# imports_granularity = "Module"
+# hex_literal_case = "Lower"
+# format_macro_matchers = true
 # format_code_in_doc_comments = true
 # wrap_comments = true
 ```
 
 `edition` matches the detected edition. Keep the file small: every key is a
 house style the whole repo now has to follow, and a key with no reason behind
-it is a future argument.
+it is a future argument; the same test applies to every rule in a style
+configuration, and a rule that earns nothing is dropped.
+
+What the nightly keys do: `imports_granularity = "Module"` gives one `use`
+per module with no `::` nesting inside braces, `group_imports` orders
+standard, external, then crate imports, `hex_literal_case = "Lower"` writes
+hex digits in lowercase, and `format_macro_matchers` formats the matcher side
+of `macro_rules!` definitions. Propose them only alongside a nightly-pinned
+toolchain file. `#[rustfmt::skip]` is not a config matter: it is reserved for
+tables whose manual alignment carries meaning and for generated code.
 
 ## `docs/agents/rust.md`
 

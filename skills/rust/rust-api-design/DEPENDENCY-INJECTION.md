@@ -42,8 +42,21 @@ Every rung above the concrete type is a permanent part of the public API, so pay
 it for a requirement the surface really has, not for one only the test harness
 has.
 
+## Exposing `dyn` through a wrapper
+
+When the rung is `dyn Trait`, do not put `Arc<dyn Trait>` in a public signature.
+Wrap it in a named struct (`Storage`, holding the trait object privately) that
+exposes the operations callers need. The constructor takes the generic or concrete
+thing and boxes it inside; the pointer choice stays a private detail. A narrow
+trait over a concrete type, a generic over that trait, and then a dyn wrapper is
+the same ladder from the other direction.
+
 ## No preludes in libraries
 
-Two glob-imported preludes collide, and a prelude that would make a crate easier
-to understand is a signal the module structure needs work rather than a shortcut
-worth shipping.
+The default is no prelude: two glob-imported preludes collide, and a prelude that
+would make a crate easier to understand is usually a sign the module structure
+needs work. The rare case that justifies one is a curated set of traits and
+types every user imports together, such as the traits that must be in scope for
+the crate's method syntax to work, kept small and stable because adding a name
+can collide with a user's own. Consuming a prelude a framework documents for
+glob import is fine (`/idiomatic-rust`).

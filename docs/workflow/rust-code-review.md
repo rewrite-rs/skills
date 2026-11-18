@@ -39,6 +39,41 @@ The prompts for both, the merge rules, and the report shape are in
 run side by side; otherwise they run in order. The machine goes first either
 way: anything clippy already reports is a build failure, not a finding.
 
+## Scope, tools, and priority order
+
+The report opens with three scope decisions so the author can correct a wrong
+assumption early: what was reviewed (for a diff, the changed lines plus what
+they break), whether the crate was treated as a library or an application, and
+the edition and MSRV read from `Cargo.toml`, so no suggestion needs a newer
+toolchain. The tools run first — format check, clippy at the repo lint level,
+tests — and their results are folded in grouped by cause, with anything that
+could not run named. Pedantic lints are proposals only, never defects, unless
+the repo opted in.
+
+Attention then goes in a fixed order:
+
+| Tier | Looks for |
+|---|---|
+| Correctness and soundness | UB, reachable panics (indexing, casts, overflow), `Ord`/`Hash` disagreeing with `PartialEq`/`Eq`, lock hazards, destructors that can fail |
+| Error handling | Error types callers can match on; context that survives |
+| API design | Strict for a library, relaxed for an application |
+| Idiom | Ownership, iterators, combinators |
+| Docs and tests | Missing sections, tests that restate constants |
+
+## Finding shapes
+
+Findings are blocking, should-fix, or note; blocking includes an API choice
+that turns into a semver break after release. A diff or short review uses one
+line per finding. A file, crate, audit, or requested report uses a longer
+block: location, standard, consequence, and the minimal edit
+that fixes it. Every finding cites `path:line` or "whole file", names a
+clippy lint or the owning skill, and groups repeats. A documented choice
+becomes a note with the trade-off. The long report may add a keep list of two
+to four items, only for choices the fixes could undo; the praise ban stands.
+Templates are in `REPORT-FORMAT.md`. A repo with no lint configuration gets a
+closing suggestion to run `/setup-rust-skills`, citing items in the report that its lints would
+have flagged.
+
 ## What it adds beyond clippy
 
 The smell baseline: the judgment calls no lint can make — an unexplained
@@ -82,6 +117,12 @@ lint configuration: a finding that contradicts a deliberately set level is
 phrased as a proposal, and the verification step never re-runs stricter than
 the level the repo set.
 
+**Will it reformat or rewrite my code?** No. It runs `cargo fmt --check`
+only, and shows fixes as the smallest change inside the finding.
+
+**Why a keep list, if praise is banned?** It tells the author what not to
+break while fixing, and appears only in the long report form.
+
 **How is this different from running clippy?** Clippy is the floor, and it
 runs first. The review covers what the tools cannot see, and it leads with a
 verdict rather than a dump of tool output.
@@ -97,6 +138,10 @@ verdict rather than a dump of tool output.
 - Nothing clippy already reports appears as a finding.
 - Findings that contradict the repo lint configuration are phrased as
   proposals.
+- The report opens with scope: what was reviewed, library or application, and
+  edition and MSRV.
+- Soundness and reachable-panic findings come before style findings.
+- Repeats are grouped, and a documented choice is a note, not a blocker.
 - The verification output is quoted rather than summarized, and any check
   that could not run is named.
 

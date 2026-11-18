@@ -17,7 +17,9 @@ published type costs is `/rust-api-design`.
 A type that cannot represent the bad state removes the runtime check, the test
 for it, and the bug report about it. Ask of every struct: how many field
 combinations are constructible, and how many are valid? The gap between those two
-numbers is the surface where bugs live.
+numbers is the surface where bugs live. The compiler is also the one reviewer that
+never skims: an agent or a new teammate who misses an unwritten rule still cannot
+build the state the type forbids.
 
 ## Enums over flag soup
 
@@ -39,6 +41,10 @@ enum Post {
     Published { body: String, at: DateTime<Utc> },
 }
 ```
+
+The same move applies to a parameter: a `bool` or bare `u8` argument that makes the
+call site unreadable becomes an enum, or a newtype when it is boolean for good,
+and absence is an `Option`, never a sentinel value. `MODELLING.md` has the table.
 
 The same move covers the `Option<T>` pair smell: two `Option` fields where
 exactly one is always `Some` is an enum with two variants, and the impossible
@@ -66,7 +72,9 @@ fn deliver(to: &Email) { /* no validation possible here — none needed */ }
 
 The private field is the load-bearing part. A public field makes the
 constructor a suggestion, and the invariant dies the day someone builds the
-struct by literal.
+struct by literal. Validation has three tiers in order of preference — static
+types, dynamic checks, an opt-out `_unchecked` sibling — spelled out in
+`MODELLING.md`.
 
 ## Newtypes as invariant carriers
 
@@ -75,10 +83,14 @@ primitive being swapped at a call site. Here the newtype *carries an invariant*:
 `NonEmptyVec<T>`, `Percentage`, `Sanitized<String>` — types whose constructor is
 the only entrance and whose fields are private. The standard library already
 runs this pattern: `NonZeroU32` and friends, with the niche-optimization payoff
-that `Option<NonZeroU32>` is the same size as `u32`.
+that `Option<NonZeroU32>` is the same size as `u32`. Use a newtype, not a type
+alias, whenever the two meanings must not be mixed up, and check whether `std`
+already has the strongest type (`Path`, `Duration`) before writing one;
+`MODELLING.md` also covers restricting traits, panicking `const fn new`, and why
+reflection is replaced with traits.
 The same argument applies to numbers, where the type system will otherwise let
 a byte count be added to a millisecond count — `NonZero` for what cannot be
-zero, `TryFrom` rather than `as` at every boundary, and `NUMERICS.md` for the
+zero (inside the crate; on a public parameter only when callers can build it easily), `TryFrom` rather than `as` at every boundary, and `NUMERICS.md` for the
 rest.
 
 ## Typestate for protocol order

@@ -19,7 +19,47 @@ important thing to keep in view: it does not remove the borrow-checker error, it
 moves it from compile time to runtime. A `RefCell` that is borrowed mutably and
 then read panics in the user process, where the `E0502` used to stop the build.
 Reach for it only when the borrow structure is genuinely dynamic — determined by
-data at runtime, not by the shape of the code.
+data at runtime, not by the shape of the code. Where a panic is not acceptable,
+`try_borrow` and `try_borrow_mut` return a `Result` instead of aborting the
+operation; handle the `Err` as the signal that the structure is more tangled than
+planned.
+
+The nesting order picks the mutation granularity. `Rc<RefCell<Vec<T>>>` locks the
+whole collection for any change, so one borrow blocks every other. `Rc<Vec<RefCell<T>>>`
+lets each element be borrowed on its own while the collection stays fixed in
+length. Choose the finer grain only when the elements really are touched
+independently; otherwise the extra cells are more runtime checks to get wrong.
+
+Pointer-choice guidance for ordinary references and `Box` is in `LIFETIMES.md`.
+Prefer unique ownership wherever it fits. Shared ownership is the right call when
+the alternative is unreasonably complex, and cloning an `Rc` or `Arc` handle is
+cheap and expected rather than a smell. A reference cycle between `Rc`s is never
+freed, so back-pointers in a tree or graph (a child pointing at its parent) hold a
+`Weak<T>`, upgraded to an `Rc` only for the moment of use:
+
+```rust
+use std::cell::RefCell;
+use std::rc::{Rc, Weak};
+
+struct Folder {
+    name: String,
+    parent: RefCell<Weak<Folder>>,
+    children: RefCell<Vec<Rc<Folder>>>,
+}
+
+fn add_child(parent: &Rc<Folder>, name: &str) -> Rc<Folder> {
+    let child = Rc::new(Folder {
+        name: name.to_string(),
+        parent: RefCell::new(Rc::downgrade(parent)),
+        children: RefCell::new(Vec::new()),
+    });
+    parent.children.borrow_mut().push(Rc::clone(&child));
+    child
+}
+```
+
+The owning direction (parent to children) is strong and the back direction is
+weak, so dropping the root frees the whole tree.
 
 ## The handle clone
 
@@ -106,6 +146,12 @@ impl Graph {
     }
 }
 ```
+
+The arena has a weak spot of its own: a plain `usize` is not tied to the element
+it named. After a removal, or an id carried over from a different graph, the index
+can point at the wrong node or past the end. Keep the `Vec` append-only, or pair
+the index with a generation counter or a typed id wrapper, so a stale handle is
+caught instead of silently reading the wrong thing.
 
 The index pays a bounds check per hop and a cache miss per node; the `Rc` pays
 an atomic counter, a possible runtime panic, and a possible cycle leak. For most

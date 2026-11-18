@@ -69,6 +69,34 @@ implementations disagree — is in `PARITY-CONTRACT.md`.
 What each phase produces, what done looks like, and the failure
 that skipping it causes is in `PHASES.md`.
 
+## Sizing the port and the reviewer notes
+
+The port is sized to the source: it behaves like the source on inputs the
+code actually receives, and leans on `std` for the rest instead of
+hand-copying source string, number, or whitespace semantics. Where `std`
+diverges only on rare input, the difference goes in the notes, and a shim
+for those inputs is added only if the user confirms they exist.
+
+- **API:** the items the source exposes, plus the conventional trait impls
+  a Rust user expects (`Debug` and `Clone` on data, `Display` and `Error`
+  on failures, `FromStr`, `Default`, `IntoIterator` and `len`/`is_empty`
+  on collections). No builders, `Index`, `FromIterator`, `Extend`, or
+  custom iterators unless callers need them.
+- **Algorithm:** kept unless it is wrong, and any swap is recorded.
+- **Size:** count code lines, leaving out tests and comments. C and C++
+  ports land near the source; Python, JavaScript, and TypeScript ports
+  often land at two to three times. Much more points at one of the habits
+  above. It is a warning light, not a target.
+- **Differential testing:** tens of representative inputs, error paths
+  included, are enough to judge parity; rare divergences from a large
+  campaign belong in the notes.
+
+The reviewer gets `PORTING.md` (or the file name the user gives): item
+correspondence, test correspondence, intended divergences, quirks kept
+intact, follow-ups, and verification. It is the companion to the parity
+contract, not a copy of it. `cargo fmt` runs only on files the port created; if the
+check flags untouched files, they are left alone and mentioned.
+
 ## Common questions
 
 **What if the source implementation cannot be run at all?** Then
@@ -120,6 +148,12 @@ first and stays running through the port.
 - The source implementation was deleted at cut-over rather than
   left in place.
 - The Rust module structure was chosen, not inherited.
+- A `PORTING.md` maps the API and the tests, and lists deliberate
+  differences, preserved quirks, follow-ups, and the commands run.
+- The port is near the expected size for its source language, with no
+  hand-copied source runtime and no API the source lacked.
+- Build, tests, and clippy ran at the repo lint level, and files the port
+  did not create were not reformatted.
 
 ## Where it fits
 

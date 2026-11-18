@@ -65,6 +65,14 @@ The surrounding decisions, per type:
 External is the default; internal and adjacent are what a self-describing
 message needs; untagged is for a shape no representation fits.
 
+## Serde in a library crate
+
+A library whose public types are plain data should let callers serialize
+them, behind an optional feature called `serde`, spelled that way because
+downstream crates look for that name. The derives are gated with
+`cfg_attr(feature = "serde", derive(...))`, the feature stays additive, and the
+dependency is optional. Types that wrap a resource get no impls.
+
 ## Common questions
 
 **`#[serde(default)]` or `Option<T>`?** Different questions. `default` says

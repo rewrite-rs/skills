@@ -27,6 +27,22 @@ borrow-checker pain that an ownership fix resolves first
   the constructor the only way in.
 - **Newtypes carry invariants.** `NonEmptyVec`, `Percentage`, `Sanitized<T>` —
   distinct from the argument-swap-safety newtype in `/idiomatic-rust`.
+- **Comments that state an invariant become enums.** A field comment reading
+  "must be X if Y" means the type permits states it should not; an enum whose
+  variants carry only the valid data removes them.
+- **Choices get names.** A `bool` or bare `u8` parameter that makes the call
+  unreadable becomes an enum (a third option may arrive) or a newtype (boolean for
+  good); independent switches use a flags type; absence is `Option`, never a
+  sentinel; enums may carry explicit discriminants for wire or C formats.
+- **Strongest std type, newtype over alias.** `Path` for OS paths, `Duration` for
+  time; an alias does not stop a mix-up, a newtype does, and it can also withhold
+  traits from the inner type. A panicking `const fn new` suits fixed-bound
+  newtypes, never an infallible `From`.
+- **Three validation tiers.** Static types, then dynamic checks (`debug_assert!`
+  for the expensive ones), then an `_unchecked` opt-out sibling.
+- **No reflection.** `type_name` is diagnostic, `Any::downcast_ref` recovers only
+  what is already `dyn Any`; use traits, marker traits, and derives instead.
+- **The compiler as reviewer.** Types check what an agent or newcomer might miss.
 - **The stopping rule.** Encode an invariant in a type when violating it is a
   real bug class here, not when it is merely expressible.
 
@@ -34,8 +50,8 @@ borrow-checker pain that an ownership fix resolves first
 
 Protocol order — connect before send, build before finalize — can be a type
 parameter, so an out-of-order call is a compile error. The worked `Connection`
-example, the builder variant, and the three costs (error messages, storage,
-public API leakage) live in `TYPESTATE.md`. The decision list: typestate for
+example, the builder variant, and the four costs (error messages, storage, binary
+size, public API leakage) live in `TYPESTATE.md`. The decision list: typestate for
 small fixed state machines where out-of-order use ships a bug; a runtime state
 enum with a `Result` when states are many, dynamic, or stored together.
 
@@ -44,13 +60,15 @@ enum with a `Result` when states are many, dynamic, or stored together.
 - **The type family first.** A count is an unsigned integer, a measurement a
   float only if it genuinely is one, an identifier a newtype that never does
   arithmetic, and money an integer of minor units.
-- **`NonZero` for what cannot be zero**, and the overflow operator named
+- **`NonZero` for what cannot be zero** inside the crate; on a public parameter
+  only when zero is a caller bug and callers can build the value easily,
+  otherwise the plain integer and an error (same test for `Saturating`), and the overflow operator named
   explicitly — checked, saturating, or wrapping — rather than plain `+`.
 - **`TryFrom` over `as`** at the boundary, once.
 - **Floats compare badly.** No `==` without an epsilon appropriate to the
   magnitude, and sorting goes through `total_cmp`.
 - The worked `Cents` versus `Meters` example, with the range-checking
-  constructor, lives in `NUMERICS.md`.
+  constructor, lives in `NUMERICS.md`; the modelling choices above live in `MODELLING.md`.
 
 ## Common questions
 

@@ -40,7 +40,9 @@ in two sentences? A block that does not sit under one of these three has an
 author reaching for `unsafe` to make an error go away, and the error was
 right. When a published crate already solved the case — `bytemuck`,
 `zerocopy`, `smallvec`, an existing binding — auditing it beats writing the
-`unsafe`.
+`unsafe`. A hand-written `unsafe impl Send` or `Sync` is never a way to
+silence a rejected bound, and `transmute` is never used to turn integers into
+enums or to stretch a lifetime.
 
 ## Documenting and verifying safety
 
@@ -52,7 +54,12 @@ closure that panics mid-operation, a `Deref` that varies, a `Drop` at an
 unchosen moment. The line-by-line checklist — per block, per pointer, per
 `transmute`, per FFI call (including the edition 2024 marks), per
 hand-written `Send`/`Sync` impl — is in `SAFETY-REVIEW.md`, where the
-sound/unsound `split_at_mut` pair is the test. Verification runs
+sound/unsound `split_at_mut` pair is the test. Soundness boundaries are module boundaries: the `unsafe` lives in the
+narrowest module that still guarantees its invariant, behind a safe interface, the way
+`String` keeps its bytes valid UTF-8 — and in its own small crate when the
+invariant or the dependency list is large. New unsafe abstractions are tested
+with adversarial callers (panicking closures, lying trait impls, boundary
+inputs). Verification runs
 `cargo miri test` (targeted at the relevant tests, with its limits stated),
 clippy at the repo lint level, and the full suite.
 
@@ -76,13 +83,13 @@ to be a win the profile named, so `/rust-performance` goes first, and the
 answer there is usually that the allocation was the problem.
 
 **What is the difference between unsafe and unsound?** `unsafe` names the
-block; soundness names the API. A safe function that can cause UB from safe
-caller code is unsound — a bug regardless of who currently calls it — and
+block; soundness names the API. A safe function that lets safe caller code
+reach UB is unsound — a bug whoever calls it today — and
 unsound code is never acceptable.
 
 ## It's working if
 
-- Every `unsafe` block has a `// SAFETY:` comment naming an invariant.
+- No `unsafe` block lacks a `// SAFETY:` comment that names its invariant.
 - Every `pub unsafe fn` has a `# Safety` doc section.
 - `cargo miri test` passes on the tests covering the `unsafe` paths, or its
   absence is reported.
@@ -92,6 +99,9 @@ unsound code is never acceptable.
   performance win the profile named, or a primitive the language cannot
   express safely.
 - No `mem::zeroed()` on a type with invalid bit patterns.
+- No `transmute` from integer to enum or to extend a lifetime, and no
+  `unsafe impl Send` added to satisfy a bound.
+- New unsafe abstractions have tests that feed them hostile input.
 
 ## Where it fits
 

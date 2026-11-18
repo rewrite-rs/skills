@@ -45,6 +45,12 @@ fn describe(stats: &[u64], into: &mut String) {
 }
 ```
 
+A type meant to be reused across calls offers a `clear()` that empties it
+while keeping its capacity, so callers can recycle one instance in a loop
+instead of dropping it and building a new one. Where an API returns a value
+by building it, a sibling that fills a caller-owned `&mut` target is the
+version that allows this.
+
 `write!` into a `&mut String` is the sanctioned alternative to `format!` in a
 tight loop: the formatting happens into the reused buffer, and the `Result` is
 unfailable for a `String`, so discarding it is correct, not a swallowed error.
@@ -115,5 +121,23 @@ fn trimmed() -> Vec<u8> {
     v.truncate(128);
     v.shrink_to_fit();
     v
+}
+```
+
+## Fallible allocation: `try_reserve`
+
+`Vec::with_capacity` and ordinary growth abort the process when the allocator
+refuses. Where memory is limited (a sandboxed worker, input sizes an outside
+party controls) prefer `try_reserve`, which reports failure as a `Result` the
+caller can turn into an error instead of dying:
+
+```rust
+use std::collections::TryReserveError;
+
+fn load(len: usize) -> Result<Vec<u8>, TryReserveError> {
+    let mut buf = Vec::new();
+    buf.try_reserve(len)?;
+    buf.resize(len, 0);
+    Ok(buf)
 }
 ```

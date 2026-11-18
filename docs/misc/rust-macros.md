@@ -18,12 +18,29 @@ as `/rust-macros`.
 
 ## Before writing a macro
 
-Three cases are the genuine answers: a variadic interface, generating an impl
-per type from a list, and embedding a DSL whose syntax is not Rust. Outside
+Four cases are the genuine answers: a variadic interface, generating an impl
+per type from a list, embedding a DSL whose syntax is not Rust, and keeping
+parallel definitions in sync — an enum, its text, its group, and its
+`TryFrom` conversion generated from one table so adding a variant is a
+one-line change. Outside
 them, a function, a trait with a blanket impl, or a generic is the tool, and
 the cost a macro charges — no jump-to-definition, errors pointing at
 expansions, no type checking until the expansion happens — is paid by every
 reader afterwards.
+
+Rank the options by tooling cost and stop at the first that works:
+
+| Rank | Option | Cost |
+|---|---|---|
+| 1 | Ordinary functions, types, traits, modules | None extra |
+| 2 | `macro_rules!` in the same crate | Hidden expansion, a syntax to learn |
+| 3 | Generated source such as `build.rs` | A build step, output outside the tree |
+| 4 | Procedural macro | A separate crate, `syn`/`quote`, slower builds |
+
+Weigh IDE and search support, the private dialect readers must learn,
+and the cost of large mechanical changes before stepping down, and check
+`strum`, `enumn`, and `num_enum` before hand-rolling an enum conversion macro.
+A derive beats a macro that emits a new type.
 
 `macro_rules!` comes before the proc macro: it is in the same crate, needs no
 dependency, and can be read. The proc macro earns its own crate and a
@@ -32,6 +49,23 @@ syntax — what derives and attribute macros are. Whatever the expansion
 references in the crate that defines it goes through `$crate`, and the
 helpers live in a `#[doc(hidden)] pub mod _private` so they stay reachable
 from the expansion without becoming public surface.
+
+## What an expansion must not do
+
+Bind each `expr` argument once, so it is not evaluated twice. Keep `return`,
+`?`, and mutation out of the expansion so control flow stays visible at the
+call site. Never change an item kind, a signature, or `async`; the single
+exception is a handler-style attribute that emits a documented companion
+struct. Item macros follow the checklist in `ITEM-MACROS.md`: input that
+resembles the output, attributes and visibility passed through, working at
+module and function scope, and `ty` fragments that accept paths and generics.
+
+## Proc-macro crate layout
+
+A user-facing proc macro ships as `foo` (re-exports), `foo_proc` (entry
+points only), and `foo_proc_impl` (logic, snapshot tests with `insta`).
+Companion crates are pinned to one exact version with `=x.y.z` and released as a set, and renamed
+imports of the macro crate are not supported.
 
 ## Errors users can act on
 
@@ -75,6 +109,8 @@ is the surface the user reads.
 - No expansion references an item from the defining crate without `$crate`.
 - The helpers the expansion needs sit in a `_private` module marked
   `#[doc(hidden)]`, not in the public surface.
+- No expansion evaluates an argument twice or hides a `return`, `?`, or
+  mutation.
 - Failure cases produce spanned errors, and there is a test that reads them.
 
 ## Where it fits

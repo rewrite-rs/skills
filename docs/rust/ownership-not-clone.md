@@ -30,15 +30,31 @@ held across `.await` points (`/async-rust`). The user can run it directly, as
   extract a free function taking the two fields when destructuring is not enough.
 - **Cheapest argument types.** `&str` over `&String`, `&[T]` over `&Vec<T>` — a
   signature that takes ownership of a value it only reads forces a clone at every
-  call site, and the bug is in the signature.
+  call site, and the bug is in the signature. Likewise `&T` over `&Box<T>` and
+  `Option<&T>` over `&Option<T>` (clippy `borrowed_box`, `ptr_arg`). When the
+  function needs ownership, take it by value and never clone a borrow inside;
+  bound by `Copy` only when the body needs it.
 - **`Cow` for genuine borrow-or-own.** The common path borrows, the rare path
   allocates; anything else is a plain owned type.
-- **`mem::take` and `mem::replace`.** Move a value out of a `&mut` by leaving a
-  default in its place — the answer to "I need to own this but I only have a
-  mutable borrow".
-- **Avoid statics.** A `static` with mutable or lazily-initialised state is a
-  lifetime nobody wrote down and an ownership story nobody can follow — pass the
-  value, or hold it in the type that owns the work.
+- **`mem::take` and `mem::replace`.** When only a `&mut` is in hand and an owned
+  value is needed, swap something in so the original can be moved out. `take`
+  leaves `Default`, `replace` leaves a value you pick, `Option::take` covers
+  options, and an enum variant can be changed in place by taking the field you
+  want to keep.
+- **Global state.** A `static` with mutable or lazily-initialised contents has
+  no visible owner and no stated lifetime; pass the value in, or keep it in the
+  type that does the work. Thread-locals break where one shared value matters,
+  two semver-incompatible crate versions each carry their own statics, and no
+  code should run before `main`.
+
+## Pointers, lifetimes, and borrow tactics
+
+`LIFETIMES.md` holds the pointer-type table (`&`, `Box`, `Rc`/`Arc`, `RefCell`,
+`Mutex`), the elision rules and when to name a lifetime, why a struct should
+usually own its data instead of borrowing it, what `'static` and `Box::leak`
+mean, and the order of tactics when a borrow conflict survives: shorten the
+borrow, split the expression into typed steps, split the struct, then change the
+ownership design. Self-referential structs are avoided.
 
 ## When shared ownership is the answer
 
@@ -49,7 +65,10 @@ graph as `Vec<Node>` plus index edges, no runtime borrow check, no cycle leak)
 live in `SHARED-STATE.md`; the situation-by-situation verdicts live in
 `CLONE-DECISIONS.md`. The handle clone — a service type that derives `Clone`
 over an `Arc<Inner>` and copies one pointer, not the pool — passes the
-one-sentence test and is covered in `SHARED-STATE.md`.
+one-sentence test and is covered in `SHARED-STATE.md`, along with `Weak`
+back-pointers, `try_borrow`, the `RefCell` nesting granularity, and the stale-index
+risk of arenas. Prefer unique ownership; use shared ownership when the
+alternative is unreasonably complex; cloning an `Rc`/`Arc` handle is cheap.
 
 ## Common questions
 

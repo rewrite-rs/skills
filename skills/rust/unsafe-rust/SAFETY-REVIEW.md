@@ -45,6 +45,9 @@ impl is an invariant you do not have.
 
 ## Per `transmute`
 
+- Is it turning an integer into an enum, or extending a lifetime? Both are
+  banned; use a checked conversion or restructure ownership.
+
 - Are both types `#[repr(C)]` or `#[repr(transparent)]`, or otherwise guaranteed
   the same layout and size?
 - Would `bytemuck` or `zerocopy` do the conversion safely?
@@ -84,6 +87,9 @@ pub unsafe extern "C" fn rust_add_named(a: u32, b: u32) -> u32 {
 ```
 
 ## Per hand-written `Send`/`Sync` impl
+
+- Is the impl being written because the compiler rejected a bound? That is
+  never a reason; fix the type or the sharing.
 
 - What makes it true, stated in a comment for a reviewer who did not write it?
   "All the fields are `Send`" is not an answer when one of them is a raw

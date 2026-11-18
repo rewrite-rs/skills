@@ -14,6 +14,8 @@ Every line of business logic lives in a normal Rust crate that knows nothing
 about FFI; the `extern` layer converts types, checks pointers, and calls in.
 The core crate is testable with `cargo test`, the FFI layer only through a
 foreign harness — logic that drifts into the boundary is logic no test reaches.
+Core types stay free of raw-pointer fields and of `#[repr(C)]` layouts chosen
+for the foreign side; the pointer lives in the boundary type, as below.
 
 ```rust
 use std::ffi::{c_char, CStr};
@@ -55,6 +57,13 @@ pub unsafe extern "C" fn mylib_client_free(client: *mut MylibClient) {
 }
 ```
 
+Wrap every pointer the foreign side owns in a Rust type whose `Drop` releases
+it, so each exit path frees it exactly once. The safe wrapper checks for null
+and returns a `Result` (or `Option`) to Rust callers instead of handing the
+null onward; the raw pointer and the `unsafe` block stay inside it. For a
+large C API, split the work: a raw declarations crate named `xyzzy-sys` under a
+safe `xyzzy` crate that owns the wrappers.
+
 ## Nothing panics across the boundary
 
 Unwinding into a foreign frame is undefined behaviour. Every `extern "C"`
@@ -65,7 +74,11 @@ converts the panic to an error code or an out-parameter, the one place
 ## Every pointer states its ownership
 
 Who allocated it, who frees it, how long it stays valid, and whether null is
-allowed — in the signature and in the docs. A crate that exposes an
+allowed — in the signature and in the docs. Never return a pointer to stack
+data or to a local that dies on return; the caller holds a dangling address
+the moment the call ends. Hand out heap data (`Box::into_raw`, reclaimed with
+`Box::from_raw` in the matching free) or a pointer into memory the caller
+owns. A crate that exposes an
 allocation exposes the matching free from the same crate; the other side
 cannot free what the first side allocated. A `# Safety` section carries it —
 `/rust-docs` for the wording, `/unsafe-rust` for the invariant.
@@ -84,11 +97,22 @@ state behind. Prefer an opaque handle the caller creates, passes back, and
 destroys, over module-level statics — the handle makes the lifetime explicit
 and makes two instances possible.
 
+Across a library boundary share only plain `#[repr(C)]` data. Do not let a
+static, a thread-local, a `TypeId`, or a pointer into data that does not
+travel across the boundary (for example another module allocator or vtable)
+become part of what two sides must agree on; each library has its own copy of
+those, and they disagree silently.
+
 ## Naming across the boundary
 
 Exported symbols are prefixed with the library name, because the C namespace
 is flat: `mylib_client_new`, `mylib_client_free`. Inside Rust the same
 function is `Client::new`; the prefix belongs to the exported symbol.
+
+Crate names follow direction. A `-sys` crate imports a C library into Rust
+(raw declarations and linking, nothing else); an `-ffi` crate exports a Rust
+library as a C-style one. The build rules for `-sys` crates are in
+`SYS-CRATES.md`.
 
 ## The edition 2024 forms
 
@@ -102,9 +126,16 @@ A Rust `&str` is not a C string, and a `String` cannot be freed by `free()`.
 `CStr` and `CString` at the boundary, pointer-plus-length for slices, and the
 UTF-8 validation happens once, explicitly, on the way in.
 
+Declaring a foreign function uses an `extern "C"` block with fixed-width
+types — `c_int`, `c_char`, `u32` — never Rust `usize` guesses for a C `int`.
+Linking comes from `#[link(name = "...")]` or from a `build.rs` that emits the
+link directives, so a crate does not depend on an ambient environment.
+
 ## Deferrals
 
-Migrating an existing C codebase into Rust is `/port-from-c`, and the bindgen
+Generating declarations from headers, including the `bindgen` flags,
+`include!` of its output, and the regenerate-and-diff CI check, is in
+`SYS-CRATES.md`; the porting walkthrough stays in `/port-from-c`. Migrating an existing C codebase into Rust is `/port-from-c`, and the bindgen
 and cbindgen walkthroughs live there. Whether an `unsafe` block is sound is
 `/unsafe-rust`. What the safe Rust API on top should look like is
 `/rust-api-design`. The `# Safety` section wording is `/rust-docs`.

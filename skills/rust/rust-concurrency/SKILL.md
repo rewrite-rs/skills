@@ -52,11 +52,45 @@ converts a throughput problem into a memory problem.
 
 ## Shared state
 
+The compiler's guarantee is narrower than it feels: `Send`, `Sync`, and the borrow
+checker rule out data races in safe code. They do not rule out deadlocks, nor
+logic races — two threads each doing a correct step in an order the program did
+not intend. Message passing sidesteps most of this, so it is the first choice
+before a lock.
+
 `Mutex` is the default; `RwLock` pays off only with genuinely read-heavy
-access, and can starve writers. A `Mutex` whose holder panicked hands back
-an `Err` — propagate it, or `into_inner()` with a written reason, never a
-reflexive `unwrap`. Hold the guard for the shortest possible scope, and
-never across a call into code that might lock again.
+access, and can starve writers. Rules for using a lock well:
+
+- Put data whose parts must stay consistent with each other under one lock. Two
+  locks for two halves of one invariant let another thread see them out of sync.
+- Hold the guard for the shortest possible scope, and never across a call into
+  code that might lock again. That includes invoking a closure or callback while
+  the guard is live: the caller decides what it does.
+- Do not return a `MutexGuard` to a caller. It leaks the locking discipline across
+  an API boundary; return the value, or take a closure that runs inside the lock.
+- If two locks must be held together, take them in one agreed order. Fall back to a
+  written lock hierarchy only once restructuring to need one lock, or none,
+  has failed.
+
+A `Mutex` whose holder panicked is poisoned, and `lock()` hands back an `Err`.
+Three positions exist, and which applies depends on what the protected data
+looks like after the panic:
+
+| Position | When it applies |
+|---|---|
+| Propagate the error, or recover with `into_inner()` and a written reason | The default. The holder panicked, but the data is still consistent (a counter, a cache that can be rebuilt); say so in a comment |
+| Never touch the data behind a poisoned lock | The stricter line, for state where a half-finished update could be mistaken for a good one |
+| Panic on poison (`lock().unwrap()`, `expect`) | A deliberate stop when the state cannot be trusted and nothing can repair it. Write the reason; it is a decision, not a shortcut |
+
+What is ruled out is the reflexive `unwrap` that was never weighed.
+
+## Libraries and threads
+
+Library code does not start threads of its own. Spawning is a program-level
+decision about cost and shutdown; a library that does it hides threads from the
+caller and cannot be embedded in a runtime or sandbox that forbids them. Take a
+closure, an executor handle, or run work on the caller's thread, and let the
+binary decide.
 
 ## Atomics and orderings
 
@@ -93,13 +127,14 @@ written down in two sentences, the code wants a `Mutex`.
 
 `unsafe impl Send for T` asserts what the compiler could not prove; the
 `// SAFETY:` comment must hold an actual argument. The soundness review
-goes to `/unsafe-rust` — this skill only insists the claim is written.
+goes to `/unsafe-rust` — this skill only insists the claim is written. It is never a way to silence a `Send` bound error that the code really violates; fix the data crossing the thread instead.
 
 ## `thread_local!` over `static mut`
 
 `static mut` is effectively unusable in current editions and was never
-sound to share; `thread_local!` is the per-thread answer. Passing state
-beats hiding it in a global — a global is a lifetime nobody wrote down.
+sound to share; `thread_local!` is the per-thread answer. Avoid it where one
+consistent value across threads is the point — each thread sees its own copy.
+Passing state explicitly beats hiding it in a global, which has no visible owner.
 
 ## Deferrals
 
@@ -115,6 +150,12 @@ cargo test                    # including the ignored-by-default stress tests, i
 cargo clippy --all-targets    # at the level the repo configures
 cargo miri test               # where atomics or unsafe Send/Sync are involved
 ```
+
+Deadlocks are timing-dependent and rarely fail an ordinary run. Where the code
+holds more than one lock, add a deadlock-detection job to CI — for instance
+`parking_lot` with its `deadlock_detection` feature polled by a watchdog thread
+during the stress tests, or `loom` models of the lock order — so a cycle in the
+lock order becomes a red build instead of a production hang.
 
 Clippy runs at the lint level the target repo configures; `-D warnings`
 is the fallback only when the repo configures no lints at all. Lock-free

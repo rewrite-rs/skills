@@ -36,6 +36,11 @@ possible; ad-hoc English messages are what make it impossible. Message
 templates with placeholder syntax are one implementation of the field idea,
 not the idea itself — a codebase already on templates is fine.
 
+Name fields after the OpenTelemetry semantic attribute names where one
+exists (`http.request.method`, `url.full`, `error.type`, `server.address`),
+so a backend that understands them groups your data without a mapping layer;
+invent a dotted name of your own only where no standard one fits.
+
 ## Spans
 
 `#[tracing::instrument]` on a function makes every event inside it inherit the
@@ -93,6 +98,10 @@ impl std::fmt::Display for ApiToken {
 Whether the newtype is the right model is `/type-driven-design`.
 
 ## Overhead
+
+Keep telemetry out of hot inner loops altogether. Even a disabled event costs
+an enablement check per iteration, and an enabled one swamps the work. Emit
+one event around the loop, or one per batch, carrying a count.
 
 Building an event that a filter discards still costs when the work is done
 before the macro call. The macros take field values lazily, so do not

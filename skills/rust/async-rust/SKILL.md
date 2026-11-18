@@ -29,10 +29,31 @@ large future is copied on every move — into `Box::pin`, into a `JoinSet`.
 Many awaits and large locals mean kilobytes; box the inner future or split
 the function once a profile says the moves matter.
 
+Three habits keep futures small. Shrink what lives across an `.await`: a big
+buffer or collection that is not used after the suspension point should be
+dropped or scoped in a block before it. Move setup that does not need to
+suspend (building a request, parsing config) outside the `async` block, so
+its temporaries are never part of the state machine. And for a hot future, pin
+the size down with a test that asserts `std::mem::size_of_val(&future)` stays
+under a chosen limit, so growth from a later edit fails a build:
+
+```rust
+async fn handle(id: u32) -> u32 {
+    id + 1
+}
+
+#[test]
+fn handle_future_stays_small() {
+    let future = handle(7);
+    assert!(std::mem::size_of_val(&future) <= 64);
+}
+```
+
 ## Runtime choice, once, at the top
 
 Pick a runtime, in the overwhelming majority of cases `tokio`, deliberately.
-The library rules: stay runtime-agnostic if you can, feature-gate the
+The library rules: stay runtime-agnostic if you can (for I/O, accept `futures::io::AsyncRead` and
+`AsyncWrite` bounds instead of tokio-specific types), feature-gate the
 integration if you cannot, and never start a runtime inside a library
 function (`#[tokio::main]` belongs in a binary or test; a `Runtime::block_on`
 there hands the consumer a second, conflicting executor).
@@ -44,8 +65,11 @@ without an `.await` inside an `async fn` stalls the executor thread and starves
 every other task on it. The fix: `tokio::task::spawn_blocking` for blocking I/O
 and short CPU work, a dedicated thread pool (`rayon`) for sustained CPU work,
 and never a `std::thread::sleep` inside a task. For a compute loop, yielding
-periodically is the weaker fix — it only helps if the chunks are genuinely
-small.
+periodically is the weaker fix and only works when each chunk between yields is
+genuinely short. If yielding is the choice, put `tokio::task::yield_now().await`
+inside the loop so a yield lands after somewhere between 10 and 100 microseconds
+of work (a rule of thumb, not a measured bound). Yield rarely and neighbouring
+tasks starve; yield constantly and the switching costs more than it frees.
 
 ## `Send`, `Sync`, and the spawn bound
 
@@ -98,7 +122,10 @@ Dynamic task groups and their abort semantics are in `CANCELLATION.md`.
 
 ## Async in a public API
 
-Prefer `async fn` over `-> impl Future` unless the extra control is needed —
+Prefer `async fn` over `-> impl Future` unless the extra control is needed. The
+explicit form earns its place in two spots: trait methods, where it lets the
+signature state the `Send` bound, and a hot function whose future size or
+captures must be controlled by hand. Elsewhere it is noise, and
 the desugared form additionally promises `Send`-ness (or its absence) in ways
 the caller then depends on. In traits, `async fn` still lacks `Send` bound
 sugar, and `#[async_trait]` remains the pragmatic choice for object-safe

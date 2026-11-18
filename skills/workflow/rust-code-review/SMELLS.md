@@ -30,6 +30,41 @@ flips the call are at the bottom of this file.
 | A guard held across a call that can lock again | A live `MutexGuard` across a call that acquires the same lock, or across a callback that reaches it | Re-acquiring a lock the thread already holds is a self-deadlock: the program stops on a line that reads like ordinary refactoring | `/rust-concurrency` |
 | A committed `target-cpu` or `panic = "abort"` in a library profile | A `[profile.release]` section in a library crate setting either | The library ships code tuned to the machine it was built on, or aborts a panic the downstream binary meant to catch: a profile setting becomes a promise to every consumer | `/rust-performance` |
 
+## Read these first: correctness and soundness
+
+The priority order in `SKILL.md` puts these above every row of the table
+above. A defect here is blocking by default; a style row never outranks one.
+
+| Smell | How it shows up in a diff | Why it comes first | Owning skill |
+|---|---|---|---|
+| UB behind a safe signature | A safe `fn` that hands out a reference or pointer whose validity depends on a call order the caller is not forced into; `transmute` used to widen a lifetime or cast an enum; `unsafe impl Send`/`Sync` added to make an error go away | Safe code must never cause UB; once it can, every caller is unsound without having written `unsafe` | `/unsafe-rust` |
+| A reachable panic on outside input | `slice[start..end]` on offsets from a request, `v[i]` after a length read elsewhere, `n as u8` on a parsed value, `a + b` on untrusted integers | Debug builds panic, release builds wrap: the same input crashes in one profile and corrupts data in the other | `/rust-errors` |
+| `Ord` hand-written beside a derived `PartialEq`, or `Hash` over different fields than `Eq` | An `impl Ord for Ticket` comparing priority only, while `#[derive(PartialEq, Eq)]` compares every field | `sort`, `dedup`, `BTreeMap`, and `HashMap` assume the traits agree; when they do not, entries vanish or duplicate with no error | `/rust-api-design` |
+| A lock guard across `.await`, or returned to a caller | A `MutexGuard` alive over an await point; a method returning the guard | The task can resume on another thread, or never; the guard outlives the code that reasoned about it | `/async-rust`, `/rust-concurrency` |
+| A caller-supplied closure run while a lock is held | `with_state(\|s\| callback(s))` where the callback can reach the same lock | The library cannot know what the callback does: self-deadlock, or a long hold that serialises every other thread | `/rust-concurrency` |
+| Poison swallowed with `into_inner` and no repair | `lock().unwrap_or_else(\|e\| e.into_inner())` on state a panicking writer left half-updated | The data may break its own invariant, and the next reader trusts it | `/rust-concurrency` |
+| A `Drop` that can panic, block, or fail | `drop` that calls `unwrap`, joins a thread, or does network I/O | A panic inside unwinding aborts the process, and a blocked drop hangs whatever scope exits; failure has no channel to report through | `/unsafe-rust`, `/rust-errors` |
+
+## Error handling, then API and idiom rows
+
+Rows not already in the main table, in the order the review reads them:
+
+| Smell | How it shows up in a diff | Owning skill |
+|---|---|---|
+| A public library function whose error type is `()`, `String`, or `Box<dyn Error>`, or a custom error enum missing `Display` and the `Error` trait | `Result<T, String>` on a `pub fn` | `/rust-errors` |
+| `anyhow::Error` in a library public signature | A published function returning it | `/rust-errors` |
+| `map_err(\|_\| ...)` that drops the source, or an error naming no path, line, or value | The cause disappears; the message says only "invalid input" | `/rust-errors` |
+| `catch_unwind` as control flow, or a panic for an expected failure | A panic caught to continue the loop | `/rust-errors` |
+| `&String`, `&Vec<T>`, `&Box<T>` parameters | The clippy lint `ptr_arg` covers the plain cases; look for the wrapped ones | `/rust-api-design` |
+| A `get_` prefix on a getter, an `as_`/`to_`/`into_` name that misstates cost or ownership | `fn get_name(&self)`; `to_x` that consumes self | `/rust-api-design` |
+| Missing `Debug` on a public type, or `Default` beside a no-argument `new` | A new public struct with neither | `/rust-api-design` |
+| Testing an `Option` and then unwrapping it | `if opt.is_none() { return; } let v = opt.unwrap();` | `/idiomatic-rust` |
+| Output or a test that depends on `HashMap` ordering | A report built by looping a map, then compared as text | `/idiomatic-rust` |
+| `#![deny(warnings)]` in source | The build breaks on the next compiler release; enforce it in CI instead | `/setup-rust-skills` |
+| A `#[allow]` with no reason | Prefer `#[expect(lint, reason = "...")]` when the MSRV is 1.81 or later; below that, keep `#[allow]` with a `//` comment giving the reason | `/idiomatic-rust` |
+| A doc example that unwraps instead of using `?` | Readers copy it | `/rust-docs` |
+| Untested logic, or tests whose assertions only echo constants | An assertion equal to the literal it was built from | `/rust-testing` |
+
 ## Smells that come from generated code
 
 These are review lenses, not topics, which is why they live here rather than

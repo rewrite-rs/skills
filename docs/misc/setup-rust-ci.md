@@ -61,6 +61,22 @@ Five properties, each one surviving a reviewer asking why it is there:
 - Caching keyed on the lockfile — the cache is valid exactly while the
   dependency set is unchanged.
 
+Beyond the defaults, the skill proposes jobs a repo earns, and imposes none:
+
+| Job | Earns its place when |
+|---|---|
+| Feature combinations (`cargo hack`) | features are independent; each one doubles the configurations, so trim or schedule a large powerset |
+| Advisories and policy (`cargo deny` or `cargo audit`) | always worth proposing; runs on dependency changes and weekly |
+| Generated-code drift | the repo commits generator output; regenerate and fail on any diff |
+| Per-platform test matrix | the code has platform-specific paths |
+| A check for a recurring process problem | add it before fixing the instances |
+
+When the repo pins its toolchain in `rust-toolchain.toml`, jobs use that
+version rather than floating `stable`; the MSRV job is the named exception.
+CI holds what should block a merge; fast, false-positive-free checks belong in
+the editor, and every CI command must be one a contributor can run locally.
+Flaky tests are removed, not retried.
+
 An existing workflow is never overwritten: the skill reads it and reports the
 difference as a diff for approval. The full files and the variants are in
 `WORKFLOWS.md`.
@@ -70,7 +86,10 @@ difference as a diff for approval. The full files and the variants are in
 **Why no `-D warnings` on the clippy job?** The level comes from the repo
 `[lints]` block, and the flag would override a level the user deliberately
 set. The flag belongs in the workflow only in the fallback form, for a repo
-with no lint configuration at all.
+with no lint configuration at all, as `-D warnings` on the clippy command or
+`RUSTFLAGS` for the job. The same reasoning keeps `#![deny(warnings)]` out of
+source: a new toolchain adds lints and breaks the build. Specific lints are
+denied by name in the lint block instead.
 
 **What happens when the repo already has CI?** The existing file wins. The
 skill reports the difference between it and what the recorded posture would

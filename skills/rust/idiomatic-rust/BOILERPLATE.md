@@ -90,7 +90,9 @@ let name = user.nickname.clone().unwrap_or_else(|| user.legal_name.clone());
 let upper = user.nickname.as_ref().map(|n| n.to_uppercase());
 ```
 
-`unwrap_or`, `unwrap_or_else`, `map`, and `and_then` cover the vast majority of
+`ok_or` and `ok_or_else` turn an `Option` into a `Result` so `?` can carry the absence,
+`map_err` reshapes an error on the way out, and `as_ref()` borrows the inside without
+moving it. Between them, `unwrap_or`, `unwrap_or_else`, `map`, and `and_then` cover the vast majority of
 `Option`/`Result` handling. Reach for the explicit `match` when an arm needs to do
 something the combinators can't express cleanly — early `return`, a `?`, or logging
 distinct to one branch.
@@ -181,7 +183,7 @@ impl std::ops::Deref for LoggingConnection {
 ```
 
 Don't. `Deref` is for smart pointers — types whose whole job is to transparently
-stand in for the thing they contain, like `Box<T>` or `Rc<T>`. `LoggingConnection`
+stand in for the thing they contain, like `Box<T>`, `Rc<T>`, `Arc<T>`, `String` (a pointer to `str`), or `Cow<T>`. `LoggingConnection`
 is not a pointer to a `Connection`; it's a distinct type that happens to hold one,
 and its entire reason to exist is to add behavior (logging) on top. Implementing
 `Deref` for inheritance-style forwarding lets `connection.query(...)` compile by
@@ -198,5 +200,23 @@ The idiomatic fix for genuine forwarding boilerplate is usually one of:
 - If the wrapper only needs a subset of the surface on the inner type, forward exactly
   that subset explicitly rather than the whole type by `Deref`.
 - If the wrapper truly adds nothing and is pure indirection, delete the wrapper.
+
+Other options when forwarding hurts more than ten lines:
+
+- Define a trait for the shared behaviour and implement it on both types, so generic
+  code can take either explicitly.
+- Let a delegation crate (`delegate`, `ambassador`) generate the forwards. This keeps
+  the explicitness while removing the typing.
+
+Why `Deref` is the wrong tool here, beyond the silent exposure above: it is not
+inheritance. There is no subtyping, so a bound on a trait the inner type implements does
+not accept the wrapper, and `self` inside an inner method is the inner value, not the
+wrapper, so any behaviour the wrapper adds is skipped. Worst, the mechanism is implicit:
+a reader sees `conn.query(..)` and has no hint that it left the wrapper. Code that makes
+the reader guess is the real cost.
+
+The same forwarding burden applies to any newtype that wants most of its inner type's
+trait surface. A derive crate such as `derive_more` can generate the forwarding impls
+for `Add`, `Display`, `From`, and similar, which keeps the newtype cheap to write.
 
 Reserve `Deref` for types that are actually smart pointers.

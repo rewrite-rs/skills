@@ -34,10 +34,17 @@ thread only needs to borrow stack data.
 ## Shared state and orderings
 
 - **`Mutex` is the default.** `RwLock` pays off only with genuinely
-  read-heavy access, and can starve writers.
-- **Poisoning is a decision, not an error to swallow.** A `Mutex` whose
-  holder panicked hands back an `Err`; the honest answers are propagate or
-  `into_inner()` with a written reason.
+  read-heavy access, and can starve writers. Safe Rust rules out data races but
+  not deadlocks or logic races, so prefer message passing.
+- **Lock discipline.** Data with linked invariants shares one lock, no closure
+  runs while a guard is live, a `MutexGuard` is never returned to a caller, and
+  a written lock hierarchy is the last resort.
+- **Poisoning is a decision, not an error to swallow.** Default: propagate the
+  `Err`, or `into_inner()` with a written reason when the data is still
+  consistent. Stricter: never touch data behind a poisoned lock. A deliberate
+  panic on poison is legitimate when the state cannot be trusted and nothing can
+  repair it.
+- **Libraries do not start threads.** The binary decides.
 - **Guards are scoped.** The guard lives for the shortest possible scope,
   never across a call into code that might lock again — the deadlock a
   shared-state design invites.
@@ -45,8 +52,9 @@ thread only needs to borrow stack data.
   `Acquire`/`Release` for a publish/observe handoff, `SeqCst` when unsure.
   When the ordering argument cannot be written in two sentences, the code
   wants a `Mutex`.
-- **A global is a lifetime nobody wrote down.** `thread_local!` over
-  `static mut`, and passing state over hiding it.
+- **A global has no visible owner.** `thread_local!` over
+  `static mut` (but not where one consistent value matters), and passing state
+  over hiding it. Never `unsafe impl Send` just to get past a bound error.
 
 ## Common questions
 
@@ -73,6 +81,7 @@ cfg and needs the model to be small. Ordinary threaded code settles with
 - No guard is held across a call that can lock again.
 - No ordering weaker than `SeqCst` without a written reason.
 - No `static mut`.
+- Code holding several locks has a deadlock-detection job in CI.
 
 ## Where it fits
 

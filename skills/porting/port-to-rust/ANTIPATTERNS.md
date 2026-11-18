@@ -78,6 +78,90 @@ behaviour, not structure. Restructuring is allowed precisely because
 the parity contract is written in terms of observable behaviour —
 which is why the contract comes first.
 
+## Reimplementing the source-language runtime
+
+**Tell.** Hand-written copies of how the source language splits lines,
+trims whitespace, parses integers, classifies characters, or handles a
+locale: a `splitlines` clone, a `strtol` loop, an `isspace` table.
+
+**Why it is fatal.** The copy is code the port must now test and
+maintain, it is usually less correct than `std`, and it spends the
+size budget on behaviour no caller asked for. It also hides the real
+decision: where Rust and the source differ is a fact for the notes,
+not something to bury in a helper.
+
+**Instead.** Lean on the string helpers in `std` (`lines`, `trim`,
+`parse`, the `char` predicates) rather than re-deriving them. Where `std`
+differs only on rare input — non-ASCII digits or whitespace, unbounded
+integers, locale tables — record the difference in `PORTING.md`, and add a
+shim for those inputs only if the user confirms they exist. This is not licence to narrow behaviour:
+on inputs the code really receives, observable behaviour is preserved,
+and a difference there is a contract violation, not a note.
+
+## Growing the API
+
+**Tell.** A builder, an `Index` impl, `FromIterator` or `Extend`, or a
+custom iterator type, none of which the source offered or its callers
+used.
+
+**Why it is fatal.** Every added public item is surface the parity
+harness never exercised and a semver promise nobody requested. It also
+makes the port unreviewable against the source, because the reviewer can
+no longer map each source item to one Rust item.
+
+**Instead.** Expose what the source exposes, plus the conventional trait
+impls a Rust user would reach for: `Debug` and `Clone` on data types,
+`Display` and `Error` on failures, `FromStr` where the source parsed text,
+`Default` where it had an empty constructor, `IntoIterator` and
+`len`/`is_empty` on collections. Add anything further only when a named
+caller needs it.
+
+## Swapping the algorithm
+
+**Tell.** The source scans a list and the port introduces a different
+structure or strategy, with no note saying why.
+
+**Why it is fatal.** A new algorithm changes tie-breaking, ordering, and
+edge-case behaviour in ways the source never promised, so differences
+stop being attributable to a translation slip.
+
+**Instead.** Keep the algorithm unless it is wrong — quadratic on
+realistic input, say — and when it is swapped, say so in `PORTING.md`
+with the reason and the evidence.
+
+## Treating size as a target, or ignoring it
+
+**Tell.** Either the port is trimmed to hit a line count, or it is three
+times larger than expected and nobody asked why.
+
+**Why it is fatal.** Size is a smell detector, not a goal. Trimming to a
+number drops behaviour; ignoring it lets the three habits above go
+unseen.
+
+**Instead.** Count code lines, leaving out tests and comments, and compare
+with the source. A C or C++ port lands near the source size. A Python,
+JavaScript, or TypeScript port can come out two to three times as large, because
+Rust writes out in types, error enums, and trait impls what the source
+only implied. Much more than that points at a
+runtime reimplementation, a grown API, or a swapped algorithm: find which
+one and remove it.
+
+## Over-testing parity
+
+**Tell.** A fuzzing campaign over millions of inputs, written before the
+realistic corpus exists.
+
+**Why it is fatal.** It mostly turns up rare edge divergences that a note
+can cover, while its cost delays the evidence that matters.
+
+**Instead.** Tens of representative inputs, error paths included, are
+enough to judge parity for a port of this size. The
+recorded production corpus and property generators described in
+`PARITY-CONTRACT.md` stay the measure for a system that has them; the
+point here is that a small port does not need a campaign to be proven,
+and anything a campaign turns up on inputs nobody sends goes in the
+notes.
+
 ## Porting dead code
 
 **Tell.** A module ported that no caller could be found for.

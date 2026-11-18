@@ -27,7 +27,7 @@ and write access to `Cargo.toml` and `docs/`.
 
 | Artifact | Contents |
 |---|---|
-| Lint configuration | levels in `Cargo.toml` `[lints]` (or `[workspace.lints]` plus the per-member opt-in) and knobs in `clippy.toml` — `msrv`, the `unwrap_used`/`expect_used` test carve-outs |
+| Lint configuration | levels in `Cargo.toml` `[lints]` (or `[workspace.lints]` plus the per-member opt-in) and knobs in `clippy.toml` — `msrv`, `max-fn-params-bools`, the unwrap, expect, and print test carve-outs |
 | `rustfmt.toml` | the stable keys, and the nightly-only keys marked or omitted |
 | `docs/agents/rust.md` | the five detected facts, the commands, which of the four tools the repo runs, and the unsafe policy — the recorded posture the rest of the set reads |
 
@@ -41,13 +41,33 @@ Detection reads `Cargo.toml`, the crate root, and `rust-toolchain.toml`, and
 settles what it can — edition, MSRV, async runtime, `no_std`, and the unsafe
 policy. Only the unsettled facts are asked, in one batch. The proposal is the
 default lint set with a one-line reason per entry, presented for the user to
-cut, never imposed: denies for the unsafe-documentation lints
-(`unsafe_op_in_unsafe_fn`, `clippy::undocumented_unsafe_blocks`, and
-`clippy::missing_safety_doc`), for the panic lints `clippy::unwrap_used` and
-`clippy::expect_used` with their test carve-out, and for
-`clippy::allow_attributes_without_reason`; warns for `clippy::pedantic` as a
-group at `priority = -1`, `missing_docs`, `missing_debug_implementations`,
-`unreachable_pub`, and `rust_2018_idioms`. `#[expect(lint, reason = "...")]`
+cut, never imposed:
+
+- Denies: the unsafe lints (`unsafe_op_in_unsafe_fn`,
+  `clippy::undocumented_unsafe_blocks`, `clippy::multiple_unsafe_ops_per_block`,
+  `clippy::missing_safety_doc`), the panic lints `clippy::unwrap_used` and
+  `clippy::expect_used` with their test carve-out, and
+  `clippy::allow_attributes_without_reason` and `clippy::map_err_ignore`.
+- Warns: `clippy::pedantic` as a group at `priority = -1`, the type-design and ownership lints
+  (`fn_params_excessive_bools`, `struct_excessive_bools`, `clone_on_ref_ptr`,
+  `redundant_clone`, `rc_buffer`), the cast lints (`as_conversions`,
+  `cast_possible_truncation`, `cast_sign_loss`), the idiom and leftover lints
+  (`string_add`, `wildcard_imports`, `dbg_macro`, `todo`,
+  `panic_in_result_fn`, `missing_assert_message`), `missing_debug_implementations`,
+  `unreachable_pub`, and `rust_2018_idioms`.
+- Library only, dropped for an application: `missing_docs`, `exhaustive_enums`,
+  `print_stdout`, `print_stderr`, `missing_panics_doc`, and
+  `missing_errors_doc`. Detection picks the variant from a `lib.rs`, a `[lib]`
+  target, or a publishable package.
+- Re-allowed as noise when pedantic is on, each with a reason:
+  `module_name_repetitions`, `must_use_candidate`, `module_inception`, and
+  `enum_glob_use`.
+
+`clippy::allow_attributes` is proposed only when the detected MSRV is 1.81 or
+later, and so is `allow_attributes_without_reason`. Any lint the repo already
+sets keeps its level.
+
+`#[expect(lint, reason = "...")]`
 is preferred over `#[allow(lint)]` where the toolchain supports it, because
 an `expect` fails when the situation it was written for goes away, and an
 `allow` that outlived its reason is invisible. The confirmation is the
@@ -66,7 +86,31 @@ check` (every feature combination compiles, not just the one CI builds),
 installs them: `cargo hack` and `cargo udeps` go in a scheduled job rather
 than on every push, and `miri` is worth the toolchain only for a crate with
 `unsafe` in it. The posture file records the answer either way — "not
-installed" is as useful to the next agent as the installed state.
+installed" is as useful to the next agent as the installed state. The
+feature check matters because each independent feature doubles the
+configurations, and it only passes when features are additive. The run also
+names the everyday cargo subcommands the repo leans on and suggests
+`rust-analyzer`: put a tool in CI when its signal is worth a red build, and in
+the editor when it is fast and free of false positives.
+
+## Project shape and formatting
+
+For a new crate the skill proposes the creation-time decisions in
+`WORKSPACE.md`: one flat workspace with every crate a sibling under `crates/`
+and a member of the workspace, siblings referenced through the workspace,
+versions and metadata shared in `[workspace.package]` and
+`[workspace.dependencies]` (defined with `default-features = false`), the
+latest stable edition, an MSRV set at creation and raised conservatively in
+minor releases, no unstable features, a pinned `rust-toolchain.toml`, and a
+build that needs only `cargo` and `rustc`, with generated code produced at
+publish time and shipped in the crate. For an existing repo these are
+detected and recorded, never rewritten without an approved diff.
+
+Formatting is left to rustfmt. The `rustfmt.toml` stays small, with a reason
+per key; the nightly-only keys (`imports_granularity`, `group_imports`,
+`hex_literal_case`, `format_macro_matchers`) stay commented out unless the
+toolchain is pinned to nightly. `#[rustfmt::skip]` is for hand-aligned tables
+and generated code, never personal style.
 
 ## Common questions
 
@@ -79,6 +123,11 @@ a diff. If the existing set already covers the defaults, the run reports
 holds the knobs, such as `msrv` and the test carve-outs. A level placed there
 compiles fine and is silently ignored; the levels belong in `Cargo.toml`
 `[lints]`.
+
+**What if the repo prefers `expect` over a ban on both?** The default denies
+`clippy::expect_used`. A repo whose rule is "unwrap is banned, expect with a
+message is the sanctioned panic" sets `expect_used = "allow"`, and the skill
+honours that level when it detects it instead of proposing the deny back.
 
 **Does the run lower a level if the new set makes the build red?** No. A
 newly red lint is a finding to report with the count and the top offenders,
@@ -100,6 +149,10 @@ only when the user asks.
 - The posture file names which of the four tools the repo runs — `cargo
   audit`, `cargo hack --feature-powerset check`, `cargo udeps`, `cargo miri
   test` — including the ones it does not.
+- Library-only lints appear only for a library, and `allow_attributes` only
+  where the MSRV is 1.81 or later.
+- No `#![deny(warnings)]` was added, and `#[allow]` appears only in generated
+  code or macro output.
 - No existing key was changed without an approved diff.
 - The verification commands ran and their output was reported, including any
   lints that turned red under the new set.

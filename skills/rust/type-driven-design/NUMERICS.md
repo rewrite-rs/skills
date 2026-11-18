@@ -23,6 +23,19 @@ let size = NonZeroUsize::new(n)?; // handled once, at the boundary
 // every later use goes through size.get(); no zero-check is possible
 ```
 
+### At a public API boundary
+
+Inside a crate, `NonZero` is the default for a value that cannot be zero, and so
+is it for storage that benefits from the niche (`Option<NonZeroU32>` is as small
+as a `u32`). On a public signature the question changes, because the type is now
+something every caller must build. A public parameter takes `NonZero*` only when
+both hold: zero is a caller bug the type should rule out, and callers can make the
+value easily (a literal, or a constant they already have). Otherwise accept the
+plain integer and return an error for zero, so a caller holding a runtime `usize`
+is not forced to unwrap a conversion first. `Saturating<T>` follows the same
+test: it belongs in a public signature only when callers genuinely hold or want
+that wrapper; otherwise the plain integer goes in and saturation happens inside.
+
 ## Checked, saturating, wrapping — say which
 
 Plain `+` panics in debug and wraps in release, which is the worst of both:

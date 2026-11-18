@@ -45,6 +45,18 @@ crosses, and `#[repr(transparent)]` on the newtype that wraps a handle, so
 the wrapper is invisible on the wire and the type safety is free on the
 Rust side.
 
+## Naming and `-sys` crates
+
+A `-sys` crate imports a C library into Rust and nothing more; an `-ffi` crate
+exports a Rust library as a C-style one. Core types carry no raw-pointer
+fields. Put each C-owned pointer inside a wrapper type that releases it in
+`Drop`; the safe constructor rejects null by returning a `Result`, and no
+function hands back a pointer into stack data. Across a library boundary share only plain `#[repr(C)]` data — no
+statics, thread-locals, or `TypeId`. A `-sys` crate builds native code with
+`cc` in `build.rs`, embeds upstream sources with a verifiable hash, keeps
+optional tools optional, ships pre-generated bindgen output, and supports both
+static linking and `libloading`; the full rules are in `SYS-CRATES.md`.
+
 ## Common questions
 
 **How is this different from `/port-from-c`?** That skill moves code off C
@@ -62,9 +74,12 @@ side gets a distinct type at no layout cost. For a struct that crosses by
 value it is `#[repr(C)]`, not `#[repr(transparent)]` — the layout is part
 of the contract either way.
 
-**Where do the bindings get generated?** That is `/port-from-c` — bindgen
-inward, cbindgen outward — because the generation tooling belongs to the
-migration story, not to the boundary design.
+**Where do the bindings get generated?** The migration walkthrough —
+bindgen inward, cbindgen outward — is `/port-from-c`. For a boundary that
+stays, prefer bindgen to hand mappings, restrict it with allowlists, pull the
+output in through `include!`, and have CI fail whenever regeneration changes
+the file; those rules are in
+`SYS-CRATES.md`.
 
 ## It's working if
 
@@ -74,6 +89,8 @@ migration story, not to the boundary design.
   an out-parameter.
 - Every allocation has a matching free from the same crate, and the
   ownership is stated in the signature and in a `# Safety` section.
+- No pointer to stack data leaves the boundary, and C-owned pointers sit in
+  `Drop` wrappers that check null.
 - A foreign-language test exercises create-use-destroy under the platform
   leak checker.
 
