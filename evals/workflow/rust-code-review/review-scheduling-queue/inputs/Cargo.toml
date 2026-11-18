@@ -1,0 +1,9 @@
+[package]
+name = "jobqueue"
+version = "0.3.1"
+edition = "2021"
+rust-version = "1.75"
+description = "A small priority queue for background jobs"
+license = "MIT OR Apache-2.0"
+
+[dependencies]

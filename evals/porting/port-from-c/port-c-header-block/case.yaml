@@ -1,0 +1,16 @@
+schema_version: "1.1"
+name: port-c-header-block
+context:
+  scaffold_script: stage-inputs.sh
+expected_outcome: |
+  Deliverable is a Rust library crate that compiles, produces no findings under `cargo clippy -D warnings` (clippy is the Rust linter; -D warnings makes every warning an error), and has a
+  Rust test counterpart for each of the 9 test functions in test_hdrblock.c. It uses no unsafe and no raw
+  pointers. Status codes and out-parameters from hb_parse turn into a Result whose error enum keeps
+  the offending line number, NULL results (absent name or index) turn into Option, and the bit-flag integer (HB_UNFOLD, HB_MERGE_REPEATS, HB_STRICT_NAMES) turns into a
+  typed options value. Behaviour
+  matches the C code, including the planted quirks: only space and tab are trimmed from values,
+  empty repeated values are skipped when merging with ", ", the integer getter follows C strtol
+  (leading whitespace skipped, one sign accepted, a number too large for a C int is a distinct range error),
+  and length limits (names up to 31 bytes, values up to 63 bytes; HB_NAME_MAX 32 and HB_VALUE_MAX 64 count the terminating NUL) report the offending line. PORTING.md
+  lays out how the API and tests correspond, states the parity contract and the intentional
+  differences, and lists possible improvements as follow-up items instead of applying them.

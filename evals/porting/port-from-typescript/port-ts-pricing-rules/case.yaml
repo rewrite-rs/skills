@@ -1,0 +1,14 @@
+schema_version: "1.1"
+name: port-ts-pricing-rules
+context:
+  scaffold_script: stage-inputs.sh
+expected_outcome: |
+  A Rust library crate that compiles, produces no findings under `cargo clippy -D warnings` (clippy is the Rust linter; -D warnings makes every warning an error), avoids unsafe, and
+  passes translations of all 13 tests in pricing.test.ts. The Rule discriminated union (object types told apart by a kind field)
+  turns into an enum with data, the thrown PricingError subclasses turn into a Result whose error
+  enum holds the index, rule name and sku, and the rule category keeps three states (missing,
+  null, string) through serde rather than collapsing to one Option. Cents and quantities are
+  integers, percent is f64, the JavaScript rounding rules are
+  reproduced (Math.round rounds halves toward positive infinity; toFixed rounds exact ties up), and Map insertion order and stable-sort ties (equal totals keep input order) are preserved. JSON goes through
+  serde and the empty-cart quote omits the average key. PORTING.md documents the numeric
+  choices, the undefined/null choice and the intentional differences.

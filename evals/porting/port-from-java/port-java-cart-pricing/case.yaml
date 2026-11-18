@@ -1,0 +1,14 @@
+schema_version: "1.1"
+name: port-java-cart-pricing
+context:
+  scaffold_script: stage-inputs.sh
+expected_outcome: |
+  A Rust library crate that compiles, produces no findings under `cargo clippy -D warnings` (clippy is the Rust linter; -D warnings makes every warning an error), avoids unsafe, and
+  has a translated test for each of the 9 test methods of CartTest.java. The Discount class hierarchy
+  becomes an enum (a closed set), not a trait-object graph or Deref inheritance; the checked
+  CartException classes turn into a Result over an error enum whose variants retain their
+  fields; null and Optional become Option; Product's SKU-only equals, hashCode and compareTo
+  become hand-written impls that agree. Catalog and cart insertion order and the TreeMap
+  (sorted map) category order are preserved. The three deliberate quirks of the Java code survive: tax rounds half-up (not
+  banker's rounding), discounts apply in priority order (ties keep insertion order) with percent amounts truncated, and
+  line totals (32-bit int times 32-bit int) wrap around at 32 bits. A PORTING.md captures the decisions made and the differences from Java.

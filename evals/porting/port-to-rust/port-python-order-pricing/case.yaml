@@ -1,0 +1,18 @@
+schema_version: "1.1"
+name: port-python-order-pricing
+context:
+  scaffold_script: stage-inputs.sh
+expected_outcome: |
+  An incremental first step of a Python-to-Rust migration. The agent picks pricing.py, the
+  pure leaf module, as the seam (not store.py, which does file I/O, or report.py, which depends on pricing and store), and says why. It writes a parity contract (end state, unit of parity,
+  acceptable and unacceptable differences, how parity is measured) and builds characterization tests
+  from the existing test_shipcalc.py rather than from scratch. It ports the live pricing
+  functions to Rust while keeping the quirks that test_shipcalc.py pins (no bulk discount at exactly 10
+  units, discount computed by flooring, shipping remainder cents on the last lines) and records them as
+  follow-ups instead of fixing them. It does not port legacy_flat_rate, which has no
+  callers. A differential harness runs the Python and Rust implementations over the same
+  inputs through a process boundary (JSON on stdin, JSON on stdout), including refunds
+  with negative quantities and shipping, error paths and tie cases, and reports the number
+  of inputs compared and the number of differences. store.py, report.py, cli.py and the
+  Python tests (test_shipcalc.py) stay in Python and unmodified. The Rust builds, passes tests, and produces no findings under clippy with warnings denied
+  (clippy is the Rust linter), without clone or unwrap added just to get past the compiler. The notes say what is done and what phases remain.

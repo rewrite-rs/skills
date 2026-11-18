@@ -1,0 +1,2 @@
+msrv = "1.64"
+allow-unwrap-in-tests = true

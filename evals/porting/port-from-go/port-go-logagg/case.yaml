@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: port-go-logagg
+context:
+  scaffold_script: stage-inputs.sh
+expected_outcome: |
+  A Rust library crate that compiles, produces no findings under `cargo clippy -D warnings` (clippy is the Rust linter; -D warnings makes every warning an error), avoids unsafe, and
+  passes translations of each table row and subtest in logagg_test.go (12 parser rows, 2 render configs, 4 error subtests, the empty-input test and the lookup test). The Go sentinel
+  errors (named error values) become an error enum matched by variant, ParseError keeps the line, text and
+  cause, nil pointers become Option, the Parser interface becomes a trait with two
+  implementers, worker goroutines become threads (no async runtime), and the Go zero-value
+  defaults (an unset Config means 2 workers and top-N 3; an unset Level means info) are reproduced explicitly. Output
+  order is deterministic: services by count descending then name ascending, levels in
+  ascending order, and if several entries tie for slowest, the first one wins. Integer division truncates,
+  empty input produces zeros rather than a panic, and PORTING.md correlates the API and tests
+  with the Go originals and lists the intentional differences.

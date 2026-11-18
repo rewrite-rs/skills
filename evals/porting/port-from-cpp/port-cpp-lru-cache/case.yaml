@@ -1,0 +1,16 @@
+schema_version: "1.1"
+name: port-cpp-lru-cache
+context:
+  scaffold_script: stage-inputs.sh
+expected_outcome: |
+  A Rust library crate that compiles, produces no findings under `cargo clippy -D warnings` (clippy is the Rust linter; -D warnings makes every warning an error), and passes Rust
+  translations of the 7 test functions in test_lru.cpp. There is no unsafe code. RAII maps to Drop
+  (the scoped bulk loader Batch becomes a guard type with Drop), the unique_ptr listener (an exclusively owned eviction listener) to an owned Box<dyn Trait> or generic, and
+  the shared_ptr test log to Rc<RefCell<..>> only because that sharing is real.
+  Exception classes turn into a Result over an error enum that implements Display and
+  Error; optional becomes Option; the class template becomes a generic with only the
+  bounds it needs; std::map becomes BTreeMap so group order stays observable. Deliberate
+  quirks of the C++ code are preserved: peek and contains do not promote, an update at capacity promotes
+  without evicting, capacity 0 rejects and counts, counters stop at their maximum instead of wrapping, and group ties
+  break by name. The Rust non-test source stays under about 300 code lines (1.5 times the roughly 202 in lru.h and lru.cpp) and adds no public API. PORTING.md
+  correlates the API and tests with the originals and records intentional differences.

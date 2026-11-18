@@ -1,0 +1,60 @@
+--- a/src/config.rs
++++ b/src/config.rs
+@@ -6,6 +6,8 @@
+ pub struct Config {
+     pub port: u16,
+     pub name: String,
++    pub workers: u8,
++    pub timeout_secs: u64,
+ }
+ 
+ fn split_pairs(text: &str) -> HashMap<&str, &str> {
+@@ -16,6 +18,7 @@
+ }
+ 
+ impl Config {
++    #[allow(clippy::cast_possible_truncation)]
+     pub fn parse(text: &str) -> Result<Config, String> {
+         let pairs = split_pairs(text);
+         let port = match pairs.get("port") {
+@@ -23,7 +26,28 @@
+             None => 8080,
+         };
+         let name = pairs.get("name").copied().unwrap_or("relay").to_string();
+-        Ok(Config { port, name })
++        let workers: u64 = pairs.get("workers").map_or("4", |w| w).parse().unwrap();
++        let workers = workers as u8;
++        let raw_timeout = match pairs.get("timeout") {
++            Some(raw) => raw,
++            None => {
++                return Ok(Config {
++                    port,
++                    name,
++                    workers,
++                    timeout_secs: 0,
++                })
++            }
++        };
++        let timeout_secs = raw_timeout
++            .parse()
++            .map_err(|_| format!("invalid timeout: {raw_timeout}"))?;
++        Ok(Config {
++            port,
++            name,
++            workers,
++            timeout_secs,
++        })
+     }
+ }
+ 
+@@ -38,7 +62,9 @@
+             cfg,
+             Config {
+                 port: 8080,
+-                name: "relay".into()
++                name: "relay".into(),
++                workers: 4,
++                timeout_secs: 0
+             }
+         );
+     }

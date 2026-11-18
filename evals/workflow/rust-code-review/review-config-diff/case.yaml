@@ -1,0 +1,17 @@
+schema_version: "1.1"
+name: review-config-diff
+context:
+  scaffold_script: stage-inputs.sh
+expected_outcome: |
+  REVIEW.md contains a review of the change in change.diff (already applied to src/config.rs),
+  one line for each finding, and the code stays untouched. It opens with a verdict, the scope (the changed
+  lines and what they break, application assumed because the crate has src/main.rs and no src/lib.rs, edition 2021 and
+  MSRV 1.64, MSRV meaning the minimum supported Rust version, both read from the `edition` and `rust-version` lines of Cargo.toml) and what ran. It flags the `.unwrap()` on the parsed
+  workers value (src/config.rs line 29, after the diff is applied) as blocking or
+  should-fix with its line, the `workers as u8` truncating cast (line 30; suggesting u8::try_from or
+  parsing straight into u8), and the #[allow(clippy::cast_possible_truncation)] (line 21) that has no
+  explanation (the `reason =` argument and the #[expect] attribute need Rust 1.81, which is newer than the MSRV of 1.64, so a plain comment or removal is the fix) and is hiding the very lint that would catch the cast. It never recommends let-else (stable in 1.65) or
+  any other feature newer than Rust 1.64 (the match-and-return block at lines 31 to 41 is left alone or
+  rewritten with a 1.64 construct such as ok_or / ok_or_else with ?). clippy (the Rust linter) runs at the level
+  the repo configured (the `[lints.clippy]` table in Cargo.toml and clippy.toml), without `-- -D warnings` appended. The repo has a lint configuration, so
+  there is no /setup-rust-skills closing (that skill sets up lint configuration, which this repo already has).

@@ -1,0 +1,17 @@
+schema_version: "1.1"
+name: review-scheduling-queue
+context:
+  scaffold_script: stage-inputs.sh
+expected_outcome: |
+  REVIEW.md contains a long-form review (the report shape with a block per finding) covering the whole crate, and no source file is modified.
+  It opens with a verdict, the scope (whole library crate, library assumed because src/lib.rs is the only source file and its items are pub, edition 2021 and MSRV
+  1.75, MSRV meaning the minimum supported Rust version, both read from the `edition` and `rust-version` lines of Cargo.toml) and what ran. It ranks as blocking the hand-written Ord on Priority
+  (src/lib.rs lines 20 to 24, comparing only `level`) that disagrees with the derived PartialEq/Eq (line 14, comparing `level` and `label`; the BTreeSet<Priority> in the `seen` field, line 63, silently merges
+  priorities that differ only by label) and the std MutexGuard held across .await in drain_into (guard taken on line 109, await on line 112).
+  The slice index `jobs[start..end]` in page (line 103) on caller offsets is at least should-fix with its line, the
+  Box<dyn Error> public error type of push (line 76) is routed to error-handling guidance, and the get_ prefix on
+  get_len (line 91) is a note. The documented, deliberate pub max_retries field (line 47, with the comment on lines 44 to 46) is not blocking. Every
+  finding has a path:line, repeats are grouped (the six `.lock().unwrap()` calls on lines 80, 85, 92, 97, 102, and 109 are one finding at most), the keep list (if present) has two to four
+  items (the range the report template gives), there is no praise padding, and because the crate has no lint configuration (Cargo.toml has no `[lints]` table and the crate has no clippy.toml)
+  the report closes by suggesting /setup-rust-skills (the skill that sets up lint configuration) and naming two or three findings its lints would catch. Formatting
+  is only ever checked (`cargo fmt --check`), never rewritten.

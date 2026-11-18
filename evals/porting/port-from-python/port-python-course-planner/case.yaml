@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: port-python-course-planner
+context:
+  scaffold_script: stage-inputs.sh
+expected_outcome: |
+  A Rust library crate that compiles, produces no findings under `cargo clippy -D warnings` (clippy is the Rust linter; -D warnings makes every warning an error), and passes
+  translations of all 11 test functions in test_curriculum.py. The exception classes collapse into one
+  error enum whose variants hold the same data (line number, course and prerequisite, the loop path);
+  the level string is modelled as an enum that parses and prints through FromStr and Display; course credits is an Option (None when a course has no credits);
+  catalog order survives instead of being scrambled by HashMap iteration. study_order breaks ties
+  by catalog position (position in the input, not alphabetical order), the cycle path matches the Python output exactly (for example ["B", "C", "A", "B"]), and empty input behaves as in Python. PORTING.md
+  correlates the API and tests with the Python originals and lists the intentional differences.

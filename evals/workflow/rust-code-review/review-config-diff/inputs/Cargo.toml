@@ -1,0 +1,11 @@
+[package]
+name = "relayd"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.64"
+
+[dependencies]
+
+[lints.clippy]
+unwrap_used = "warn"
+cast_possible_truncation = "warn"
