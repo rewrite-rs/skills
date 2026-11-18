@@ -91,7 +91,7 @@ match on, the cast is checked, and failure propagates instead of panicking.
 
 ## Installation
 
-Pick one route. The managed plugin routes (Claude Code) install a read-only bundle
+Pick one route. The managed plugin routes (Claude Code, and Codex, untested) install a read-only bundle
 that updates on its own schedule. The file-copy routes (npx, GitHub CLI, Gemini CLI,
 manual copy) write editable files you own. Installing through both leaves every skill
 duplicated, and the copies drift apart.
@@ -174,9 +174,18 @@ only.
 <details>
 <summary>OpenAI Codex</summary>
 
-Codex reads skills from `.agents/skills/` in a repo, or from `~/.agents/skills/` for
-your user. Use the `manual-copy` block with one of those directories. This repo does not
-ship a Codex plugin manifest, so there is no plugin route for Codex.
+**Untested: this Codex plugin route has not been run end to end.**
+
+```bash
+codex plugin marketplace add rewrite-rs/skills
+```
+
+Then open the `/plugins` browser in Codex, install `rewrite-rs-skills` from the
+`rewrite-rs` marketplace, and start a new session. The plugin manifest points Codex at
+`./skills/`; whether Codex discovers the nested `skills/<bucket>/<name>` folders from
+there is unconfirmed. If the skills do not appear, remove the plugin and use the
+`manual-copy` block instead. Codex reads skills from `.agents/skills/` in a repo, or from
+`~/.agents/skills/` for your user.
 
 </details>
 

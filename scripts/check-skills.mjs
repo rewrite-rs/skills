@@ -134,6 +134,24 @@ export function checkRepo(repoRoot) {
     }
   }
 
+  const codexPath = join(repoRoot, ".codex-plugin", "plugin.json");
+  if (existsSync(codexPath)) {
+    const codexSkills = JSON.parse(readFileSync(codexPath, "utf8")).skills;
+    if (Array.isArray(codexSkills)) {
+      const codexListed = new Set(codexSkills);
+      for (const entry of listed) {
+        if (!codexListed.has(entry)) {
+          errors.push(`.codex-plugin/plugin.json skills array is missing "${entry}"`);
+        }
+      }
+      for (const entry of codexListed) {
+        if (!listed.has(entry)) {
+          errors.push(`.codex-plugin/plugin.json lists "${entry}" which plugin.json does not`);
+        }
+      }
+    }
+  }
+
   for (const entry of listed) {
     const match = /^\.\/skills\/([^/]+)\/([^/]+)$/.exec(entry);
     if (!match || !existsSync(join(repoRoot, "skills", match[1], match[2], "SKILL.md"))) {

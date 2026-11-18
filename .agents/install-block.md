@@ -69,9 +69,18 @@ only.
 
 ## `codex`
 
-Codex reads skills from `.agents/skills/` in a repo, or from `~/.agents/skills/` for
-your user. Use the `manual-copy` block with one of those directories. This repo does not
-ship a Codex plugin manifest, so there is no plugin route for Codex.
+**Untested: this Codex plugin route has not been run end to end.**
+
+```bash
+codex plugin marketplace add rewrite-rs/skills
+```
+
+Then open the `/plugins` browser in Codex, install `rewrite-rs-skills` from the
+`rewrite-rs` marketplace, and start a new session. The plugin manifest points Codex at
+`./skills/`; whether Codex discovers the nested `skills/<bucket>/<name>` folders from
+there is unconfirmed. If the skills do not appear, remove the plugin and use the
+`manual-copy` block instead. Codex reads skills from `.agents/skills/` in a repo, or from
+`~/.agents/skills/` for your user.
 
 ## `manual-copy`
 
@@ -124,7 +133,7 @@ two-step blocks above are canonical until then.
 
 ## The routes are exclusive
 
-Pick one. The plugin routes (`claude-code`, `claude-code-shell`) install a managed,
+Pick one. The plugin routes (`claude-code`, `claude-code-shell`, `codex`) install a managed,
 read-only bundle that Claude Code updates on its own schedule. The file-copy routes
 (`npx-whole-set`, `gh-skill`, `gemini-cli`, `manual-copy`) write editable files that the
 user then owns and can modify. Installing through both families leaves every skill

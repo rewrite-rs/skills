@@ -40,3 +40,34 @@ test("check mode does not write", () => {
   const plugin = JSON.parse(readFileSync(join(root, ".claude-plugin", "plugin.json"), "utf8"));
   assert.equal(plugin.version, "0.1.0");
 });
+
+function addCodex(root, version) {
+  mkdirSync(join(root, ".codex-plugin"), { recursive: true });
+  writeFileSync(
+    join(root, ".codex-plugin", "plugin.json"),
+    JSON.stringify({ name: "rewrite-rs-skills", version, skills: "./skills/" }, null, 2)
+  );
+}
+
+test("writes the package version into the Codex manifest too", () => {
+  const root = scaffold("0.2.0", "0.2.0");
+  addCodex(root, "0.1.0");
+  const result = syncVersion(root, { check: false });
+  assert.equal(result.changed, true);
+  const codex = JSON.parse(readFileSync(join(root, ".codex-plugin", "plugin.json"), "utf8"));
+  assert.equal(codex.version, "0.2.0");
+});
+
+test("check mode flags a stale Codex manifest without writing", () => {
+  const root = scaffold("0.2.0", "0.2.0");
+  addCodex(root, "0.1.0");
+  const result = syncVersion(root, { check: true });
+  assert.equal(result.changed, true);
+  const codex = JSON.parse(readFileSync(join(root, ".codex-plugin", "plugin.json"), "utf8"));
+  assert.equal(codex.version, "0.1.0");
+});
+
+test("a missing Codex manifest is not an error", () => {
+  const root = scaffold("0.1.0", "0.1.0");
+  assert.equal(syncVersion(root, { check: true }).changed, false);
+});
