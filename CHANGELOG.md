@@ -1,5 +1,62 @@
 # rewrite-rs-skills
 
+## 0.2.0
+
+2026-11-18
+
+Every skill was broadened. Ten skills gained new companion files, the rest
+gained rules and reworked examples, and the porting skills and the Rust code
+review now ship with eval cases. The README now explains how the set works and
+lists every install route. The promoted set is unchanged at 28 skills.
+
+### Skills — `skills/rust/`
+
+- `idiomatic-rust` — new `PATTERNS` (common idioms with worked examples) and `READABILITY` files; `NAMING` extended with conversion, getter, and iterator naming rules; formatting now covers only the files you changed
+- `rust-api-design` — new `CONSTRUCTION` (constructors, builders, defaults), `STANDARD-TRAITS` (which common traits a public type should implement), and `FEATURES` (additive Cargo features) files; `SURFACE` and `SEMVER` extended
+- `rust-errors` — new `PANICS` file covering when a panic is the right answer and how to document it; `ERROR-TYPES` extended
+- `type-driven-design` — new `MODELLING` file on turning a domain into types, with typestate and numerics notes tightened
+- `ownership-not-clone` — new `LIFETIMES` file; the shared-state guidance extended
+- `rust-docs` — new `COMMENTS` (when a plain comment beats a doc comment) and `PACKAGING` (crate metadata and docs.rs setup) files
+- `async-rust` — keeping futures small, with a size test, and library rules for staying runtime-agnostic
+- `unsafe-rust` — module-level soundness, plus rules against `transmute` shortcuts and `unsafe impl Send` used to silence a compiler error
+- `rust-concurrency` — lock discipline (scope, ordering, never returning a guard) and a position on poisoned mutexes
+- `rust-performance` — deciding whether speed matters at all, `black_box` in benchmarks, hasher choice, and batch entry points
+- `rust-observability` — standard attribute names for fields, and keeping telemetry out of hot loops
+
+### Skills — `skills/porting/`
+
+- `port-to-rust` — `ANTIPATTERNS` extended with proportionality rules, so the port is sized to the source and does not grow extra layers; a `PORTING.md` reviewer-notes deliverable; `PARITY-CONTRACT` extended
+
+### Skills — `skills/workflow/`
+
+- `rust-code-review` — decides scope first, then reviews in a fixed priority order; short and long report formats in a new `REPORT-FORMAT` file, where each long finding carries Consequence, Standard, and Change; a larger smells table; `#[expect]` advice applies only at MSRV 1.81 or later
+- `setup-rust-skills` — a wider default lint set, tagged lib or app and regrouped by category; `expect_used` stays at deny, with the alternative documented; new `WORKSPACE` file on lint and layout choices for multi-crate workspaces
+- `rust-testing` — examples as compiled usage samples, fuzzing for untrusted input, feature-combination and per-platform testing, and following the test framework the repo already uses
+
+### Skills — `skills/misc/`
+
+- `setup-rust-ci` — CI job guidance and an extended `WORKFLOWS` file
+- `rust-macros` — new `ITEM-MACROS` file on macros that generate items
+- `rust-ffi` — new `SYS-CRATES` file on `-sys` crates and their safe wrappers
+- `rust-serde` — an opt-in `serde` feature for library crates
+- `rust-supply-chain` — what version requirements allow, why duplicate crates appear, and the cost of each added dependency
+
+### Fixes
+
+- `rust-macros` — the `min_of!` example evaluated its arguments twice; it now binds each argument once
+
+### Evals
+
+- Eval cases for all seven porting skills (`port-to-rust`, `port-from-python`, `port-from-typescript`, `port-from-go`, `port-from-java`, `port-from-cpp`, `port-from-c`), each with inputs, a prompt, and graders
+- Two eval cases for `rust-code-review`
+- Each grader says where its numbers come from
+
+### Install and docs
+
+- README: how the set works, a before and after example, and a testing section
+- Install routes: Claude Code plugin, `npx`, `gh skill install rewrite-rs/skills --all`, Gemini CLI, manual copy, and claude.ai zips
+- Codex plugin manifest and marketplace file (untested)
+
 ## 0.1.0-alpha.1
 
 2026-08-16
