@@ -30,30 +30,199 @@ language (C, C++, Go, Java, Python, TypeScript) over a shared migration spine.
 **Workflow:** review, testing, setup, and a router that picks the skill for you.
 **Misc:** the occasional setup and audit skills.
 
+> ⭐ **Found this useful? Give it a star.** rewrite-rs/skills is free and open source. A star takes one click, tells us the work is worth continuing, and helps other Rust developers, and teams porting code into Rust, find the project.
+
+## How it works
+
+Skills fire on their own. Each model-invoked skill carries a description, and the
+agent loads the skill when the task matches it: write an error type and
+`rust-errors` loads, start a port and `port-to-rust` loads. User-invoked skills
+never fire on their own, so you type them (`setup-rust-skills`, `rust-skills-map`,
+`setup-rust-ci`, `setup-rust-pre-commit`). Not sure which skill owns a decision?
+Run `rust-skills-map`, the router over the set.
+
+## What changes with the skills
+
+An illustrative contrast, not a measured run. The task: read a port number from
+a config string. Without the skills, an agent often reaches for the shortest
+thing that compiles:
+
+```rust,ignore
+fn parse_port(s: &String) -> Result<u16, String> {
+    let n: u32 = s.trim().parse().map_err(|_| "bad port".to_string())?;
+    if n == 0 || n > 65535 {
+        return Err(format!("port {} out of range", n));
+    }
+    Ok(n as u16)
+}
+
+let port = parse_port(&raw).unwrap();
+```
+
+The borrow is `&String`, the error is a string the caller can only print, and
+the `unwrap` turns bad input into a panic. With `idiomatic-rust` and
+`rust-errors` loaded, the same function reads like this:
+
+```rust,ignore
+#[derive(Debug, thiserror::Error)]
+enum PortError {
+    #[error("port is not a number: {0:?}")]
+    NotANumber(String),
+    #[error("port {0} is outside 1..=65535")]
+    OutOfRange(u32),
+}
+
+fn parse_port(s: &str) -> Result<u16, PortError> {
+    let n: u32 = s
+        .trim()
+        .parse()
+        .map_err(|_| PortError::NotANumber(s.to_owned()))?;
+    u16::try_from(n)
+        .ok()
+        .filter(|&p| p != 0)
+        .ok_or(PortError::OutOfRange(n))
+}
+
+let port = parse_port(&raw)?;
+```
+
+The parameter accepts any string slice, the error is a type the caller can
+match on, the cast is checked, and failure propagates instead of panicking.
+
 ## Installation
 
-The two routes below are exclusive: the plugin is a managed, read-only bundle you
-subscribe to; `npx` writes editable files you own. Installing both leaves every
-skill duplicated. Pick one.
+Pick one route. The managed plugin routes (Claude Code) install a read-only bundle
+that updates on its own schedule. The file-copy routes (npx, GitHub CLI, Gemini CLI,
+manual copy) write editable files you own. Installing through both leaves every skill
+duplicated, and the copies drift apart.
 
 <details>
 <summary>Claude Code</summary>
+
+Inside a session:
 
 ```
 /plugin marketplace add rewrite-rs/skills
 /plugin install rewrite-rs-skills@rewrite-rs
 ```
 
+Or from a terminal:
+
+```bash
+claude plugin marketplace add rewrite-rs/skills
+claude plugin install rewrite-rs-skills@rewrite-rs
+```
+
+Run these in a terminal instead of inside a session. Add `--scope project` to the
+install command to share the plugin with everyone on a repo.
+
 </details>
 
 <details>
-<summary>Other agents</summary>
+<summary>Any agent (npx)</summary>
 
 ```bash
 npx skills@latest add rewrite-rs/skills
 ```
 
 Pick the skills you want, and which coding agents to install them on.
+
+</details>
+
+<details>
+<summary>GitHub CLI (Copilot and others)</summary>
+
+```bash
+gh skill install rewrite-rs/skills --all
+```
+
+To install one skill, name it:
+
+```bash
+gh skill install rewrite-rs/skills rust/idiomatic-rust
+```
+
+Project scope is the default; `--scope user` installs for your account, and
+`--agent <name>` picks the target agent.
+
+</details>
+
+<details>
+<summary>Gemini CLI</summary>
+
+```bash
+for skill in \
+  rust/async-rust rust/idiomatic-rust rust/ownership-not-clone rust/rust-api-design \
+  rust/rust-concurrency rust/rust-docs rust/rust-errors rust/rust-observability \
+  rust/rust-performance rust/type-driven-design rust/unsafe-rust \
+  porting/port-from-c porting/port-from-cpp porting/port-from-go porting/port-from-java \
+  porting/port-from-python porting/port-from-typescript porting/port-to-rust \
+  workflow/rust-code-review workflow/rust-skills-map workflow/rust-testing \
+  workflow/setup-rust-skills \
+  misc/rust-ffi misc/rust-macros misc/rust-serde misc/rust-supply-chain \
+  misc/setup-rust-ci misc/setup-rust-pre-commit
+do
+  gemini skills install https://github.com/rewrite-rs/skills.git --path "skills/$skill" --consent
+done
+```
+
+This installs for your user. Add `--scope workspace` to install for the current project
+only.
+
+</details>
+
+<details>
+<summary>OpenAI Codex</summary>
+
+Codex reads skills from `.agents/skills/` in a repo, or from `~/.agents/skills/` for
+your user. Use the `manual-copy` block with one of those directories. This repo does not
+ship a Codex plugin manifest, so there is no plugin route for Codex.
+
+</details>
+
+<details>
+<summary>Copy the folders by hand</summary>
+
+```bash
+git clone https://github.com/rewrite-rs/skills rewrite-rs-skills
+mkdir -p ~/.agents/skills
+for dir in rewrite-rs-skills/skills/*/*/; do
+  case "$dir" in */in-progress/*) continue ;; esac
+  cp -R "$dir" ~/.agents/skills/
+done
+```
+
+This flattens each `skills/<bucket>/<name>` folder into one skills directory. Replace
+`~/.agents/skills` with the directory for your agent:
+
+Where each agent looks, for your user and for a single project:
+
+- Claude Code: `~/.claude/skills/` for you, `.claude/skills/` in a project.
+- OpenAI Codex: `~/.agents/skills/` for you, `.agents/skills/` in a project.
+- GitHub Copilot: `~/.copilot/skills/` or `~/.agents/skills/` for you; `.github/skills/` or `.agents/skills/` in a project.
+- Cursor: `~/.cursor/skills/` or `~/.agents/skills/` for you; `.cursor/skills/` or `.agents/skills/` in a project.
+- Gemini CLI: `~/.gemini/skills/` or `~/.agents/skills/` for you; `.gemini/skills/` or `.agents/skills/` in a project.
+
+Claude Code ignores `.agents/skills/`. Give it `.claude/skills/` or `~/.claude/skills/`,
+or take the plugin route. If a freshly copied skill is missing, restart the agent.
+
+</details>
+
+<details>
+<summary>claude.ai</summary>
+
+```bash
+git clone https://github.com/rewrite-rs/skills rewrite-rs-skills
+mkdir -p skill-zips
+for dir in rewrite-rs-skills/skills/*/*/; do
+  case "$dir" in */in-progress/*) continue ;; esac
+  name=$(basename "$dir")
+  (cd "$(dirname "$dir")" && zip -r "$OLDPWD/skill-zips/$name.zip" "$name" -x '*.DS_Store')
+done
+```
+
+Each zip has a single skill folder at its root. Turn on code execution first, then
+upload every zip from the **Customize > Skills** page.
 
 </details>
 
@@ -185,7 +354,36 @@ behaviour changes, a review that ends in a verdict, and a recorded posture file
 every agent reads on opening the repo are what make the standard the state
 the repo lives in, not advice about it.
 
-## Contributing / repo layout
+## How the skills are tested
 
-See `CLAUDE.md` for the rules that govern authoring, editing, and reviewing a skill
-in this repo, and `CONTEXT.md` for the vocabulary this repo uses.
+The `evals/` directory holds eval cases that run the skills against realistic
+tasks and grade the result. There is one case per porting skill (C, C++, Go,
+Java, Python, TypeScript, and `port-to-rust`) and two cases for
+`rust-code-review`.
+
+Each case is a directory:
+
+- `case.yaml` — the name, the scaffold script, and the expected outcome.
+- `prompt.md` — the task given to the agent, with the tool allowlist and turn limit in its frontmatter.
+- `inputs/` — the source files the task starts from.
+- `stage-inputs.sh` — the scaffold script that copies the inputs into a clean working directory.
+- `graders/` — one Markdown file per check, each scored by an LLM judge.
+
+Run them with `claude plugin eval`. Scaffold scripts and tools such as `Bash`
+and `Write` are opt-in, so pass them explicitly:
+
+```bash
+claude plugin eval . --scaffold --allow-tools Bash Write Edit
+claude plugin eval . --scaffold --allow-tools Bash Write Edit --case 'port-c-*' --runs 1
+```
+
+The first form runs every case with a no-plugin baseline arm to report the score
+delta. Narrow it with `--case` or `--tag`. Only run it on a checkout you trust,
+since the scaffold scripts run as you. No benchmark results are published yet.
+
+## Contributing
+
+Open an issue before building anything; `docs/contributing.md` explains why and
+covers the branch model. `CLAUDE.md` holds the rules for authoring, editing, and
+reviewing a skill, and `CONTEXT.md` the vocabulary. Run `npm run check` before
+sending a change.
