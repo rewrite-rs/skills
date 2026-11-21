@@ -2,7 +2,7 @@
   "name": "rewrite-rs-skills",
   "version": "0.2.0",
   "private": true,
-  "description": "The most comprehensive agent skill set for real Rust, plus disciplined porting into it",
+  "description": "The most comprehensive Rust agent skills for writing real, idiomatic Rust and porting code from other languages.",
   "homepage": "https://rewrite.rs",
   "repository": {
     "type": "git",
